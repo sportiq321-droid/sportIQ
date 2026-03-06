@@ -4,7 +4,7 @@
 
 const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
   ? '' 
-  : 'https://YOUR_HUGGINGFACE_URL_HERE';
+  : 'https://Sportiq321-sportiqbackend.hf.space';
 
 const API = {
   // ==================== AUTH ====================
