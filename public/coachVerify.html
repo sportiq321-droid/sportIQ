@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Achievement Verification - SportIQ</title>
+
+    <!-- Tailwind (project-wide tokens) -->
+    <script src="js/tailwind-config.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+      rel="stylesheet"
+    />
+
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="css/global.css" />
+
+    <!-- Inline styles for glow effect -->
+    <style>
+      .glow {
+        box-shadow: 0 0 5px rgba(56, 105, 250, 0.5),
+          0 0 10px rgba(56, 105, 250, 0.3), 0 0 15px rgba(56, 105, 250, 0.2);
+      }
+
+      /* Desktop modal width */
+      @media (min-width: 1024px) {
+        .modal-content-lg {
+          max-width: 48rem;
+        }
+      }
+    </style>
+  </head>
+  <body
+    data-page="coach-achievements"
+    class="font-display text-white min-h-screen"
+  >
+    <div class="relative flex min-h-screen w-full flex-col">
+      <!-- Main Content -->
+      <main
+        class="flex-grow p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 max-w-7xl mx-auto w-full pb-28 sm:pb-32"
+      >
+        <!-- Header -->
+        <header class="flex items-center justify-between gap-4">
+          <button
+            id="backBtn"
+            class="flex items-center justify-center size-10 sm:size-11 text-gray-300 hover:text-white hover:bg-white/10 rounded-full transition-all active:scale-95"
+            aria-label="Back to previous page"
+            title="Back"
+          >
+            <span class="material-symbols-outlined">arrow_back_ios_new</span>
+          </button>
+          <h1 class="text-lg sm:text-xl lg:text-2xl font-bold text-white">
+            Achievements
+          </h1>
+          <a
+            href="notifications.html"
+            class="relative flex items-center justify-center size-10 sm:size-11 text-gray-300 hover:text-white hover:bg-white/10 rounded-full transition-all"
+            aria-label="Notifications"
+            data-notify-bell
+          >
+            <span class="material-symbols-outlined">notifications</span>
+          </a>
+        </header>
+
+        <!-- Pending Section -->
+        <div class="space-y-3 sm:space-y-4">
+          <h2
+            id="pendingHeader"
+            class="text-base sm:text-lg font-semibold text-gray-300"
+            aria-live="polite"
+          >
+            Pending (<span id="pendingCount">0</span>)
+          </h2>
+
+          <!-- Loading State -->
+          <div id="loadingState" class="space-y-3 sm:space-y-4">
+            <div
+              class="glassmorphic rounded-xl p-3 sm:p-4 animate-pulse flex items-center gap-3 sm:gap-4"
+            >
+              <div
+                class="size-12 sm:size-14 rounded-full bg-white/10 flex-shrink-0"
+              ></div>
+              <div class="flex-grow space-y-2 min-w-0">
+                <div class="h-4 bg-white/10 rounded w-1/3"></div>
+                <div class="h-3 bg-white/10 rounded w-1/2"></div>
+                <div class="h-3 bg-white/10 rounded w-1/4"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Empty State -->
+          <div id="emptyState" class="hidden text-center py-12 sm:py-16">
+            <div class="max-w-sm mx-auto">
+              <p class="text-gray-400 text-sm sm:text-base">
+                No pending achievements.
+              </p>
+            </div>
+          </div>
+
+          <!-- Cards Container -->
+          <div id="cardsContainer" class="space-y-3 sm:space-y-4 hidden"></div>
+
+          <!-- Legacy pendingList for JS compatibility -->
+          <div id="pendingList" class="hidden"></div>
+        </div>
+      </main>
+
+      <!-- Modal (Hidden by default) -->
+      <div
+        id="achievementModal"
+        class="hidden fixed inset-0 z-50 flex items-center justify-center p-4"
+        aria-modal="true"
+        role="dialog"
+        aria-labelledby="modalTitle"
+      >
+        <!-- Overlay -->
+        <div
+          id="modalOverlay"
+          class="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        ></div>
+
+        <!-- Modal Content -->
+        <div
+          class="relative glassmorphic rounded-2xl p-4 sm:p-6 max-w-lg lg:max-w-3xl w-full max-h-[90vh] overflow-y-auto space-y-3 sm:space-y-4"
+        >
+          <!-- Close Button -->
+          <button
+            id="modalClose"
+            class="absolute top-3 right-3 sm:top-4 sm:right-4 flex items-center justify-center size-8 sm:size-10 text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition-all"
+            aria-label="Close modal"
+            title="Close"
+          >
+            <span class="material-symbols-outlined">close</span>
+          </button>
+
+          <!-- Player Info -->
+          <div class="flex items-center gap-3 sm:gap-4 pr-10 sm:pr-12">
+            <img
+              id="modalAvatar"
+              alt="Player avatar"
+              class="size-14 sm:size-16 rounded-full border-2 border-primary/50 flex-shrink-0"
+              src=""
+            />
+            <div class="min-w-0 flex-1">
+              <h2
+                id="modalTitle"
+                class="text-lg sm:text-xl font-bold text-white truncate"
+              ></h2>
+              <p
+                id="modalSport"
+                class="text-xs sm:text-sm text-gray-300 truncate"
+              ></p>
+            </div>
+          </div>
+
+          <!-- Achievement Details -->
+          <div class="space-y-3">
+            <div>
+              <p class="text-xs text-gray-400 uppercase tracking-wide">Title</p>
+              <p
+                id="modalAchTitle"
+                class="text-base sm:text-lg font-semibold text-white break-words"
+              ></p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <p class="text-xs text-gray-400 uppercase tracking-wide">
+                  Date
+                </p>
+                <p id="modalDate" class="text-sm text-gray-300"></p>
+              </div>
+              <div>
+                <p class="text-xs text-gray-400 uppercase tracking-wide">
+                  Venue
+                </p>
+                <p
+                  id="modalVenue"
+                  class="text-sm text-gray-300 break-words"
+                ></p>
+              </div>
+            </div>
+
+            <div>
+              <p class="text-xs text-gray-400 uppercase tracking-wide">
+                Description
+              </p>
+              <p
+                id="modalDescription"
+                class="text-sm text-gray-300 break-words"
+              ></p>
+            </div>
+
+            <!-- Proof (if exists) -->
+            <div id="modalProofContainer" class="hidden">
+              <p class="text-xs text-gray-400 uppercase tracking-wide mb-2">
+                Proof
+              </p>
+              <div
+                id="modalProofContent"
+                class="rounded-lg overflow-hidden bg-black/20"
+              >
+                <!-- Dynamic content: image or "View PDF" button -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="space-y-3 pt-4 border-t border-white/10">
+            <!-- Reject Reason (hidden initially) -->
+            <div id="rejectReasonContainer" class="hidden space-y-2">
+              <label
+                for="rejectReason"
+                class="block text-sm font-medium text-gray-300"
+              >
+                Rejection Reason <span class="text-red-400">*</span>
+              </label>
+              <textarea
+                id="rejectReason"
+                rows="3"
+                class="w-full px-3 py-2 text-sm sm:text-base rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/50 focus:outline-none resize-none"
+                placeholder="Explain why this achievement is being rejected..."
+                style="
+                  background-color: #1f2937;
+                  border: 1px solid #4b5563;
+                  color: #e5e7eb;
+                "
+              ></textarea>
+              <p
+                id="rejectReasonError"
+                class="text-sm text-red-400 hidden"
+                aria-live="assertive"
+              >
+                Rejection reason is required.
+              </p>
+            </div>
+
+            <!-- Action Buttons -->
+            <div id="actionButtons" class="flex flex-col sm:flex-row gap-3">
+              <button
+                id="approveBtn"
+                class="flex-1 px-4 sm:px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm sm:text-base font-semibold transition-all active:scale-95 focus:ring-2 focus:ring-emerald-400 focus:outline-none min-h-[44px]"
+              >
+                <span class="flex items-center justify-center gap-2">
+                  <span class="material-symbols-outlined text-lg"
+                    >check_circle</span
+                  >
+                  Approve
+                </span>
+              </button>
+              <button
+                id="rejectBtn"
+                class="flex-1 px-4 sm:px-5 py-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-sm sm:text-base font-semibold transition-all active:scale-95 focus:ring-2 focus:ring-rose-400 focus:outline-none min-h-[44px]"
+              >
+                <span class="flex items-center justify-center gap-2">
+                  <span class="material-symbols-outlined text-lg">cancel</span>
+                  Reject
+                </span>
+              </button>
+            </div>
+
+            <!-- Submit Reject Button (shown after clicking Reject) -->
+            <div
+              id="submitRejectContainer"
+              class="hidden flex flex-col sm:flex-row gap-3"
+            >
+              <button
+                id="cancelRejectBtn"
+                class="flex-1 px-4 sm:px-5 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm sm:text-base font-semibold transition-all active:scale-95 border border-white/20 min-h-[44px]"
+              >
+                Cancel
+              </button>
+              <button
+                id="submitRejectBtn"
+                class="flex-1 px-4 sm:px-5 py-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-sm sm:text-base font-semibold transition-all active:scale-95 focus:ring-2 focus:ring-rose-400 focus:outline-none min-h-[44px]"
+              >
+                Submit Rejection
+              </button>
+            </div>
+          </div>
+
+          <!-- Error Message -->
+          <p
+            id="modalError"
+            class="text-sm text-rose-400 hidden break-words"
+            aria-live="assertive"
+          ></p>
+        </div>
+      </div>
+
+      <!-- Legacy modals (hidden, kept for JS backward compatibility) -->
+      <div id="proofModal" class="hidden" aria-hidden="true"></div>
+      <div id="rejectModal" class="hidden" aria-hidden="true"></div>
+      <div id="statusMsg" class="hidden"></div>
+    </div>
+
+    <!-- Bell dot helper -->
+    <script type="module" src="js/notify-dot.js"></script>
+
+    <!-- Controller -->
+    <script type="module" src="js/coachVerify.js"></script>
+
+    <!-- Bottom nav -->
+    <script type="module" src="js/nav.js"></script>
+
+    <!-- Smart back button handler -->
+    <script>
+      document
+        .getElementById("backBtn")
+        ?.addEventListener("click", function () {
+          if (window.history.length > 1 && document.referrer) {
+            window.history.back();
+          } else {
+            window.location.href = "coachVerifyLand.html";
+          }
+        });
+    </script>
+  </body>
+</html>

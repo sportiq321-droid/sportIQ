@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notifications - SportIQ</title>
+
+    <!-- Tailwind tokens + CDN -->
+    <script src="js/tailwind-config.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <link rel="stylesheet" href="css/global.css" />
+    <link rel="stylesheet" href="css/tournament.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    />
+  </head>
+  <body
+    class="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200 min-h-screen"
+    data-page="notifications.html"
+  >
+    <main class="relative flex min-h-screen w-full max-w-xl mx-auto flex-col">
+      <!-- Header (no notify dot on this page) -->
+      <header
+        class="sticky top-0 z-20 p-4 bg-background-light/80 dark:bg-background-dark/80 glassmorphic-backdrop"
+      >
+        <div class="flex items-center justify-between">
+          <a href="profile.html" class="block" aria-label="Profile">
+            <img
+              id="headerAvatar"
+              src="img/defaultavatar.jpg"
+              alt="Profile avatar"
+              class="w-10 h-10 rounded-full object-cover border-2 border-primary"
+            />
+          </a>
+          <h1 class="text-lg font-bold text-gray-900 dark:text-white">
+            Notifications
+          </h1>
+          <!-- Quick link to My Tournaments -->
+          <a
+            href="mytournaments.html"
+            class="text-gray-300"
+            aria-label="My Tournaments"
+          >
+            <span class="material-symbols-outlined">emoji_events</span>
+          </a>
+        </div>
+      </header>
+
+      <!-- Reminder list -->
+      <section class="flex-grow p-4">
+        <div id="notifList" class="flex flex-col gap-4"></div>
+      </section>
+    </main>
+
+    <!-- Controller -->
+    <script type="module" src="js/notifications.js"></script>
+
+    <!-- Header avatar setter -->
+    <script type="module">
+      import { getCurrentUser } from "./js/modules/users.js";
+      const img = document.getElementById("headerAvatar");
+      try {
+        const u = getCurrentUser();
+        img.src = u?.profilePic || "img/defaultavatar.jpg";
+      } catch {
+        img.src = "img/defaultavatar.jpg";
+      }
+    </script>
+
+    <!-- Bottom nav -->
+    <script type="module" src="js/nav.js"></script>
+  </body>
+</html>

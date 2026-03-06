@@ -1,0 +1,125 @@
+├── index.ts
+├── package-lock.json
+├── package.json
+├── prisma/
+│   ├── dev.db
+│   ├── migrations/
+│   │   ├── 20250929135309_init/
+│   │   │   └── migration.sql
+│   │   └── migration_lock.toml
+│   └── schema.prisma
+├── public/
+│   ├── achievements.html
+│   ├── adminregistrations.html
+│   ├── admintournament.html
+│   ├── assess-broadjump.html
+│   ├── assess-run.html
+│   ├── assess-situps.html
+│   ├── assess.html
+│   ├── coach-assessments.html
+│   ├── coach-reports.html               // NEW - Coach reports detail page
+│   ├── coachVerify.html
+│   ├── css/
+│   │   ├── achievements.css
+│   │   ├── adminregistrations.css
+│   │   ├── admintournament.css
+│   │   ├── assessments.css
+│   │   ├── backlogin.jpg
+│   │   ├── dashboard.css
+│   │   ├── details.css
+│   │   ├── global.css
+│   │   ├── govaverify.css
+│   │   ├── india-states-districts.json
+│   │   ├── players.css
+│   │   ├── profile.css
+│   │   ├── schedules.css
+│   │   ├── tournament.css
+│   │   └── upload.css
+│   ├── dashboard.html
+│   ├── details.html
+│   ├── explore.html
+│   ├── find-tournament.html
+│   ├── govverifiy.html
+│   ├── img/
+│   │   ├── defaultavatar.jpg
+│   │   └── sports/
+│   │       └── thumb/
+│   │           ├── archery.jpg
+│   │           ├── ... (all other images)
+│   │           └── wrestling.webp
+│   ├── index.html
+│   ├── js/
+│   │   ├── adminRegistrations.js
+│   │   ├── adminTournament.js
+│   │   ├── api.js
+│   │   ├── assessments/
+│   │   │   ├── broadjump.js
+│   │   │   ├── coach.js
+│   │   │   ├── home.js
+│   │   │   ├── my.js
+│   │   │   ├── run.js
+│   │   │   └── situps.js
+│   │   ├── auth-pages.js
+│   │   ├── coachPlayers.js
+│   │   ├── coachSchedules.js
+│   │   ├── coachVerify.js
+│   │   ├── core/
+│   │   │   ├── auth.js
+│   │   │   └── storage.js
+│   │   ├── dashboard.js
+│   │   ├── districts.js
+│   │   ├── govaverify.js
+│   │   ├── index-intro.js
+│   │   ├── modules/
+│   │   │   ├── achievements.js
+│   │   │   ├── coach-reports.js         // NEW - Controller for coach-reports.html
+│   │   │   ├── dashboards.js
+│   │   │   ├── reports.store.js
+│   │   │   ├── reports.ui.js
+│   │   │   ├── schedules.js
+│   │   │   ├── tournaments-admin.js
+│   │   │   ├── tournaments.js
+│   │   │   └── users.js
+│   │   ├── myachieve.js
+│   │   ├── mytournaments.js
+│   │   ├── nav.js
+│   │   ├── notifications.js
+│   │   ├── notify-dot.js
+│   │   ├── reports.js
+│   │   ├── tailwind-config.js
+│   │   ├── tournaments.js
+│   │   ├── upload-certificate.js
+│   │   └── upload.js
+│   ├── login.html
+│   ├── my-assessments.html
+│   ├── myachieve.html
+│   ├── mytournaments.html
+│   ├── notifications.html
+│   ├── package.json
+│   ├── player-schedules.html
+│   ├── playerschedulesLand.html         // NEW - Player schedules landing page
+│   ├── pnpm-lock.yaml
+│   ├── profile.html
+│   ├── register.html
+│   ├── reports.html
+│   ├── schedules.html
+│   ├── schedulesLand.html               // NEW - Coach schedules landing page
+│   ├── SportIQ blue logo.png
+│   ├── tournament.html
+│   ├── upload-certificate.html
+│   ├── upload.html
+│   ├── viewPlayers.html
+│   └── vscode-profile-2025-09-21-11-50-45.cpuprofile
+├── README.md
+├── scripts/
+│   ├── build-sport-thumbs.js
+│   └── gen-sport-thumbs.js
+├── tsconfig.json
+├── uploads/
+│   ├── assessments/
+│   └── certificates/
+│       ├── cmg0nt6fz0000i2ihgg6ebqfz-1758884336043.docx
+│       ├── ... (all other certificate files)
+│       └── cmg6ay2o2000oj9jvwrqp2k7m-1759221517354.pdf
+├── yarn-error.log
+└── yarn.lock

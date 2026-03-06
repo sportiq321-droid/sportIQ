@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Player Schedules - SportIQ</title>
+
+    <!-- Tailwind tokens + CDN -->
+    <script src="js/tailwind-config.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    />
+
+    <!-- Global + schedules styles -->
+    <link rel="stylesheet" href="css/global.css" />
+    <link rel="stylesheet" href="css/schedules.css" />
+  </head>
+
+  <body
+    data-page="player-schedules-landing"
+    class="font-display text-white min-h-screen"
+  >
+    <div class="relative flex min-h-screen w-full flex-col">
+      <!-- Header -->
+      <header
+        class="sticky top-0 z-20 glassmorphic backdrop-blur-md border-b border-white/10"
+      >
+        <div class="flex items-center justify-between px-4 sm:px-6 py-4">
+          <button
+            id="backBtn"
+            class="flex size-10 sm:size-11 items-center justify-center rounded-full text-white/80 hover:text-white hover:bg-white/10 transition-all active:scale-95"
+            aria-label="Back"
+            title="Back"
+          >
+            <span class="material-symbols-outlined">arrow_back</span>
+          </button>
+
+          <h1
+            class="text-xl sm:text-2xl lg:text-3xl font-bold text-white tracking-tight"
+          >
+            Player Schedules
+          </h1>
+
+          <a
+            href="notifications.html"
+            class="relative flex items-center justify-center size-10 sm:size-11 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-all duration-200"
+            aria-label="Notifications"
+            data-notify-bell
+          >
+            <span class="material-symbols-outlined">notifications</span>
+          </a>
+        </div>
+      </header>
+
+      <!-- Main -->
+      <main class="flex-grow p-4 sm:p-6 lg:p-8 pb-28 sm:pb-32">
+        <div class="max-w-7xl mx-auto w-full">
+          <div
+            class="grid gap-6 sm:gap-8 grid-cols-1 sm:grid-cols-2 max-w-5xl mx-auto"
+          >
+            <!-- Available schedules tile -->
+            <article
+              class="group tile-hover glassmorphic rounded-2xl shadow-2xl cursor-pointer overflow-hidden"
+            >
+              <a href="player-schedules.html?view=available" class="block">
+                <div
+                  class="tile-image-wrapper aspect-video w-full bg-gradient-to-br from-blue-600/30 to-purple-600/30"
+                >
+                  <img
+                    alt="Available schedules"
+                    class="h-full w-full object-cover"
+                    src="https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=1200&q=80&auto=format&fit=crop"
+                    loading="lazy"
+                  />
+                </div>
+                <div class="p-6 sm:p-8 space-y-4">
+                  <div class="flex items-center justify-center">
+                    <div
+                      class="flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/30"
+                    >
+                      <span
+                        class="material-symbols-outlined text-5xl text-blue-400"
+                        >event_available</span
+                      >
+                    </div>
+                  </div>
+                  <div class="text-center space-y-2">
+                    <h2 class="text-xl sm:text-2xl font-bold text-white">
+                      Available Schedules
+                    </h2>
+                    <p class="text-sm sm:text-base text-white/70">
+                      Find and request to join upcoming sessions
+                    </p>
+                  </div>
+                  <div
+                    class="w-full btn-primary flex items-center justify-center gap-2 h-12 sm:h-14 rounded-xl text-white font-semibold text-sm sm:text-base transition-all duration-200 active:scale-95"
+                  >
+                    <span class="material-symbols-outlined text-xl"
+                      >search</span
+                    >
+                    <span>Browse</span>
+                  </div>
+                </div>
+              </a>
+            </article>
+
+            <!-- My schedules tile -->
+            <article
+              class="group tile-hover glassmorphic rounded-2xl shadow-2xl cursor-pointer overflow-hidden"
+            >
+              <a href="player-schedules.html?view=my" class="block">
+                <div
+                  class="tile-image-wrapper aspect-video w-full bg-gradient-to-br from-green-600/30 to-teal-600/30"
+                >
+                  <img
+                    alt="My schedules"
+                    class="h-full w-full object-cover"
+                    src="https://images.unsplash.com/photo-1517649763962-0c623066013b?w=1200&q=80&auto=format&fit=crop"
+                    loading="lazy"
+                  />
+                </div>
+                <div class="p-6 sm:p-8 space-y-4">
+                  <div class="flex items-center justify-center">
+                    <div
+                      class="flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-green-500/20 to-teal-500/20 border border-green-500/30"
+                    >
+                      <span
+                        class="material-symbols-outlined text-5xl text-green-400"
+                        >schedule</span
+                      >
+                    </div>
+                  </div>
+                  <div class="text-center space-y-2">
+                    <h2 class="text-xl sm:text-2xl font-bold text-white">
+                      My Schedules
+                    </h2>
+                    <p class="text-sm sm:text-base text-white/70">
+                      See your pending and approved requests
+                    </p>
+                  </div>
+                  <div
+                    class="w-full btn-primary flex items-center justify-center gap-2 h-12 sm:h-14 rounded-xl text-white font-semibold text-sm sm:text-base transition-all duration-200 active:scale-95"
+                  >
+                    <span class="material-symbols-outlined text-xl"
+                      >list_alt</span
+                    >
+                    <span>Open</span>
+                  </div>
+                </div>
+              </a>
+            </article>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Session guard: redirect to login if backend session missing -->
+    <script type="module">
+      (async () => {
+        try {
+          const r = await fetch("/api/me", { credentials: "same-origin" });
+          if (!r.ok) {
+            const returnTo = encodeURIComponent(
+              location.pathname + location.search
+            );
+            location.href = `login.html?returnTo=${returnTo}`;
+          }
+        } catch {
+          const returnTo = encodeURIComponent(
+            location.pathname + location.search
+          );
+          location.href = `login.html?returnTo=${returnTo}`;
+        }
+      })();
+    </script>
+
+    <!-- Bell dot helper + Bottom nav -->
+    <script type="module" src="js/notify-dot.js"></script>
+    <script type="module" src="js/nav.js"></script>
+
+    <!-- Back button -->
+    <script>
+      document
+        .getElementById("backBtn")
+        ?.addEventListener("click", function () {
+          if (window.history.length > 1 && document.referrer) {
+            window.history.back();
+          } else {
+            window.location.href = "dashboard.html";
+          }
+        });
+    </script>
+  </body>
+</html>

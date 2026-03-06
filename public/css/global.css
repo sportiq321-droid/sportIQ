@@ -1,0 +1,334 @@
+/* =====================================================
+   RESET + BASE
+===================================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  background: #0f1323;
+  color: #e5e7eb;
+}
+
+/* Centered content helper (legacy) */
+body.centered-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* =====================================================
+   GLASS UTILITIES (shared)
+===================================================== */
+.glassmorphic {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+html.dark .glassmorphic {
+  background: rgba(15, 19, 35, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Glow utility used on CTA button in index.html */
+.neon-glow {
+  box-shadow: 0 0 12px rgba(51, 101, 250, 0.6), 0 0 24px rgba(51, 101, 250, 0.3);
+}
+
+/* Placeholder class to avoid missing-class warnings */
+
+/* Legacy glass container (non-auth pages) */
+.glass-container {
+  padding: 50px 30px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  text-align: center;
+  transition: 0.3s;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+.glass-container:hover {
+  transform: translateY(-6px) scale(1.05);
+}
+
+/* Original inputs (legacy) */
+.input-box {
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.input-box input,
+.input-box select,
+textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  outline: none;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.6);
+  transition: 0.3s;
+}
+
+.input-box input:focus,
+.input-box select:focus,
+textarea:focus {
+  border-color: #2563eb;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 6px rgba(37, 99, 235, 0.5);
+}
+
+/* =====================================================
+   AUTH PAGES (dark theme)
+===================================================== */
+body[data-page="login"],
+body[data-page="register"] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Inter", sans-serif;
+  background: #0f1323 !important;
+  color: #e5e7eb;
+}
+
+/* The main glassmorphic form container for auth pages */
+.glass-effect {
+  background: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Scoped input styling ONLY on auth pages */
+body[data-page="login"] .form-input,
+body[data-page="register"] .form-input {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.75rem !important; /* space for icon */
+  border-radius: 0.5rem !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: white !important;
+  transition: all 0.2s ease-in-out;
+}
+
+body[data-page="login"] .form-input::placeholder,
+body[data-page="register"] .form-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+body[data-page="login"] .form-input:focus,
+body[data-page="register"] .form-input:focus {
+  outline: none !important;
+  border-color: #3365fa !important; /* matches primary */
+  background: rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 0 0 3px rgba(51, 101, 250, 0.4) !important;
+}
+
+/* Icon positioning inside input boxes (old layout helper) */
+body[data-page="login"] .input-box .material-icons,
+body[data-page="register"] .input-box .material-icons {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.5);
+  pointer-events: none;
+}
+
+/* Override .container on auth pages (defensive) */
+body[data-page="login"] .container,
+body[data-page="register"] .container {
+  background: transparent;
+  box-shadow: none;
+  border: none;
+  backdrop-filter: none;
+  padding: 0;
+  width: 100%;
+  max-width: 100%;
+  animation: none;
+}
+
+/* General button styling (shared) */
+.btn {
+  display: inline-block;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  color: #fff;
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #60a5fa, #2563eb);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+}
+
+/* Form error styling */
+.field-error {
+  color: #fca5a5;
+  font-size: 0.8rem;
+  text-align: left;
+  margin-top: 4px;
+  padding-left: 0.25rem;
+}
+
+.input-error {
+  border-color: #f87171 !important;
+}
+/* Neon glow (primary blue) for CTA buttons */
+.btn-neon-blue {
+  box-shadow: 0 0 0 rgba(51, 101, 250, 0);
+  transition: box-shadow 0.25s ease, filter 0.2s ease;
+  will-change: box-shadow;
+}
+.btn-neon-blue:hover {
+  box-shadow: 0 0 10px rgba(51, 101, 250, 0.85),
+    0 0 20px rgba(51, 101, 250, 0.65), 0 0 40px rgba(51, 101, 250, 0.45);
+}
+.btn-neon-blue:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(51, 101, 250, 0.5),
+    0 0 10px rgba(51, 101, 250, 0.85), 0 0 24px rgba(51, 101, 250, 0.55);
+}
+.btn-neon-blue:active {
+  box-shadow: 0 0 6px rgba(51, 101, 250, 0.9), 0 0 16px rgba(51, 101, 250, 0.6);
+}
+
+/* =====================================================
+   DASHBOARD DARK BACKGROUND OVERRIDES (Player & Coach only)
+   - Blocks the global background image and uses solid dark bg
+===================================================== */
+body[data-page="dashboard-player"],
+body[data-page="dashboard-coach"] {
+  background: #020c34 !important;
+  background-image: none !important;
+  background-attachment: initial !important;
+}
+
+/* =====================================================
+   TOURNAMENTS PAGES DARK BACKGROUND (Player/common)
+   - Applies solid dark bg across all tournament pages
+===================================================== */
+body[data-page="tournament.html"],
+body[data-page="find-tournament.html"],
+body[data-page="find-tournaments"], /* legacy attribute value still supported */
+body[data-page="mytournaments.html"] {
+  background: #0f1323 !important;
+  background-image: none !important;
+  background-attachment: initial !important;
+}
+
+/* =====================================================
+   NOTIFICATIONS PAGE DARK BACKGROUND
+===================================================== */
+body[data-page="notifications.html"] {
+  background: #0f1323 !important;
+  background-image: none !important;
+  background-attachment: initial !important;
+}
+
+/* =====================================================
+   ACHIEVEMENTS PAGE DARK BACKGROUND
+===================================================== */
+body[data-page="achievements.html"] {
+  background: #0f1323 !important;
+  background-image: none !important;
+  background-attachment: initial !important;
+}
+
+/* =====================================================
+   UPLOAD PAGE DARK BACKGROUND
+===================================================== */
+body[data-page="upload.html"] {
+  background: #0f1323 !important;
+  background-image: none !important;
+  background-attachment: initial !important;
+}
+/* =====================================================
+MY ACHIEVEMENTS PAGE DARK BACKGROUND
+===================================================== */
+body[data-page="myachievements.html"] {
+  background: #0f1323 !important;
+  background-image: none !important;
+  background-attachment: initial !important;
+}
+/* =====================================================
+   ASSESSMENTS PAGES DARK BACKGROUND
+===================================================== */
+body[data-page="assessments-home"],
+body[data-page="assessments-list"],
+body[data-page="assess-situps"],
+body[data-page="assess-run"],
+body[data-page="assess-broadjump"],
+body[data-page="coach-assessments"] {
+  background: #0f1323 !important;
+  background-image: none !important;
+  background-attachment: initial !important;
+}
+/* =====================================================
+   DARK THEME FORM CONTROLS (selects, options)
+   - Fix white dropdown panel and unreadable text on dark pages
+===================================================== */
+html.dark {
+  /* Instruct UA to render native controls in dark colors */
+  color-scheme: dark;
+}
+
+/* Base select style on dark pages */
+html.dark select,
+html.dark .select-dark {
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.08
+  ) !important; /* matches bg-white/10 */
+  color: #e5e7eb !important; /* text-white */
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  outline: none !important;
+}
+
+/* Focus ring consistent with your primary token */
+html.dark select:focus,
+html.dark .select-dark:focus {
+  border-color: #3365fa !important;
+  box-shadow: 0 0 0 3px rgba(51, 101, 250, 0.4) !important;
+}
+
+/* Dropdown list panel (supported by Chromium/Firefox) */
+html.dark option {
+  background-color: #0f1323 !important; /* dark panel */
+  color: #e5e7eb !important; /* readable text */
+}
+
+/* Disabled/placeholder options (if used) */
+html.dark option:disabled {
+  color: #9ca3af !important; /* text-gray-400 */
+}
+/* =====================================================
+   COACH ASSESSMENTS PAGE DARK BACKGROUND
+===================================================== */
+body[data-page="coach-assessments"] {
+  background: #0f1323 !important;
+  background-image: none !important;
+  background-attachment: initial !important;
+}
+
+/* =====================================================
+   GLOW EFFECT (for highlighted assessment cards)
+===================================================== */
+.glow {
+  box-shadow: 0 0 5px rgba(56, 105, 250, 0.5), 0 0 10px rgba(56, 105, 250, 0.3),
+    0 0 15px rgba(56, 105, 250, 0.2);
+}

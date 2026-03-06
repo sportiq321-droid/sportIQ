@@ -1,0 +1,8 @@
+# ai_worker/requirements.txt
+fastapi
+uvicorn[standard]
+python-multipart
+opencv-python-headless
+ultralytics
+torch
+torchvision

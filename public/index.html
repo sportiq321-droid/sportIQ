@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>SportIQ Introduction</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="css/global.css" />
+
+    <script src="js/tailwind-config.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  </head>
+  <body class="home-intro font-display min-h-screen w-full bg-black relative">
+    <!-- Midnight Mist Background Layer -->
+    <div
+      class="absolute inset-0 z-0"
+      style="
+        background-image: radial-gradient(
+            circle at 50% 100%,
+            rgba(70, 85, 110, 0.5) 0%,
+            transparent 60%
+          ),
+          radial-gradient(
+            circle at 50% 100%,
+            rgba(99, 102, 241, 0.4) 0%,
+            transparent 70%
+          ),
+          radial-gradient(
+            circle at 50% 100%,
+            rgba(181, 184, 208, 0.3) 0%,
+            transparent 80%
+          );
+      "
+    ></div>
+
+    <!-- Main Content Wrapper -->
+    <div
+      class="relative flex h-screen w-full flex-col items-center justify-center overflow-hidden p-4"
+    >
+      <!-- Background blur effects -->
+      <div
+        class="absolute -top-1/4 -left-1/4 h-1/2 w-1/2 rounded-full bg-primary/20 blur-3xl"
+      ></div>
+      <div
+        class="absolute -bottom-1/4 -right-1/4 h-1/2 w-1/2 rounded-full bg-primary/20 blur-3xl"
+      ></div>
+
+      <!-- Main glass container - BIGGER SIZE -->
+      <main
+        class="z-10 flex w-full max-w-2xl flex-col items-center justify-center text-center glass-effect rounded-2xl p-12 sm:p-16"
+      >
+        <!-- Logo - BIGGER SIZE -->
+        <div class="mb-8">
+          <img
+            src="SportIQ blue logo.png"
+            alt="SportIQ logo"
+            class="h-32 w-auto sm:h-40"
+            decoding="async"
+            fetchpriority="high"
+          />
+        </div>
+
+        <!-- Tagline -->
+        <p class="mt-6 max-w-md text-xl text-white/70 sm:text-2xl">
+          Elevate your game with intelligent sports management.
+        </p>
+
+        <!-- Get Started Button -->
+        <div class="mt-12 w-full max-w-md">
+          <button
+            id="getStartedBtn"
+            class="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-primary px-8 py-5 text-center text-xl font-bold text-white transition-all duration-300 ease-in-out hover:bg-primary/90 hover:scale-105 active:scale-100 neon-glow"
+          >
+            <span class="truncate">Get Started</span>
+          </button>
+        </div>
+      </main>
+    </div>
+
+    <script src="js/index-intro.js" defer></script>
+  </body>
+</html>

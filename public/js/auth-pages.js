@@ -1,0 +1,540 @@
+// public/js/auth-pages.js
+import API from "./api.js";
+import { loadData, saveData } from "./core/storage.js";
+
+document.addEventListener("DOMContentLoaded", () => {
+  const page = document.body.dataset.page;
+  switch (page) {
+    case "register":
+      initRegister();
+      break;
+    case "login":
+      initLogin();
+      break;
+    case "details":
+      initDetails();
+      break;
+  }
+});
+
+/* ============== Bridge: backend user -> localStorage session ============== */
+function syncLocalSession(apiUser) {
+  if (!apiUser) return;
+  const data = loadData();
+  if (!Array.isArray(data.users)) data.users = [];
+  let idx = data.users.findIndex(
+    (u) => u.id === apiUser.id || u.email === apiUser.email
+  );
+  const local = idx !== -1 ? { ...data.users[idx] } : {};
+  const merged = {
+    ...local,
+    id: apiUser.id,
+    username: apiUser.username,
+    email: apiUser.email,
+    role: apiUser.role || local.role || "Player",
+    sport: apiUser.sport ?? local.sport ?? "",
+    name: apiUser.name ?? local.name ?? "",
+    dob: apiUser.dob ? apiUser.dob.slice(0, 10) : local.dob || "",
+    gender: apiUser.gender ?? local.gender ?? "",
+    mobile: apiUser.mobile ?? local.mobile ?? "",
+    profilePic: apiUser.profilePic ?? local.profilePic ?? "",
+    height: apiUser.height ?? local.height ?? null,
+    weight: apiUser.weight ?? local.weight ?? null,
+    bloodgroup: apiUser.bloodgroup ?? local.bloodgroup ?? "",
+    address: apiUser.address ?? local.address ?? "",
+    achievements: Array.isArray(local.achievements) ? local.achievements : [],
+    registeredTournaments: Array.isArray(local.registeredTournaments)
+      ? local.registeredTournaments
+      : [],
+  };
+  if (idx === -1) data.users.push(merged);
+  else data.users[idx] = merged;
+  data.currentUser = merged.id;
+  saveData(data);
+}
+
+/* ========================= REGISTER ========================= */
+function initRegister() {
+  const form = document.getElementById("registerForm");
+  if (!form) return;
+  const msg = document.getElementById("msg");
+  const usernameEl = document.getElementById("regUsername");
+  const emailEl = document.getElementById("regEmail");
+  const passEl = document.getElementById("regPass");
+  const pass2El = document.getElementById("regPass2");
+  const pass2ErrorEl = document.getElementById("regPass2Error");
+  const emailErrorEl = document.getElementById("regEmailError");
+
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+    if (msg) msg.textContent = "";
+    if (pass2ErrorEl) pass2ErrorEl.textContent = "";
+    if (emailErrorEl) emailErrorEl.textContent = "";
+
+    const username = usernameEl.value.trim();
+    const email = emailEl.value.trim().toLowerCase();
+    const pass = passEl.value;
+    const pass2 = pass2El.value;
+
+    if (pass !== pass2) {
+      if (pass2ErrorEl) pass2ErrorEl.textContent = "Passwords do not match.";
+      return;
+    }
+
+    try {
+      const me = await API.register({ username, email, password: pass });
+      syncLocalSession(me);
+      if (msg) {
+        msg.textContent = "✅ Registered! Redirecting...";
+        msg.style.color = "green";
+      }
+      setTimeout(() => (window.location.href = "details.html"), 800);
+    } catch (err) {
+      const message = (err && err.message) || "Registration failed";
+      if (message.toLowerCase().includes("exists")) {
+        if (emailErrorEl)
+          emailErrorEl.textContent = "Email or username already exists.";
+      } else {
+        if (msg) {
+          msg.textContent = "❌ " + message;
+          msg.style.color = "red";
+        }
+      }
+    }
+  };
+}
+
+/* ========================= LOGIN ========================= */
+function initLogin() {
+  const form = document.getElementById("loginForm");
+  if (!form) return;
+  form.setAttribute("novalidate", "");
+  const msg = document.getElementById("msg");
+  const identifierEl = document.getElementById("loginEmail");
+  const passEl = document.getElementById("loginPass");
+  const showToggle = document.getElementById("showLoginPass");
+
+  // Read optional returnTo for post-login redirection (e.g., assess-situps.html?results=true)
+  const params = new URLSearchParams(window.location.search);
+  const returnToRaw = params.get("returnTo");
+  const returnTo = returnToRaw ? decodeURIComponent(returnToRaw) : null;
+
+  if (showToggle) {
+    showToggle.addEventListener("change", () => {
+      passEl.type = showToggle.checked ? "text" : "password";
+    });
+  }
+
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+    const identifier = identifierEl.value.trim();
+    const pass = passEl.value;
+    try {
+      const me = await API.login({ identifier, password: pass });
+      syncLocalSession(me);
+      if (msg) {
+        msg.textContent = "✅ Login successful!";
+        msg.style.color = "green";
+      }
+      setTimeout(() => {
+        if (returnTo) {
+          // Redirect back to the page that requested re-auth (mobile flow)
+          window.location.href = returnTo;
+        } else {
+          window.location.href = "dashboard.html";
+        }
+      }, 800);
+    } catch {
+      if (msg) {
+        msg.textContent = "❌ Invalid email or password";
+        msg.style.color = "red";
+      }
+    }
+  };
+}
+
+/* ========================= DETAILS ========================= */
+function initDetails() {
+  guard().then((me) => runDetails(me));
+
+  async function guard() {
+    try {
+      const me = await API.me();
+      syncLocalSession(me);
+      return me;
+    } catch {
+      window.location.href = "login.html";
+      return null;
+    }
+  }
+
+  function runDetails(me) {
+    if (!me) return;
+
+    const steps = {
+      1: document.getElementById("step-1"),
+      2: document.getElementById("step-2"),
+      3: document.getElementById("step-3"),
+    };
+
+    // Step 1 refs
+    const nameEl = document.getElementById("name");
+    const dobEl = document.getElementById("dob");
+    const ageEl = document.getElementById("age");
+    const genderEl = document.getElementById("gender");
+    const mobileEl = document.getElementById("mobile");
+    const otpEl = document.getElementById("otp");
+    const step1ErrorEl = document.getElementById("step1Error");
+    const otpErrorEl = document.getElementById("otpError");
+    const mobileErrorEl = document.getElementById("mobileError");
+
+    // Step 2 refs
+    const roleRadios = document.querySelectorAll('input[name="role"]');
+    const primarySportBlock = document.getElementById("primarySportBlock");
+    const sportSearch = document.getElementById("sportSearch");
+    const sportChips = document.getElementById("sportChips");
+    const sportError = document.getElementById("sportError");
+
+    const certificateBlock = document.getElementById("certificateBlock");
+    const addCertificateBtn = document.getElementById("addCertificateBtn");
+    const certificateStatus = document.getElementById("certificateStatus");
+    const certError = document.getElementById("certError");
+
+    // Step 3 refs
+    // NEW: support dual inputs (camera vs library) with fallback
+    const profilePicInput = document.getElementById("profilePic"); // fallback (legacy single input)
+    const profilePicInputCamera = document.getElementById("profilePicCamera"); // optional new input
+    const profilePicInputLibrary = document.getElementById("profilePicLibrary"); // optional new input
+
+    const profilePreview = document.getElementById("profilePreview");
+    const avatarErrorEl = document.getElementById("avatarError");
+    const cameraBtn = document.getElementById("cameraBtn");
+    const libraryBtn = document.getElementById("libraryBtn");
+    const removePhotoBtn = document.getElementById("removePhotoBtn");
+    const previewOverlay = document.getElementById("previewOverlay");
+
+    const defaultAvatarSrc =
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuCaRTUM1oLCpSsqn0-Jy4ehP-j6TP_dGHS8IC7ZxPzqc7eYfXpPo8C9qF8zL8XslcWuz_lj0qhlS2ecYL6B1s7T2GN72j4mOee-8-63FLWDOlvBUFYwLWwsDEfTB0v0gj-5lUqjRuyo36z5k3qiH-1jb4kHbDa4ZMAb3AyrmtRMwSfa-u6lpEENQlFnk2ZoPmH1glHvcNG0S2Sh5ZKkm6c54naVvy_B52BXDOD6V7Gs-Sg9Uzpwomz1fn2HnJDzU5Va1VYD7j-hOeU";
+
+    const showStep = (n) => {
+      Object.values(steps).forEach((s) => s.classList.remove("active"));
+      if (steps[n]) steps[n].classList.add("active");
+    };
+
+    // Navigation
+    document.getElementById("nextToRole").onclick = handleStep1Submit;
+    document.getElementById("backToStep1").onclick = () => showStep(1);
+    document.getElementById("nextToPic").onclick = handleStep2Submit;
+    document.getElementById("backToStep2").onclick = () => showStep(2);
+    document.getElementById("finishBtn").onclick = handleStep3Submit;
+    document.getElementById("skipBtn").onclick = finishOnboarding;
+
+    // Upload certificate button (Option B: persist role before redirect)
+    if (addCertificateBtn) {
+      addCertificateBtn.addEventListener("click", async () => {
+        const role = getSelectedRole();
+        if (!role) {
+          alert("Please select a role.");
+          return;
+        }
+        try {
+          await API.updateMe({ role });
+        } catch {
+          // Non-fatal; proceed anyway
+        }
+        const q = role ? `?role=${encodeURIComponent(role)}` : "";
+        window.location.href = `upload-certificate.html${q}`;
+      });
+    }
+
+    // Age auto-calc (Step 1)
+    dobEl.addEventListener("input", () => {
+      if (dobEl.value) {
+        const birthDate = new Date(dobEl.value);
+        if (!isNaN(birthDate.getTime())) {
+          const today = new Date();
+          let age = today.getFullYear() - birthDate.getFullYear();
+          const m = today.getMonth() - birthDate.getMonth();
+          if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate()))
+            age--;
+          ageEl.value = age >= 0 ? age : "";
+        } else {
+          ageEl.value = "";
+        }
+      } else {
+        ageEl.value = "";
+      }
+    });
+
+    // Helper to update preview + clear overlay/error
+    function updatePreview(src) {
+      if (profilePreview) profilePreview.src = src;
+      if (avatarErrorEl) avatarErrorEl.textContent = "";
+      if (previewOverlay) {
+        if (src === defaultAvatarSrc) previewOverlay.classList.remove("hidden");
+        else previewOverlay.classList.add("hidden");
+      }
+    }
+
+    // Step 3 — bind Camera/Library to distinct inputs when available (fallback to single)
+    if (cameraBtn) {
+      cameraBtn.addEventListener("click", () => {
+        const input = profilePicInputCamera || profilePicInput;
+        input?.click();
+      });
+    }
+    if (libraryBtn) {
+      libraryBtn.addEventListener("click", () => {
+        const input = profilePicInputLibrary || profilePicInput;
+        input?.click();
+      });
+    }
+    if (removePhotoBtn) {
+      removePhotoBtn.addEventListener("click", () => {
+        if (profilePicInput) profilePicInput.value = "";
+        if (profilePicInputCamera) profilePicInputCamera.value = "";
+        if (profilePicInputLibrary) profilePicInputLibrary.value = "";
+        updatePreview(defaultAvatarSrc);
+      });
+    }
+
+    // Attach change handlers to each present input
+    function bindInputChange(inputEl) {
+      if (!inputEl) return;
+      inputEl.addEventListener("change", (event) => {
+        const file = event.target.files?.[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            updatePreview(e.target.result);
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+    bindInputChange(profilePicInput); // legacy fallback
+    bindInputChange(profilePicInputCamera); // camera input
+    bindInputChange(profilePicInputLibrary); // library input
+
+    // Clear mobile error on input
+    if (mobileEl && mobileErrorEl) {
+      mobileEl.addEventListener(
+        "input",
+        () => (mobileErrorEl.textContent = "")
+      );
+    }
+
+    // Step 2 — Role toggles
+    roleRadios.forEach((r) => {
+      r.addEventListener("change", () => {
+        sportError.textContent = "";
+        certError.textContent = "";
+        toggleRoleUI();
+      });
+    });
+
+    // Helper: selected role
+    function getSelectedRole() {
+      const r = document.querySelector('input[name="role"]:checked');
+      return r ? r.value : null;
+    }
+
+    // Helper: fetch and update certificate status pill
+    async function refreshCertificateStatus() {
+      try {
+        const doc = await API.getCertificate();
+        if (doc && certificateStatus) {
+          certificateStatus.classList.remove("hidden");
+        } else {
+          certificateStatus?.classList.add("hidden");
+        }
+        return !!doc;
+      } catch {
+        certificateStatus?.classList.add("hidden");
+        return false;
+      }
+    }
+
+    // Toggle UI based on role
+    async function toggleRoleUI() {
+      const role = getSelectedRole();
+
+      primarySportBlock.classList.add("hidden");
+      sportChips.classList.add("hidden");
+      certificateBlock.classList.add("hidden");
+
+      if (role === "Player") {
+        primarySportBlock.classList.remove("hidden");
+        sportChips.classList.remove("hidden");
+        certificateStatus?.classList.add("hidden");
+      } else if (role === "Coach") {
+        primarySportBlock.classList.remove("hidden");
+        sportChips.classList.add("hidden"); // search-only
+        certificateBlock.classList.remove("hidden");
+        await refreshCertificateStatus();
+      } else if (role === "Admin" || role === "Government Official") {
+        certificateBlock.classList.remove("hidden");
+        await refreshCertificateStatus();
+      }
+    }
+
+    // --- Step 1 handler ---
+    async function handleStep1Submit() {
+      if (step1ErrorEl) step1ErrorEl.textContent = "";
+      if (otpErrorEl) otpErrorEl.textContent = "";
+      if (mobileErrorEl) mobileErrorEl.textContent = "";
+
+      const otpClean = otpEl.value.replace(/\s+/g, "").trim();
+      if (otpClean !== "123456") {
+        if (otpErrorEl) otpErrorEl.textContent = "Invalid OTP (use 123456).";
+        otpEl.focus();
+        return;
+      }
+
+      try {
+        const updated = await API.updateMe({
+          name: nameEl.value.trim(),
+          dob: new Date(dobEl.value).toISOString(),
+          gender: genderEl.value,
+          mobile: mobileEl.value.trim(),
+        });
+        syncLocalSession(updated);
+        showStep(2);
+        toggleRoleUI();
+      } catch (err) {
+        const msg = (err && err.message) || "An error occurred.";
+        if (step1ErrorEl) step1ErrorEl.textContent = msg;
+        if (mobileErrorEl && typeof msg === "string") {
+          const low = msg.toLowerCase();
+          if (low.includes("mobile") || low.includes("10")) {
+            mobileErrorEl.textContent = msg;
+            mobileEl?.focus();
+          }
+        }
+      }
+    }
+
+    // --- Step 2 handler ---
+    async function handleStep2Submit() {
+      const role = getSelectedRole();
+      const chipSelected = document.querySelector(
+        'input[name="sport"]:checked'
+      );
+      const searchValue = sportSearch?.value?.trim() || "";
+
+      if (!role) {
+        alert("Please select a role.");
+        return;
+      }
+
+      let needsCert = false; // keep variable for compatibility; no roles require certificate now
+      let needsSport = false;
+      let sportValue = "";
+
+      if (role === "Player") {
+        needsSport = true;
+        sportValue = chipSelected ? chipSelected.value : "";
+      } else if (role === "Coach") {
+        needsSport = true;
+        sportValue = searchValue;
+        // certificate no longer required for Coach
+      } else if (role === "Admin" || role === "Government Official") {
+        // certificate no longer required for Admin/Government
+      }
+
+      sportError.textContent = "";
+      certError.textContent = "";
+
+      if (needsSport && !sportValue) {
+        sportError.textContent = "Please select or type a sport.";
+        return;
+      }
+
+      try {
+        const payload = { role };
+        if (sportValue) payload.sport = sportValue;
+        const updated = await API.updateMe(payload);
+        syncLocalSession(updated);
+        showStep(3);
+      } catch (err) {
+        alert(`Error: ${err.message}`);
+      }
+    }
+
+    // --- Step 3 handler ---
+    async function handleStep3Submit() {
+      // Prefer camera, then library, then fallback single
+      const file =
+        (profilePicInputCamera &&
+          profilePicInputCamera.files &&
+          profilePicInputCamera.files[0]) ||
+        (profilePicInputLibrary &&
+          profilePicInputLibrary.files &&
+          profilePicInputLibrary.files[0]) ||
+        (profilePicInput && profilePicInput.files && profilePicInput.files[0]);
+
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          try {
+            const updated = await API.updateMe({ profilePic: e.target.result });
+            syncLocalSession(updated);
+            finishOnboarding();
+          } catch (err) {
+            alert(`Error uploading image: ${err.message}`);
+          }
+        };
+        reader.readAsDataURL(file);
+      } else {
+        finishOnboarding();
+      }
+    }
+
+    function finishOnboarding() {
+      alert("Profile setup complete! Please log in.");
+      window.location.href = "login.html";
+    }
+
+    // Prefill Step 1/2
+    const u = me || {};
+    if (u.name) nameEl.value = u.name;
+    if (u.dob) {
+      dobEl.value = u.dob.slice(0, 10);
+      dobEl.dispatchEvent(new Event("change"));
+    }
+    if (u.gender) genderEl.value = u.gender;
+    if (u.mobile) mobileEl.value = u.mobile;
+    if (u.role) {
+      const roleRadio = document.querySelector(
+        `input[name="role"][value="${u.role}"]`
+      );
+      if (roleRadio) roleRadio.checked = true;
+    }
+    if (u.sport) {
+      const sportRadio = document.querySelector(
+        `input[name="sport"][value="${u.sport}"]`
+      );
+      if (sportRadio) sportRadio.checked = true;
+      if (sportSearch) sportSearch.value = u.sport;
+    }
+
+    // Initial step choice (honor hash to force Step 2 on return)
+    const hasStep1Data = u.name && u.dob && u.gender && u.mobile;
+    const hasStep2Data = u.role && (u.role === "Player" ? u.sport : true);
+    const hash = (window.location.hash || "").toLowerCase();
+
+    if (hash === "#step-1") {
+      showStep(1);
+    } else if (hash === "#step-2") {
+      showStep(2);
+      toggleRoleUI();
+    } else if (!hasStep1Data) {
+      showStep(1);
+    } else if (!hasStep2Data) {
+      showStep(2);
+      toggleRoleUI();
+    } else {
+      showStep(3);
+    }
+  }
+}

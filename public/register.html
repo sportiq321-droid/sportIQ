@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Register - SportIQ</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+
+    <!-- Tailwind config BEFORE CDN -->
+    <script src="js/tailwind-config.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+
+    <!-- Global CSS (glassmorphic + auth styles + neon btn) -->
+    <link rel="stylesheet" href="css/global.css" />
+  </head>
+
+  <body
+    class="font-display bg-background-light dark:bg-background-dark"
+    data-page="register"
+  >
+    <div class="min-h-screen grid grid-cols-1 lg:grid-cols-2">
+      <!-- Header (sticky, like Reports) -->
+      <header class="sticky top-0 z-20 col-span-full glassmorphic px-4 py-3">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+          <div class="w-10"></div>
+          <h1 class="text-lg font-bold text-white">Register</h1>
+          <div class="w-10"></div>
+        </div>
+      </header>
+
+      <!-- Left visual panel (hidden on mobile) -->
+      <aside class="hidden lg:block">
+        <div class="relative h-full">
+          <div
+            class="absolute inset-0 bg-cover bg-center"
+            style="
+              background-image: url('https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=1600&auto=format&fit=crop');
+            "
+            aria-hidden="true"
+          ></div>
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent"
+          ></div>
+
+          <div class="relative h-full flex items-end">
+            <div class="p-8 lg:p-10">
+              <img
+                src="SportIQ blue logo.png"
+                alt="SportIQ logo"
+                class="h-14 w-auto mb-4"
+              />
+              <h2 class="text-2xl font-extrabold text-white">
+                Elevate your game
+              </h2>
+              <p class="text-white/70 mt-1">
+                Manage players, sessions, and tournaments—all in one place.
+              </p>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Right form panel -->
+      <main class="flex items-center justify-center p-4 lg:p-8">
+        <div
+          class="w-full max-w-md glassmorphic rounded-xl p-6 md:p-8 shadow-lg"
+        >
+          <div class="mb-6 text-center">
+            <img
+              src="SportIQ blue logo.png"
+              alt="SportIQ logo"
+              class="h-16 w-auto mx-auto"
+            />
+            <p class="mt-3 text-white/70">Create your Account</p>
+          </div>
+
+          <form id="registerForm" class="mt-4 space-y-4">
+            <div>
+              <label for="regUsername" class="sr-only">Username</label>
+              <div class="relative">
+                <span
+                  class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-white/50"
+                  >person</span
+                >
+                <input
+                  type="text"
+                  id="regUsername"
+                  class="form-input"
+                  placeholder="Username"
+                  required
+                />
+              </div>
+              <p
+                class="field-error"
+                id="regUsernameError"
+                aria-live="polite"
+              ></p>
+            </div>
+
+            <div>
+              <label for="regEmail" class="sr-only">Email</label>
+              <div class="relative">
+                <span
+                  class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-white/50"
+                  >email</span
+                >
+                <input
+                  type="email"
+                  id="regEmail"
+                  class="form-input"
+                  placeholder="Email address"
+                  required
+                />
+              </div>
+              <p class="field-error" id="regEmailError" aria-live="polite"></p>
+            </div>
+
+            <div>
+              <label for="regPass" class="sr-only">Password</label>
+              <div class="relative">
+                <span
+                  class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-white/50"
+                  >lock</span
+                >
+                <input
+                  type="password"
+                  id="regPass"
+                  class="form-input"
+                  placeholder="Password"
+                  required
+                  minlength="6"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label for="regPass2" class="sr-only">Confirm Password</label>
+              <div class="relative">
+                <span
+                  class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-white/50"
+                  >lock_reset</span
+                >
+                <input
+                  type="password"
+                  id="regPass2"
+                  class="form-input"
+                  placeholder="Confirm Password"
+                  required
+                />
+              </div>
+              <p class="field-error" id="regPass2Error" aria-live="polite"></p>
+            </div>
+
+            <div class="pt-2">
+              <button
+                type="submit"
+                class="btn-neon-blue flex w-full items-center justify-center rounded-lg bg-primary px-6 py-3 text-base font-bold text-white transition-all duration-300 hover:bg-primary/90 hover:scale-[1.02] active:scale-100"
+              >
+                Create Account
+              </button>
+            </div>
+          </form>
+
+          <p
+            id="msg"
+            class="mt-4 text-sm font-medium h-5 text-center"
+            aria-live="polite"
+          ></p>
+
+          <div class="text-center mt-6">
+            <p class="text-sm text-white/70">
+              Already have an account?
+              <a
+                href="login.html"
+                class="font-medium text-primary hover:underline"
+                >Log In</a
+              >
+            </p>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script type="module" src="js/auth-pages.js"></script>
+  </body>
+</html>

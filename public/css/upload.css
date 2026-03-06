@@ -1,0 +1,142 @@
+.upload-container {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 40px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(15px);
+}
+
+.upload-section {
+  display: none;
+}
+.upload-section.active {
+  display: block;
+  animation: fadeIn 0.5s ease;
+}
+
+.section-title {
+  text-align: center;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.parent {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+}
+
+.neon-btn {
+  background: linear-gradient(135deg, #34d399, #059669);
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
+}
+.neon-btn:hover {
+  transform: translateY(-3px);
+}
+
+.btn-group {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* File preview */
+.preview-wrap {
+  margin-top: 12px;
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+}
+.preview-wrap img {
+  max-width: 480px;
+  width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+.preview-meta {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+/* Utility to hide/show preview */
+[hidden] {
+  display: none !important;
+}
+
+/* Button group helpers used in HTML */
+.btn-group.inline {
+  justify-content: center;
+}
+.btn-group.bottom {
+  justify-content: space-between;
+}
+
+/* Responsive: stack form columns on small screens */
+@media (max-width: 780px) {
+  .parent {
+    grid-template-columns: 1fr;
+  }
+}
+/* ===== Upload (Step 1 only) — dark form overrides =========================
+   Purpose: Make typed text clearly visible on dark inputs in Step 1.
+   Scope:   upload.html → #section-1 only. Step 2 remains unchanged.
+============================================================================ */
+
+body[data-page="upload.html"] #section-1 .input-box input,
+body[data-page="upload.html"] #section-1 .input-box select,
+body[data-page="upload.html"] #section-1 .input-box textarea {
+  background: rgba(255, 255, 255, 0.10) !important; /* subtle dark field */
+  border: 1px solid rgba(255, 255, 255, 0.20) !important;
+  color: #ffffff !important;        /* typed text */
+  caret-color: #ffffff !important;  /* caret color */
+  outline: none !important;
+  box-shadow: none;                 /* keep Tailwind focus ring clean */
+}
+
+/* Placeholder tone */
+body[data-page="upload.html"] #section-1 .input-box input::placeholder,
+body[data-page="upload.html"] #section-1 .input-box textarea::placeholder {
+  color: rgba(255, 255, 255, 0.50) !important;
+}
+
+/* Focus state (primary ring) */
+body[data-page="upload.html"] #section-1 .input-box input:focus,
+body[data-page="upload.html"] #section-1 .input-box select:focus,
+body[data-page="upload.html"] #section-1 .input-box textarea:focus {
+  border-color: #607afb !important; /* primary */
+  box-shadow: 0 0 0 2px rgba(96, 122, 251, 0.45) !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+}
+
+/* Date input: use dark native picker UI where supported */
+body[data-page="upload.html"] #section-1 input[type="date"] {
+  color-scheme: dark;
+}
+
+/* Autofill (Chrome/Safari) — keep text white; suppress bright bg */
+body[data-page="upload.html"] #section-1 input:-webkit-autofill,
+body[data-page="upload.html"] #section-1 select:-webkit-autofill,
+body[data-page="upload.html"] #section-1 textarea:-webkit-autofill {
+  -webkit-text-fill-color: #ffffff !important;
+  transition: background-color 9999s ease-in-out 0s;
+  box-shadow: 0 0 0 30px rgba(255, 255, 255, 0.06) inset !important; /* subtle fill */
+}
+
+/* Optional: ensure selects inherit text color consistently */
+body[data-page="upload.html"] #section-1 .input-box select {
+  color: #ffffff !important;
+  background-position: right 0.6rem center;
+}

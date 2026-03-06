@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Complete Your Profile - SportIQ</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+      rel="stylesheet"
+    />
+
+    <!-- Tailwind (aligns with Reports responsiveness) -->
+    <script src="js/tailwind-config.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+
+    <link rel="stylesheet" href="css/global.css" />
+    <link rel="stylesheet" href="css/details.css" />
+  </head>
+  <body data-page="details">
+    <div class="details-shell">
+      <!-- STEP 1 (unchanged) -->
+      <div id="step-1" class="step">
+        <header
+          class="step-header sticky top-0 z-10 bg-white text-black border-b border-gray-200"
+        >
+          <button
+            id="backToLogin"
+            class="icon-button"
+            onclick="window.location.href='register.html'"
+            aria-label="Back"
+          >
+            <span class="material-symbols-outlined">arrow_back_ios_new</span>
+          </button>
+          <h1 class="step-title">Personal Info</h1>
+          <div style="width: 40px"></div>
+        </header>
+
+        <main class="step-content bg-white p-4">
+          <div class="mx-auto w-full max-w-md md:max-w-xl space-y-5 text-black">
+            <div class="field-group">
+              <label for="name" class="field-label">Name</label>
+              <input
+                type="text"
+                id="name"
+                placeholder="Enter your full name"
+                class="form-input-base form-outline"
+                required
+              />
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div class="field-group">
+                <label for="dob" class="field-label">Date of Birth</label>
+                <input
+                  type="date"
+                  id="dob"
+                  placeholder="DD/MM/YYYY"
+                  class="form-input-base form-outline"
+                  required
+                />
+              </div>
+              <div class="field-group">
+                <label for="age" class="field-label">Age</label>
+                <input
+                  type="text"
+                  id="age"
+                  placeholder="25"
+                  class="form-input-base form-outline"
+                  disabled
+                />
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label for="gender" class="field-label">Gender</label>
+              <div class="relative">
+                <select
+                  id="gender"
+                  class="form-input-base form-outline appearance-none"
+                  aria-label="Select Gender"
+                  required
+                >
+                  <option value="" disabled selected>Select Gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
+                <div
+                  class="pointer-events-none absolute inset-y-0 right-3 flex items-center"
+                >
+                  <span class="material-symbols-outlined text-black"
+                    >expand_more</span
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label for="mobile" class="field-label">Mobile</label>
+              <input
+                type="tel"
+                id="mobile"
+                placeholder="10-digit number"
+                maxlength="10"
+                inputmode="numeric"
+                pattern="[0-9]{10}"
+                class="form-input-base form-outline"
+                required
+              />
+              <p class="field-error" id="mobileError" aria-live="polite"></p>
+            </div>
+
+            <div class="field-group">
+              <label for="otp" class="field-label">OTP</label>
+              <input
+                type="text"
+                id="otp"
+                placeholder="1 2 3 4 5 6  ( demo )"
+                class="form-input-base form-outline tracking-[0.5em] text-center"
+                required
+              />
+              <p class="field-error" id="otpError" aria-live="polite"></p>
+            </div>
+
+            <p
+              class="field-error text-center"
+              id="step1Error"
+              aria-live="polite"
+            ></p>
+          </div>
+        </main>
+
+        <footer class="step-footer bg-white border-t border-gray-200">
+          <div class="step-indicator">
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+          <button id="nextToRole" type="button" class="btn-cta-floating">
+            Next
+          </button>
+        </footer>
+      </div>
+
+      <!-- STEP 2 (unchanged from your latest) -->
+      <div id="step-2" class="step active">
+        <header class="step-header">
+          <button id="backToStep1" class="icon-button">
+            <span class="material-symbols-outlined">arrow_back_ios_new</span>
+          </button>
+          <h1 class="step-title">SportIQ</h1>
+          <div style="width: 40px"></div>
+        </header>
+
+        <main class="step-content">
+          <div class="text-center px-4">
+            <h2 class="section-heading">What is your role?</h2>
+            <p class="section-subheading">
+              Select the role that best describes you.
+            </p>
+          </div>
+
+          <div class="role-grid">
+            <label class="role-card">
+              <input
+                type="radio"
+                name="role"
+                id="rolePlayer"
+                value="Player"
+                class="sr-only peer"
+              />
+              <div class="card-content"><span>👤</span><span>Player</span></div>
+            </label>
+            <label class="role-card">
+              <input
+                type="radio"
+                name="role"
+                id="roleCoach"
+                value="Coach"
+                class="sr-only peer"
+              />
+              <div class="card-content"><span>👨‍🏫</span><span>Coach</span></div>
+            </label>
+            <label class="role-card">
+              <input
+                type="radio"
+                name="role"
+                id="roleAdmin"
+                value="Admin"
+                class="sr-only peer"
+              />
+              <div class="card-content">
+                <span>⚙️</span><span>Admin/Organiser</span>
+              </div>
+            </label>
+            <label class="role-card">
+              <input
+                type="radio"
+                name="role"
+                id="roleGov"
+                value="Government Official"
+                class="sr-only peer"
+              />
+              <div class="card-content">
+                <span>🏛️</span><span>Government</span>
+              </div>
+            </label>
+          </div>
+
+          <section id="primarySportBlock" class="px-4 mt-8 hidden">
+            <div class="text-center">
+              <h2 class="section-heading">Primary Sport</h2>
+              <p class="section-subheading">What sport will you be managing?</p>
+            </div>
+
+            <div class="mt-3">
+              <input
+                id="sportSearch"
+                type="search"
+                placeholder="Search for a sport..."
+                class="form-input-base form-outline w-full"
+              />
+              <p id="sportSearchHint" class="text-xs text-gray-500 mt-1">
+                Type to select a sport
+              </p>
+            </div>
+
+            <div id="sportChips" class="sport-grid mt-4 hidden">
+              <label class="sport-chip"
+                ><input
+                  type="radio"
+                  name="sport"
+                  value="Cricket"
+                  class="sr-only peer"
+                /><span>Cricket</span></label
+              >
+              <label class="sport-chip"
+                ><input
+                  type="radio"
+                  name="sport"
+                  value="Football"
+                  class="sr-only peer"
+                /><span>Football</span></label
+              >
+              <label class="sport-chip"
+                ><input
+                  type="radio"
+                  name="sport"
+                  value="Kabaddi"
+                  class="sr-only peer"
+                /><span>Kabaddi</span></label
+              >
+              <label class="sport-chip"
+                ><input
+                  type="radio"
+                  name="sport"
+                  value="Volleyball"
+                  class="sr-only peer"
+                /><span>Volleyball</span></label
+              >
+              <label class="sport-chip"
+                ><input
+                  type="radio"
+                  name="sport"
+                  value="Badminton"
+                  class="sr-only peer"
+                /><span>Badminton</span></label
+              >
+              <label class="sport-chip"
+                ><input
+                  type="radio"
+                  name="sport"
+                  value="Hockey"
+                  class="sr-only peer"
+                /><span>Hockey</span></label
+              >
+            </div>
+
+            <p
+              class="field-error mt-2 text-center"
+              id="sportError"
+              aria-live="polite"
+            ></p>
+          </section>
+
+          <section id="certificateBlock" class="px-4 mt-8 hidden">
+            <div class="text-center">
+              <h2 class="section-heading">Upload Certificate</h2>
+              <p class="section-subheading">
+                Upload a PDF or DOC for verification.
+              </p>
+            </div>
+
+            <div class="mt-3 flex items-center justify-center gap-3">
+              <button id="addCertificateBtn" class="btn-secondary">
+                <span class="material-symbols-outlined">upload_file</span>
+                <span>Add certificate</span>
+              </button>
+
+              <span
+                id="certificateStatus"
+                class="hidden inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold bg-amber-100 text-amber-700 border border-amber-200"
+                aria-live="polite"
+              >
+                <span class="material-symbols-outlined" style="font-size: 16px"
+                  >schedule</span
+                >
+                <span>Submitted for approval</span>
+              </span>
+            </div>
+
+            <p
+              id="certError"
+              class="field-error mt-2 text-center"
+              aria-live="assertive"
+            ></p>
+          </section>
+        </main>
+
+        <footer class="step-footer">
+          <div class="step-indicator">
+            <span class="dot"></span>
+            <span class="dot active"></span>
+            <span class="dot"></span>
+          </div>
+          <button id="nextToPic" class="btn-primary">Next</button>
+        </footer>
+      </div>
+
+      <!-- STEP 3 (new UI, same logic/IDs) -->
+      <div id="step-3" class="step">
+        <header class="step-header">
+          <button
+            id="backToStep2"
+            class="icon-button"
+            aria-label="Back to Step 2"
+          >
+            <span class="material-symbols-outlined">arrow_back_ios_new</span>
+          </button>
+          <h1 class="step-title">Add a Profile Picture</h1>
+          <button id="skipBtn" class="skip-btn">Skip</button>
+        </header>
+
+        <main class="step-content">
+          <div class="text-center px-4">
+            <h2 class="section-heading text-white">Add a profile picture</h2>
+            <p class="section-subheading text-white/60">
+              Choose a photo from your library or take one with your camera.
+            </p>
+          </div>
+
+          <div class="px-4 mt-6">
+            <div class="mx-auto w-full max-w-sm relative">
+              <!-- 3:4 preview -->
+              <div
+                class="aspect-[3/4] w-full overflow-hidden rounded-xl shadow-lg"
+              >
+                <img
+                  id="profilePreview"
+                  alt="Avatar preview"
+                  class="h-full w-full object-cover"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCaRTUM1oLCpSsqn0-Jy4ehP-j6TP_dGHS8IC7ZxPzqc7eYfXpPo8C9qF8zL8XslcWuz_lj0qhlS2ecYL6B1s7T2GN72j4mOee-8-63FLWDOlvBUFYwLWwsDEfTB0v0gj-5lUqjRuyo36z5k3qiH-1jb4kHbDa4ZMAb3AyrmtRMwSfa-u6lpEENQlFnk2ZoPmH1glHvcNG0S2Sh5ZKkm6c54naVvy_B52BXDOD6V7Gs-Sg9Uzpwomz1fn2HnJDzU5Va1VYD7j-hOeU"
+                />
+              </div>
+
+              <!-- glass overlay (toggle via JS) -->
+              <div id="previewOverlay" class="preview-glass-overlay"></div>
+
+              <!-- action buttons on image -->
+              <div class="preview-actions">
+                <button
+                  id="cameraBtn"
+                  class="btn-overlay-secondary"
+                  type="button"
+                >
+                  <span class="material-symbols-outlined">photo_camera</span>
+                  <span class="font-bold">Camera</span>
+                </button>
+                <button
+                  id="libraryBtn"
+                  class="btn-overlay-primary"
+                  type="button"
+                >
+                  <span class="material-symbols-outlined">photo_library</span>
+                  <span class="font-bold">Library</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- hidden file inputs -->
+            <input
+              type="file"
+              id="profilePic"
+              accept="image/*"
+              capture="environment"
+              class="sr-only"
+            />
+            <!-- NEW: separate inputs to distinguish camera/library -->
+            <input
+              id="profilePicCamera"
+              type="file"
+              accept="image/*"
+              capture="environment"
+              class="sr-only"
+            />
+            <input
+              id="profilePicLibrary"
+              type="file"
+              accept="image/*"
+              class="sr-only"
+            />
+
+            <!-- optional remove (UI only) -->
+            <div class="text-center mt-3">
+              <button
+                id="removePhotoBtn"
+                type="button"
+                class="text-sm text-white/70 hover:text-white underline"
+              >
+                Remove photo
+              </button>
+            </div>
+
+            <!-- error rail -->
+            <p
+              id="avatarError"
+              class="field-error text-center mt-2"
+              aria-live="assertive"
+            ></p>
+          </div>
+        </main>
+
+        <footer class="step-footer">
+          <div class="step-indicator">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot active"></span>
+          </div>
+          <button id="finishBtn" class="btn-cta-blue">Finish</button>
+        </footer>
+      </div>
+    </div>
+
+    <script type="module" src="js/auth-pages.js"></script>
+  </body>
+</html>

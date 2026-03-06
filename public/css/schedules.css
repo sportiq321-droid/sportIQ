@@ -1,0 +1,587 @@
+/* ===========================
+   SCHEDULES PAGE STYLES
+   SportIQ - Modern UI
+   Dark Theme Form Inputs Fix
+=========================== */
+
+/* ===========================
+   PAGE BACKGROUND
+=========================== */
+body[data-page="schedules-landing"],
+body[data-page="coach-schedules"] {
+  background: #0f1323 !important;
+  background-image: none !important;
+  background-attachment: initial !important;
+}
+
+/* ===========================
+   FORCE DARK MODE COLOR SCHEME
+=========================== */
+body[data-page="schedules-landing"],
+body[data-page="coach-schedules"] {
+  color-scheme: dark;
+}
+
+/* ===========================
+   LANDING TILES
+=========================== */
+.tile-hover {
+  position: relative;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.tile-hover::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.15),
+    rgba(147, 51, 234, 0.15)
+  );
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 0;
+}
+
+.tile-hover:hover::before {
+  opacity: 1;
+}
+
+.tile-hover:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.tile-hover > * {
+  position: relative;
+  z-index: 1;
+}
+
+.tile-hover a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ===========================
+   TILE IMAGE WRAPPER
+=========================== */
+.tile-image-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+.tile-image-wrapper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.tile-hover:hover .tile-image-wrapper::after {
+  opacity: 1;
+}
+
+.tile-image-wrapper img {
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tile-hover:hover .tile-image-wrapper img {
+  transform: scale(1.1);
+}
+
+/* ===========================
+   FORM INPUTS - DARK THEME FIX
+   High specificity to override Tailwind
+=========================== */
+
+/* Base input styling - all types */
+body[data-page="coach-schedules"] input[type="text"],
+body[data-page="coach-schedules"] input[type="date"],
+body[data-page="coach-schedules"] input[type="time"],
+body[data-page="coach-schedules"] select,
+body[data-page="coach-schedules"] textarea,
+body[data-page="coach-schedules"] .form-input {
+  background: rgba(31, 41, 55, 0.7) !important;
+  border: 1px solid rgba(75, 85, 99, 0.5) !important;
+  color: #f3f4f6 !important;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Placeholder text */
+body[data-page="coach-schedules"] input::placeholder,
+body[data-page="coach-schedules"] textarea::placeholder {
+  color: rgba(156, 163, 175, 0.5) !important;
+  opacity: 1;
+}
+
+/* Focus state */
+body[data-page="coach-schedules"] input:focus,
+body[data-page="coach-schedules"] select:focus,
+body[data-page="coach-schedules"] textarea:focus,
+body[data-page="coach-schedules"] .form-input:focus {
+  border-color: rgba(59, 130, 246, 0.7) !important;
+  background: rgba(31, 41, 55, 0.9) !important;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2) !important;
+  outline: none !important;
+}
+
+/* Disabled state */
+body[data-page="coach-schedules"] input:disabled,
+body[data-page="coach-schedules"] select:disabled,
+body[data-page="coach-schedules"] .form-input:disabled {
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+  background: rgba(31, 41, 55, 0.4) !important;
+  color: rgba(156, 163, 175, 0.6) !important;
+}
+
+/* ===========================
+   SELECT DROPDOWNS - DARK THEME
+=========================== */
+
+/* Select element specific */
+body[data-page="coach-schedules"] select {
+  background-color: rgba(31, 41, 55, 0.7) !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%239CA3AF' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3E%3C/svg%3E") !important;
+  background-position: right 0.75rem center !important;
+  background-repeat: no-repeat !important;
+  background-size: 1.5em 1.5em !important;
+  padding-right: 2.5rem !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+}
+
+/* Select options (dropdown items) */
+body[data-page="coach-schedules"] select option {
+  background-color: #1f2937 !important;
+  color: #f3f4f6 !important;
+  padding: 0.5rem !important;
+}
+
+/* Selected option */
+body[data-page="coach-schedules"] select option:checked {
+  background-color: #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+/* Hover state for options (some browsers) */
+body[data-page="coach-schedules"] select option:hover {
+  background-color: #374151 !important;
+}
+
+/* ===========================
+   DATE & TIME INPUTS
+   Browser-specific fixes
+=========================== */
+
+/* Date picker icons and calendar */
+body[data-page="coach-schedules"] input[type="date"],
+body[data-page="coach-schedules"] input[type="time"] {
+  color-scheme: dark;
+  background-color: rgba(31, 41, 55, 0.7) !important;
+}
+
+/* Chrome/Safari date/time picker icon */
+body[data-page="coach-schedules"]
+  input[type="date"]::-webkit-calendar-picker-indicator,
+body[data-page="coach-schedules"]
+  input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(0.8);
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+body[data-page="coach-schedules"]
+  input[type="date"]::-webkit-calendar-picker-indicator:hover,
+body[data-page="coach-schedules"]
+  input[type="time"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+/* Firefox date/time clear button */
+body[data-page="coach-schedules"] input[type="date"]::-webkit-clear-button,
+body[data-page="coach-schedules"] input[type="time"]::-webkit-clear-button {
+  filter: invert(1) brightness(0.8);
+}
+
+/* Date input inner elements (Chrome) */
+body[data-page="coach-schedules"] input[type="date"]::-webkit-datetime-edit,
+body[data-page="coach-schedules"] input[type="time"]::-webkit-datetime-edit {
+  color: #f3f4f6 !important;
+  padding: 0;
+}
+
+body[data-page="coach-schedules"]
+  input[type="date"]::-webkit-datetime-edit-fields-wrapper,
+body[data-page="coach-schedules"]
+  input[type="time"]::-webkit-datetime-edit-fields-wrapper {
+  color: #f3f4f6 !important;
+}
+
+body[data-page="coach-schedules"]
+  input[type="date"]::-webkit-datetime-edit-text,
+body[data-page="coach-schedules"]
+  input[type="time"]::-webkit-datetime-edit-text {
+  color: rgba(156, 163, 175, 0.7) !important;
+}
+
+body[data-page="coach-schedules"]
+  input[type="date"]::-webkit-datetime-edit-month-field,
+body[data-page="coach-schedules"]
+  input[type="date"]::-webkit-datetime-edit-day-field,
+body[data-page="coach-schedules"]
+  input[type="date"]::-webkit-datetime-edit-year-field,
+body[data-page="coach-schedules"]
+  input[type="time"]::-webkit-datetime-edit-hour-field,
+body[data-page="coach-schedules"]
+  input[type="time"]::-webkit-datetime-edit-minute-field,
+body[data-page="coach-schedules"]
+  input[type="time"]::-webkit-datetime-edit-ampm-field {
+  color: #f3f4f6 !important;
+  background: transparent !important;
+}
+
+/* ===========================
+   SCHEDULE CARDS
+=========================== */
+.schedule-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 1rem;
+  padding: 1rem;
+}
+
+.schedule-card:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(59, 130, 246, 0.4);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+}
+
+.schedule-card h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.schedule-card p {
+  margin: 0.25rem 0;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.schedule-card .meta {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+}
+
+/* ===========================
+   STATUS BADGES
+=========================== */
+.badge-approved {
+  background: rgba(34, 197, 94, 0.2);
+  color: #86efac;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.badge-pending {
+  background: rgba(251, 191, 36, 0.2);
+  color: #fcd34d;
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.badge-open {
+  background: rgba(59, 130, 246, 0.2);
+  color: #93c5fd;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+/* ===========================
+   REQUEST CARDS
+=========================== */
+.request-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  transition: all 0.3s ease;
+  border-radius: 1rem;
+  padding: 1rem;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  align-items: start;
+}
+
+.request-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(59, 130, 246, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.request-card h5 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.request-card p {
+  margin: 0.25rem 0;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.request-photo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.request-photo img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 0.75rem;
+  border: 2px solid rgba(59, 130, 246, 0.3);
+}
+
+.request-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+/* ===========================
+   RESPONSIVE GRIDS
+=========================== */
+.schedules-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .schedules-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .schedules-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.requests-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .requests-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .requests-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ===========================
+   EMPTY STATES
+=========================== */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  text-align: center;
+  color: rgba(156, 163, 175, 0.8);
+}
+
+.empty-state .material-symbols-outlined {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.empty-state p {
+  margin: 0.25rem 0;
+}
+
+/* ===========================
+   BUTTON ENHANCEMENTS
+=========================== */
+.btn-primary {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+  transform: translateY(-2px);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+/* ===========================
+   CUSTOM SCROLLBAR
+=========================== */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(31, 41, 55, 0.5);
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(75, 85, 99, 0.5);
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(107, 114, 128, 0.7);
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(75, 85, 99, 0.5) rgba(31, 41, 55, 0.5);
+}
+
+/* ===========================
+   ANIMATIONS
+=========================== */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes pulse-slow {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ===========================
+   RESPONSIVE ADJUSTMENTS
+=========================== */
+@media (max-width: 639px) {
+  .tile-hover {
+    margin-bottom: 0.5rem;
+  }
+
+  .request-card {
+    grid-template-columns: 1fr;
+  }
+
+  .request-photo img {
+    width: 100%;
+    height: 120px;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 1023px) {
+  .schedules-grid {
+    gap: 1.25rem;
+  }
+
+  .requests-grid {
+    gap: 1.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .schedules-grid {
+    gap: 1.5rem;
+  }
+
+  .requests-grid {
+    gap: 1.5rem;
+  }
+}
+
+/* ===========================
+   LABEL STYLING
+=========================== */
+body[data-page="coach-schedules"] label {
+  color: #e5e7eb !important;
+  font-weight: 600;
+}
+
+/* ===========================
+   AUTOFILL OVERRIDE (Chrome)
+   Prevent white background on autofill
+=========================== */
+body[data-page="coach-schedules"] input:-webkit-autofill,
+body[data-page="coach-schedules"] input:-webkit-autofill:hover,
+body[data-page="coach-schedules"] input:-webkit-autofill:focus,
+body[data-page="coach-schedules"] select:-webkit-autofill,
+body[data-page="coach-schedules"] select:-webkit-autofill:hover,
+body[data-page="coach-schedules"] select:-webkit-autofill:focus {
+  -webkit-text-fill-color: #f3f4f6 !important;
+  -webkit-box-shadow: 0 0 0px 1000px rgba(31, 41, 55, 0.9) inset !important;
+  box-shadow: 0 0 0px 1000px rgba(31, 41, 55, 0.9) inset !important;
+  transition: background-color 5000s ease-in-out 0s;
+  border: 1px solid rgba(75, 85, 99, 0.5) !important;
+}

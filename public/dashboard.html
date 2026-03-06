@@ -1,0 +1,37 @@
+<!-- dashboard.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - SportIQ</title>
+
+    <!-- Tailwind (project-wide tokens) -->
+    <script src="js/tailwind-config.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <!-- Global CSS is still needed for fonts, backgrounds, etc. -->
+    <link rel="stylesheet" href="css/global.css" />
+
+    <!-- dashboard.css is now optional, as styles are mostly handled by Tailwind in JS -->
+    <!-- You can keep it if you have other shared styles, or remove it. -->
+    <link rel="stylesheet" href="css/dashboard.css" />
+
+    <!-- Lordicon script is no longer strictly needed here, but harmless to keep -->
+    <script src="https://cdn.lordicon.com/lordicon.js"></script>
+  </head>
+  <body>
+    <!-- 
+      This body is now intentionally blank.
+      The entire UI (header, content, and footer) is injected dynamically 
+      by dashboard.js and nav.js based on the user's role.
+    -->
+
+    <!-- Preload state/district dataset (faster than lazy-loading) -->
+    <script src="js/districts.js"></script>
+    <!-- Logic to build the dashboard UI for the current user's role -->
+    <script type="module" src="js/dashboard.js"></script>
+    <!-- Logic to build the header and bottom navigation for all roles -->
+    <script type="module" src="js/nav.js"></script>
+  </body>
+</html>

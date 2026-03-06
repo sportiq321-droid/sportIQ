@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Coach Reports</title>
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
+
+    <!-- Tailwind tokens + CDN -->
+    <script src="js/tailwind-config.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Material Symbols (for back arrow + notifications icon) -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    />
+
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="css/global.css" />
+
+    <style>
+      .glassmorphic {
+        background-color: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .dark .glassmorphic {
+        background-color: rgba(15, 19, 35, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .chip {
+        transition: all 0.2s ease;
+      }
+    </style>
+  </head>
+
+  <body
+    class="font-display bg-background-light dark:bg-background-dark text-stone-100 min-h-screen"
+  >
+    <div class="relative flex min-h-screen w-full flex-col">
+      <!-- Header -->
+      <header
+        class="sticky top-0 z-20 flex items-center justify-between px-4 py-3 glassmorphic"
+      >
+        <button
+          id="backBtn"
+          class="flex h-10 w-10 items-center justify-center rounded-full text-white/80 hover:text-white hover:bg-white/10 transition"
+          aria-label="Back"
+          title="Back"
+        >
+          <span class="material-symbols-outlined">arrow_back</span>
+        </button>
+        <h1 id="pageTitle" class="text-lg font-bold text-white">Reports</h1>
+        <a
+          href="notifications.html"
+          class="relative flex size-10 items-center justify-center text-white/70 hover:text-white hover:bg-white/10 rounded-full transition"
+          aria-label="Notifications"
+          data-notify-bell
+        >
+          <span class="material-symbols-outlined">notifications</span>
+        </a>
+      </header>
+
+      <!-- Breadcrumb / tabs -->
+      <div class="sticky top-14 z-10 px-4 pt-2">
+        <div
+          class="glassmorphic rounded-xl px-3 py-2 flex items-center gap-2 overflow-x-auto"
+          role="toolbar"
+          aria-label="Report views"
+        >
+          <a
+            href="coach-reports.html?view=attendance"
+            class="chip rounded-full px-3 py-1 text-xs font-medium hover:bg-white/10"
+            data-chip="attendance"
+            >Attendance</a
+          >
+          <a
+            href="coach-reports.html?view=achievements"
+            class="chip rounded-full px-3 py-1 text-xs font-medium hover:bg-white/10"
+            data-chip="achievements"
+            >Achievements</a
+          >
+          <a
+            href="coach-reports.html?view=players"
+            class="chip rounded-full px-3 py-1 text-xs font-medium hover:bg-white/10"
+            data-chip="players"
+            >Players</a
+          >
+          <a
+            href="coach-reports.html?view=schedules"
+            class="chip rounded-full px-3 py-1 text-xs font-medium hover:bg-white/10"
+            data-chip="schedules"
+            >Schedules</a
+          >
+          <a
+            href="coach-reports.html?view=tournaments"
+            class="chip rounded-full px-3 py-1 text-xs font-medium hover:bg-white/10"
+            data-chip="tournaments"
+            >Tournaments</a
+          >
+          <span class="ml-auto text-[11px] text-white/50 pr-1"
+            >(detail views)</span
+          >
+        </div>
+      </div>
+      <!-- Filters: common range + per-view controls -->
+      <div class="px-4 pt-2">
+        <div
+          id="filterBar"
+          class="glassmorphic rounded-xl px-3 py-2 flex items-center gap-2 overflow-x-auto"
+        >
+          <span class="text-xs text-white/60 px-2">Range</span>
+          <button
+            class="chip rounded-full px-3 py-1 text-xs font-medium text-white/80 hover:text-white hover:bg-white/10 transition"
+            data-range="7d"
+          >
+            7D
+          </button>
+          <button
+            class="chip rounded-full px-3 py-1 text-xs font-medium text-white/80 hover:text-white hover:bg-white/10 transition"
+            data-range="30d"
+          >
+            30D
+          </button>
+          <button
+            class="chip rounded-full px-3 py-1 text-xs font-medium text-white/80 hover:text-white hover:bg-white/10 transition"
+            data-range="90d"
+          >
+            90D
+          </button>
+
+          <span class="ml-3 text-[11px] text-white/50">Filters</span>
+          <!-- Per-view dynamic filter controls will be injected here -->
+          <div id="viewFilters" class="flex items-center gap-2"></div>
+        </div>
+      </div>
+      <!-- Main -->
+      <main class="flex-1 overflow-y-auto p-4 pb-28" role="main">
+        <div id="viewContainer" class="max-w-5xl mx-auto space-y-4">
+          <!-- Dynamic content injected here -->
+          <div
+            id="loading"
+            class="glassmorphic rounded-xl p-6 text-center text-white/70"
+          >
+            Loading…
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Bell dot helper -->
+    <script type="module" src="js/notify-dot.js"></script>
+    <!-- Bottom navigation injection -->
+    <script type="module" src="js/nav.js"></script>
+    <script type="module">
+      (async () => {
+        try {
+          const res = await fetch("/api/me", { credentials: "same-origin" });
+          if (!res.ok) {
+            const returnTo = encodeURIComponent(
+              location.pathname + location.search
+            );
+            location.href = `login.html?returnTo=${returnTo}`;
+          }
+        } catch {
+          const returnTo = encodeURIComponent(
+            location.pathname + location.search
+          );
+          location.href = `login.html?returnTo=${returnTo}`;
+        }
+      })();
+    </script>
+    <!-- Page controller -->
+    <script type="module" src="js/modules/coach-reports.js"></script>
+
+    <script>
+      // Back button behavior
+      document
+        .getElementById("backBtn")
+        ?.addEventListener("click", function () {
+          if (window.history.length > 1 && document.referrer) {
+            window.history.back();
+          } else {
+            window.location.href = "reports.html";
+          }
+        });
+    </script>
+  </body>
+</html>

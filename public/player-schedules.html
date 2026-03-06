@@ -1,0 +1,551 @@
+<!-- player-schedules.html -->
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Player Schedules - SportIQ</title>
+
+    <script src="js/tailwind-config.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    />
+    <link rel="stylesheet" href="css/global.css" />
+    <link rel="stylesheet" href="css/schedules.css" />
+
+    <style>
+      /* Style for the active tab/chip (Subtle Primary) */
+      .chip-active {
+        background-color: rgba(
+          96,
+          122,
+          251,
+          0.25
+        ) !important; /* bg-primary/25 */
+        color: white !important;
+        border: 1px solid rgba(96, 122, 251, 0.4) !important; /* border-primary/40 */
+      }
+      /* Style for day-of-week toggles */
+      .dow-chip[data-selected="true"] {
+        background-color: rgba(255, 255, 255, 0.15);
+        color: white;
+      }
+    </style>
+  </head>
+
+  <body
+    class="bg-background-light dark:bg-background-dark font-display text-white min-h-screen"
+  >
+    <div class="relative flex min-h-screen w-full flex-col">
+      <!-- Header -->
+      <header
+        class="sticky top-0 z-20 glassmorphic backdrop-blur-md border-b border-white/10"
+      >
+        <div class="flex items-center justify-between px-4 sm:px-6 py-4">
+          <button
+            id="backBtn"
+            class="flex size-10 sm:size-11 items-center justify-center rounded-full text-white/80 hover:text-white hover:bg-white/10 transition-all active:scale-95"
+            aria-label="Back to Schedules"
+            title="Back to Schedules"
+          >
+            <span class="material-symbols-outlined">arrow_back</span>
+          </button>
+
+          <h1
+            id="pageTitle"
+            class="text-xl sm:text-2xl lg:text-3xl font-bold text-white tracking-tight"
+          >
+            Player Schedules
+          </h1>
+
+          <a
+            href="notifications.html"
+            class="relative flex items-center justify-center size-10 sm:size-11 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-all duration-200"
+            aria-label="Notifications"
+            data-notify-bell
+          >
+            <span class="material-symbols-outlined">notifications</span>
+          </a>
+        </div>
+      </header>
+
+      <!-- Tabs -->
+      <div class="sticky top-14 z-10 px-4 pt-2">
+        <div
+          class="glassmorphic rounded-xl px-3 py-2 flex items-center gap-2 overflow-x-auto"
+          role="toolbar"
+          aria-label="Views"
+        >
+          <a
+            href="player-schedules.html?view=available"
+            class="chip rounded-full px-3 py-1 text-xs font-medium text-white/80 hover:bg-white/10"
+            data-chip="available"
+            >Available</a
+          >
+          <a
+            href="player-schedules.html?view=my"
+            class="chip rounded-full px-3 py-1 text-xs font-medium text-white/80 hover:bg-white/10"
+            data-chip="my"
+            >My Schedules</a
+          >
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="px-4 pt-2">
+        <div
+          id="filterBar"
+          class="glassmorphic rounded-xl px-3 py-2 flex items-center gap-2 overflow-x-auto"
+        >
+          <span class="text-xs text-white/60 px-2 shrink-0">Range</span>
+          <button
+            class="chip rounded-full px-3 py-1 text-xs font-medium text-white/80 hover:text-white hover:bg-white/10 transition shrink-0"
+            data-range="7d"
+          >
+            7D
+          </button>
+          <button
+            class="chip rounded-full px-3 py-1 text-xs font-medium text-white/80 hover:text-white hover:bg-white/10 transition shrink-0"
+            data-range="30d"
+          >
+            30D
+          </button>
+          <button
+            class="chip rounded-full px-3 py-1 text-xs font-medium text-white/80 hover:text-white hover:bg-white/10 transition shrink-0"
+            data-range="90d"
+          >
+            90D
+          </button>
+
+          <span class="ml-3 text-[11px] text-white/50 shrink-0">Entrance</span>
+          <select
+            id="entranceSel"
+            class="rounded bg-white/10 border border-white/10 px-2 py-1 text-xs select-dark shrink-0"
+          >
+            <option value="ALL">All</option>
+            <option value="OPEN">Open</option>
+            <option value="APPROVAL">Approval</option>
+          </select>
+
+          <span class="ml-3 text-[11px] text-white/50 shrink-0">Days</span>
+          <div id="dowWrap" class="flex items-center gap-1 shrink-0">
+            <!-- Day-of-week toggles injected here -->
+          </div>
+
+          <span class="ml-auto text-[10px] text-white/40 pr-1 shrink-0"
+            >(Location filter pending backend update)</span
+          >
+        </div>
+      </div>
+
+      <!-- Main content -->
+      <main class="flex-1 overflow-y-auto p-4 pb-28" role="main">
+        <div id="listContainer" class="max-w-4xl mx-auto space-y-3">
+          <!-- Skeletons for loading state -->
+          <div id="skeletons" class="space-y-3 hidden">
+            <div class="glassmorphic rounded-xl p-4 animate-pulse h-24"></div>
+            <div class="glassmorphic rounded-xl p-4 animate-pulse h-24"></div>
+            <div class="glassmorphic rounded-xl p-4 animate-pulse h-24"></div>
+          </div>
+          <!-- List will be rendered here -->
+        </div>
+      </main>
+    </div>
+
+    <!-- Session guard: redirect to login if backend session is missing -->
+    <script type="module">
+      (async () => {
+        try {
+          const r = await fetch("/api/me", { credentials: "same-origin" });
+          if (!r.ok) {
+            const returnTo = encodeURIComponent(
+              location.pathname + location.search
+            );
+            location.href = `login.html?returnTo=${returnTo}`;
+          }
+        } catch {
+          const returnTo = encodeURIComponent(
+            location.pathname + location.search
+          );
+          location.href = `login.html?returnTo=${returnTo}`;
+        }
+      })();
+    </script>
+
+    <!-- Page controller (inline) -->
+    <script type="module">
+      import API from "./js/api.js";
+
+      // --- State ---
+      const state = {
+        view: "available",
+        range: "30d",
+        entrance: "ALL",
+        dows: new Set([0, 1, 2, 3, 4, 5, 6]), // 0=Sun..6=Sat
+        myStatus: "ALL", // For 'My Schedules' view
+      };
+
+      const qs = new URLSearchParams(location.search);
+      state.view = (qs.get("view") || "available").toLowerCase();
+
+      // --- DOM Elements ---
+      const pageTitle = document.getElementById("pageTitle");
+      const listContainer = document.getElementById("listContainer");
+      const skeletons = document.getElementById("skeletons");
+      const entranceSel = document.getElementById("entranceSel");
+      const dowWrap = document.getElementById("dowWrap");
+
+      // --- Helpers ---
+      const startOfDay = (d) => {
+        const x = new Date(d);
+        x.setHours(0, 0, 0, 0);
+        return x;
+      };
+      const endOfDay = (d) => {
+        const x = new Date(d);
+        x.setHours(23, 59, 59, 999);
+        return x;
+      };
+      const daysFromNow = (n) => {
+        const x = new Date();
+        x.setDate(x.getDate() + n);
+        return x;
+      };
+      const getRangeDays = () =>
+        state.range === "7d" ? 7 : state.range === "90d" ? 90 : 30;
+      const getWindow = () => {
+        const n = getRangeDays();
+        const start = startOfDay(new Date());
+        const end = endOfDay(daysFromNow(n - 1));
+        return { start, end };
+      };
+      const inRange = (dateStr, start, end) => {
+        const d = new Date(dateStr);
+        return d >= start && d <= end;
+      };
+      const dayIndex = (dateStr) => new Date(dateStr).getDay();
+      const fmtDate = (d) => {
+        try {
+          const x = new Date(d);
+          return x.toLocaleDateString(undefined, {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          });
+        } catch {
+          return "-";
+        }
+      };
+      const fmtTimeRange = (s, e) => {
+        const opt = { hour: "2-digit", minute: "2-digit" };
+        const st = s
+          ? new Date(`1970-01-01T${s}:00`).toLocaleTimeString(undefined, opt)
+          : "";
+        const et = e
+          ? new Date(`1970-01-01T${e}:00`).toLocaleTimeString(undefined, opt)
+          : "";
+        return e ? `${st} – ${et}` : st;
+      };
+      const escapeHtml = (str = "") =>
+        String(str)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+
+      // --- UI Updaters ---
+      const showSkeleton = (show) =>
+        skeletons.classList.toggle("hidden", !show);
+      const setTitle = () =>
+        (pageTitle.textContent =
+          state.view === "available" ? "Available Schedules" : "My Schedules");
+      const highlightViewChip = () => {
+        document.querySelectorAll("[data-chip]").forEach((ch) => {
+          ch.classList.remove("chip-active");
+          if (ch.getAttribute("data-chip") === state.view)
+            ch.classList.add("chip-active");
+        });
+      };
+      const highlightRangeChip = () => {
+        document.querySelectorAll("[data-range]").forEach((btn) => {
+          btn.classList.remove("chip-active");
+          if (btn.getAttribute("data-range") === state.range)
+            btn.classList.add("chip-active");
+        });
+      };
+
+      // --- Filter UI ---
+      function buildFilterUI() {
+        const labels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        dowWrap.innerHTML = "";
+        labels.forEach((lbl, idx) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className =
+            "dow-chip chip rounded-full px-2.5 py-1 text-[11px] font-medium text-white/80 hover:text-white hover:bg-white/15 transition border border-white/10";
+          btn.textContent = lbl;
+          btn.dataset.idx = String(idx);
+          const isSelected = state.dows.has(idx);
+          btn.dataset.selected = String(isSelected);
+          btn.classList.toggle("bg-white/10", isSelected);
+          btn.classList.toggle("text-white", isSelected);
+
+          btn.addEventListener("click", () => {
+            if (state.dows.has(idx)) {
+              state.dows.delete(idx);
+            } else {
+              state.dows.add(idx);
+            }
+            render();
+          });
+          dowWrap.appendChild(btn);
+        });
+      }
+
+      // --- Event Wiring ---
+      document.querySelectorAll("[data-range]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          state.range = btn.getAttribute("data-range") || "30d";
+          render();
+        });
+      });
+      entranceSel.addEventListener("change", () => {
+        state.entrance = entranceSel.value || "ALL";
+        render();
+      });
+      document
+        .getElementById("backBtn")
+        .addEventListener(
+          "click",
+          () => (location.href = "playerschedulesLand.html")
+        );
+
+      // --- Main Render Function ---
+      async function render() {
+        setTitle();
+        highlightViewChip();
+        highlightRangeChip();
+        buildFilterUI();
+        showSkeleton(true);
+
+        const { start, end } = getWindow();
+
+        try {
+          if (state.view === "available") {
+            const res = await API.getAvailableSchedules();
+            let items = (res?.items || [])
+              .filter((s) => inRange(s.date, start, end))
+              .filter((s) =>
+                state.entrance === "ALL" ? true : s.entrance === state.entrance
+              )
+              .filter((s) => state.dows.has(dayIndex(s.date)));
+            listContainer.innerHTML = items.length
+              ? items.map(scheduleCardAvailable).join("")
+              : emptyState("No schedules match filters.");
+            bindActionEvents();
+          } else {
+            // 'my' view
+            const res = await API.getMyScheduleRequests();
+            let items = (res?.items || [])
+              .filter(
+                (r) => r?.schedule?.date && inRange(r.schedule.date, start, end)
+              )
+              .filter((r) =>
+                state.entrance === "ALL"
+                  ? true
+                  : r.schedule.entrance === state.entrance
+              )
+              .filter((r) => state.dows.has(dayIndex(r.schedule.date)));
+            const filteredByStatus =
+              state.myStatus === "ALL"
+                ? items
+                : items.filter(
+                    (r) => (r.status || "").toUpperCase() === state.myStatus
+                  );
+            listContainer.innerHTML =
+              segmentHeader(state.myStatus) +
+              (filteredByStatus.length
+                ? filteredByStatus.map(scheduleCardMy).join("")
+                : emptyState("No schedules in selection."));
+            bindActionEvents();
+            bindSegmentEvents();
+          }
+        } catch (e) {
+          listContainer.innerHTML = errorState("Failed to load schedules.");
+          console.error(e);
+        } finally {
+          showSkeleton(false);
+        }
+      }
+
+      // --- Templates ---
+      const emptyState = (text) =>
+        `<div class="glassmorphic rounded-xl p-6 text-center text-white/70">${escapeHtml(
+          text || "No data."
+        )}</div>`;
+      const errorState = (text) =>
+        `<div class="glassmorphic rounded-xl p-6 text-center text-red-300">${escapeHtml(
+          text || "Error."
+        )}</div>`;
+
+      function scheduleCardAvailable(s) {
+        const status = s.myRequest?.status || null;
+        const btn = (() => {
+          if (status === "PENDING")
+            return `<button class="px-3 py-2 rounded-lg bg-yellow-600/80 text-white text-sm font-medium" disabled>Requested</button><button class="px-3 py-2 rounded-lg bg-red-600/80 hover:bg-red-500 text-white text-sm font-medium transition" data-act="leave" data-id="${escapeHtml(
+              s.id
+            )}">Cancel</button>`;
+          if (status === "APPROVED")
+            return `<span class="px-3 py-2 rounded-lg bg-green-600/20 text-green-300 text-sm font-medium">Approved</span><button class="px-3 py-2 rounded-lg bg-red-600/80 hover:bg-red-500 text-white text-sm font-medium transition" data-act="leave" data-id="${escapeHtml(
+              s.id
+            )}">Leave</button>`;
+          if (s.entrance === "OPEN")
+            return `<button class="px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium transition" data-act="join" data-id="${escapeHtml(
+              s.id
+            )}">Join</button>`;
+          return `<button class="px-3 py-2 rounded-lg bg-primary hover:bg-primary/90 text-white text-sm font-medium transition" data-act="join" data-id="${escapeHtml(
+            s.id
+          )}">Request</button>`;
+        })();
+        const badge =
+          s.entrance === "OPEN"
+            ? `<span class="inline-block text-xs rounded-full bg-green-500/15 text-green-300 px-2 py-0.5">OPEN</span>`
+            : `<span class="inline-block text-xs rounded-full bg-yellow-500/15 text-yellow-300 px-2 py-0.5">APPROVAL</span>`;
+        return `
+          <article class="glassmorphic rounded-xl p-4 space-y-2">
+            <header class="flex items-start justify-between gap-3">
+              <div>
+                <h3 class="text-base font-bold text-white">${fmtDate(
+                  s.date
+                )}</h3>
+                <p class="text-xs text-white/70">${fmtTimeRange(
+                  s.startTime,
+                  s.endTime
+                )} • ${escapeHtml(s.venue)}</p>
+              </div>
+              <div class="flex flex-col items-end gap-1">
+                ${badge}
+                <span class="text-[10px] text-white/50">${
+                  s.approvedCount
+                } joined</span>
+              </div>
+            </header>
+            <div class="flex items-center justify-between">
+              <div class="text-xs text-white/60">Coach: ${escapeHtml(
+                s.coach?.name || s.coach?.username || "-"
+              )}</div>
+              <div class="flex gap-2">${btn}</div>
+            </div>
+          </article>`;
+      }
+
+      function scheduleCardMy(r) {
+        const s = r.schedule || {};
+        const badge =
+          (r.status || "").toUpperCase() === "APPROVED"
+            ? `<span class="inline-block text-xs rounded-full bg-green-500/15 text-green-300 px-2 py-0.5">APPROVED</span>`
+            : `<span class="inline-block text-xs rounded-full bg-yellow-500/15 text-yellow-300 px-2 py-0.5">PENDING</span>`;
+        const btn =
+          (r.status || "").toUpperCase() === "APPROVED"
+            ? `<button class="px-3 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white text-sm font-medium transition" data-act="leave" data-id="${escapeHtml(
+                s.id
+              )}">Leave</button>`
+            : `<button class="px-3 py-2 rounded-lg bg-yellow-600/80 hover:bg-yellow-500 text-white text-sm font-medium transition" data-act="leave" data-id="${escapeHtml(
+                s.id
+              )}">Cancel</button>`;
+        return `
+          <article class="glassmorphic rounded-xl p-4 space-y-2">
+            <header class="flex items-center justify-between gap-3">
+              <div>
+                <h3 class="text-base font-bold text-white">${fmtDate(
+                  s.date
+                )}</h3>
+                <p class="text-xs text-white/70">${fmtTimeRange(
+                  s.startTime,
+                  s.endTime
+                )} • ${escapeHtml(s.venue)}</p>
+              </div>
+              <div class="flex gap-2 items-center">${badge}</div>
+            </header>
+            <div class="flex items-center justify-between">
+              <div class="text-xs text-white/60">Coach: ${escapeHtml(
+                s.coach?.name || s.coach?.username || "-"
+              )}</div>
+              <div class="flex gap-2">${btn}</div>
+            </div>
+          </article>`;
+      }
+
+      function segmentHeader(active) {
+        return `
+          <div class="glassmorphic rounded-xl px-3 py-2 mb-3 flex items-center gap-2 overflow-x-auto">
+            <span class="text-xs text-white/60 px-2">Status</span>
+            <button class="chip rounded-full px-3 py-1 text-xs font-medium ${
+              active === "ALL"
+                ? "chip-active"
+                : "text-white/80 hover:bg-white/10"
+            }" data-seg="ALL">All</button>
+            <button class="chip rounded-full px-3 py-1 text-xs font-medium ${
+              active === "PENDING"
+                ? "chip-active"
+                : "text-white/80 hover:bg-white/10"
+            }" data-seg="PENDING">Pending</button>
+            <button class="chip rounded-full px-3 py-1 text-xs font-medium ${
+              active === "APPROVED"
+                ? "chip-active"
+                : "text-white/80 hover:bg-white/10"
+            }" data-seg="APPROVED">Approved</button>
+          </div>`;
+      }
+
+      // --- Action Binders ---
+      function bindActionEvents() {
+        listContainer.querySelectorAll("button[data-act]").forEach((btn) => {
+          btn.addEventListener("click", async () => {
+            const act = btn.getAttribute("data-act");
+            const id = btn.getAttribute("data-id");
+            if (!id) return;
+            btn.disabled = true;
+            try {
+              if (act === "join") await API.joinSchedule(id);
+              else if (act === "leave") await API.leaveSchedule(id); // cancel and leave both use DELETE /leave
+              await render();
+            } catch (e) {
+              console.error(e);
+              alert(e.message || "Action failed. Please try again.");
+              btn.disabled = false;
+            }
+          });
+        });
+      }
+
+      function bindSegmentEvents() {
+        listContainer.querySelectorAll("[data-seg]").forEach((b) => {
+          b.addEventListener("click", () => {
+            state.myStatus = b.getAttribute("data-seg") || "ALL";
+            render();
+          });
+        });
+      }
+
+      // --- Initial Load ---
+      (async () => {
+        highlightRangeChip();
+        await render();
+      })();
+    </script>
+
+    <!-- Bottom Nav + dot -->
+    <script type="module" src="js/notify-dot.js"></script>
+    <script type="module" src="js/nav.js"></script>
+  </body>
+</html>

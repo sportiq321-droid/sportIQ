@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Leaderboard - SportIQ</title>
+
+    <!-- Tailwind tokens + CDN -->
+    <script src="js/tailwind-config.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="css/global.css" />
+    <link rel="stylesheet" href="css/leaderboard.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-background-light dark:bg-background-dark font-display text-white min-h-screen" data-page="leaderboard">
+    <div class="relative flex min-h-screen w-full flex-col">
+      <!-- Header -->
+      <header class="sticky top-0 z-20 glassmorphic backdrop-blur-md border-b border-white/10">
+        <div class="flex items-center justify-between px-4 sm:px-6 py-4">
+          <button
+            id="backBtn"
+            class="flex size-10 sm:size-11 items-center justify-center rounded-full text-white/80 hover:text-white hover:bg-white/10 transition-all active:scale-95"
+            aria-label="Back"
+            title="Back"
+          >
+            <span class="material-symbols-outlined">arrow_back</span>
+          </button>
+
+          <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-white tracking-tight">
+            Leaderboard
+          </h1>
+
+          <a
+            href="notifications.html"
+            class="relative flex items-center justify-center size-10 sm:size-11 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-all duration-200"
+            aria-label="Notifications"
+            data-notify-bell
+          >
+            <span class="material-symbols-outlined">notifications</span>
+          </a>
+        </div>
+      </header>
+
+      <!-- Filters -->
+      <div class="px-4 pt-2">
+        <div class="glassmorphic rounded-xl px-3 py-2 flex flex-wrap items-center gap-2">
+          <div class="flex-1 min-w-[120px]">
+            <label for="sportFilter" class="sr-only">Sport</label>
+            <select id="sportFilter" class="w-full bg-white/10 border-white/10 rounded-lg text-sm text-white focus:ring-primary focus:border-primary">
+              <option value="">All Sports</option>
+              <option value="Cricket">Cricket</option>
+              <option value="Football">Football</option>
+              <option value="Kabaddi">Kabaddi</option>
+              <option value="Volleyball">Volleyball</option>
+              <option value="Badminton">Badminton</option>
+            </select>
+          </div>
+          
+          <div class="flex-1 min-w-[120px]">
+            <label for="stateFilter" class="sr-only">State</label>
+            <select id="stateFilter" class="w-full bg-white/10 border-white/10 rounded-lg text-sm text-white focus:ring-primary focus:border-primary">
+              <option value="">All States</option>
+            </select>
+          </div>
+
+          <div class="flex-1 min-w-[120px]">
+            <label for="districtFilter" class="sr-only">District</label>
+            <select id="districtFilter" class="w-full bg-white/10 border-white/10 rounded-lg text-sm text-white focus:ring-primary focus:border-primary" disabled>
+              <option value="">All Districts</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <main class="flex-grow p-4 sm:p-6 lg:p-8 pb-28 sm:pb-32">
+        <div id="leaderboardContainer" class="max-w-4xl mx-auto space-y-3">
+          <!-- Loading State -->
+          <div id="loadingState" class="space-y-3">
+            <div class="glassmorphic rounded-xl p-4 animate-pulse h-20"></div>
+            <div class="glassmorphic rounded-xl p-4 animate-pulse h-20"></div>
+            <div class="glassmorphic rounded-xl p-4 animate-pulse h-20"></div>
+          </div>
+          
+          <!-- List will be rendered here -->
+          <div id="playersList" class="space-y-3 hidden"></div>
+          
+          <!-- Empty State -->
+          <div id="emptyState" class="hidden text-center py-12">
+            <p class="text-white/60">No players found matching criteria.</p>
+          </div>
+          
+          <!-- Load More -->
+          <div class="text-center pt-4 hidden" id="loadMoreContainer">
+            <button id="loadMoreBtn" class="px-6 py-2 bg-white/10 hover:bg-white/20 rounded-full text-sm font-medium transition-colors">
+              Load More
+            </button>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/js/utils.js"></script>
+    <script src="/js/districts.js"></script>
+    <script src="/js/api.js"></script>
+    <script type="module" src="/js/leaderboard.js"></script>
+    <script type="module" src="/js/nav.js"></script>
+    <script type="module" src="/js/notify-dot.js"></script>
+    
+    <script>
+      document.getElementById('backBtn')?.addEventListener('click', () => {
+        window.location.href = 'dashboard.html';
+      });
+    </script>
+  </body>
+</html>

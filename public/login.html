@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Login - SportIQ</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+
+    <!-- Tailwind config BEFORE CDN -->
+    <script src="js/tailwind-config.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="css/global.css" />
+  </head>
+
+  <body
+    class="font-display bg-background-light dark:bg-background-dark"
+    data-page="login"
+  >
+    <div class="min-h-screen grid grid-cols-1 lg:grid-cols-2">
+      <!-- Header (sticky, like Reports) -->
+      <header class="sticky top-0 z-20 col-span-full glassmorphic px-4 py-3">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+          <div class="w-10"></div>
+          <h1 class="text-lg font-bold text-white">Login</h1>
+          <div class="w-10"></div>
+        </div>
+      </header>
+
+      <!-- Left visual panel (hidden on mobile) -->
+      <aside class="hidden lg:block">
+        <div class="relative h-full">
+          <div
+            class="absolute inset-0 bg-cover bg-center"
+            style="
+              background-image: url('https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=1600&auto=format&fit=crop');
+            "
+            aria-hidden="true"
+          ></div>
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent"
+          ></div>
+
+          <div class="relative h-full flex items-end">
+            <div class="p-8 lg:p-10">
+              <img
+                src="SportIQ blue logo.png"
+                alt="SportIQ logo"
+                class="h-14 w-auto mb-4"
+              />
+              <h2 class="text-2xl font-extrabold text-white">Welcome back</h2>
+              <p class="text-white/70 mt-1">
+                Continue managing your players, schedules, and tournaments.
+              </p>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Right form panel -->
+      <main class="flex items-center justify-center p-4 lg:p-8">
+        <div
+          class="w-full max-w-md glassmorphic rounded-xl p-6 md:p-8 shadow-lg"
+        >
+          <div class="mb-6 text-center">
+            <img
+              src="SportIQ blue logo.png"
+              alt="SportIQ logo"
+              class="h-16 w-auto mx-auto"
+            />
+            <h2 class="text-2xl font-bold text-white mt-4">Welcome Back</h2>
+            <p class="text-white/70 mt-1">Log in to continue</p>
+          </div>
+
+          <form id="loginForm" class="mt-4 space-y-4" novalidate>
+            <div>
+              <label for="loginEmail" class="sr-only">Email or Username</label>
+              <div class="relative">
+                <span
+                  class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-white/50"
+                  >person</span
+                >
+                <input
+                  type="text"
+                  id="loginEmail"
+                  class="form-input"
+                  placeholder="Email or Username"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label for="loginPass" class="sr-only">Password</label>
+              <div class="relative">
+                <span
+                  class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-white/50"
+                  >lock</span
+                >
+                <input
+                  type="password"
+                  id="loginPass"
+                  class="form-input"
+                  placeholder="Password"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between text-sm">
+              <label class="inline-flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="showLoginPass"
+                  class="h-4 w-4 rounded border-gray-500 bg-white/10 text-primary focus:ring-primary focus:ring-offset-background-dark"
+                />
+                <span class="text-white/70">Show password</span>
+              </label>
+              <a href="register.html" class="text-primary hover:underline"
+                >Create account</a
+              >
+            </div>
+
+            <p id="msg" class="text-sm font-medium h-5" aria-live="polite"></p>
+
+            <div class="pt-2">
+              <button
+                type="submit"
+                class="btn-neon-blue flex w-full items-center justify-center rounded-lg bg-primary px-6 py-3 text-base font-bold text-white transition-all duration-300 hover:bg-primary/90 hover:scale-[1.02] active:scale-100"
+              >
+                Login
+              </button>
+            </div>
+          </form>
+        </div>
+      </main>
+    </div>
+
+    <script type="module" src="js/auth-pages.js"></script>
+  </body>
+</html>

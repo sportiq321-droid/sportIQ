@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Verification - Government Official</title>
+
+    <!-- Tailwind tokens + CDN (approved) -->
+    <script src="js/tailwind-config.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <!-- Icons (Material Symbols, for header + hero) -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    />
+
+    <!-- Global + page styles -->
+    <link rel="stylesheet" href="css/global.css" />
+    <link rel="stylesheet" href="css/govaverify.css" />
+  </head>
+
+  <body data-page="gov-verify" class="font-display text-white min-h-screen">
+    <div class="relative flex min-h-screen w-full flex-col">
+      <!-- ===========================
+           HEADER (schedules-like)
+      =========================== -->
+      <header
+        class="sticky top-0 z-20 glassmorphic backdrop-blur-md border-b border-white/10"
+      >
+        <div class="flex items-center justify-between px-4 sm:px-6 py-4">
+          <!-- Back Button -->
+          <button
+            id="backBtn"
+            class="flex size-10 sm:size-11 items-center justify-center rounded-full text-white/80 hover:text-white hover:bg-white/10 transition-all active:scale-95"
+            aria-label="Back to Dashboard"
+            title="Back"
+            type="button"
+          >
+            <span class="material-symbols-outlined">arrow_back</span>
+          </button>
+
+          <!-- Title -->
+          <h1
+            class="text-xl sm:text-2xl lg:text-3xl font-bold text-white tracking-tight"
+          >
+            Verification
+          </h1>
+
+          <!-- Notifications -->
+          <a
+            href="notifications.html"
+            class="relative flex items-center justify-center size-10 sm:size-11 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-all duration-200"
+            aria-label="Notifications"
+            data-notify-bell
+          >
+            <span class="material-symbols-outlined">notifications</span>
+          </a>
+        </div>
+      </header>
+
+      <!-- ===========================
+           MAIN CONTENT (Information)
+      =========================== -->
+      <main class="flex-grow p-4 sm:p-6 lg:p-8 pb-28 sm:pb-32">
+        <div class="max-w-4xl mx-auto w-full">
+          <section
+            class="glassmorphic rounded-2xl p-6 sm:p-10 shadow-2xl animate-fade-in-up"
+          >
+            <!-- Hero -->
+            <div class="flex items-start gap-4">
+              <div
+                class="flex items-center justify-center w-14 h-14 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 shrink-0"
+                aria-hidden="true"
+              >
+                <span
+                  class="material-symbols-outlined text-3xl text-emerald-300"
+                  >verified</span
+                >
+              </div>
+              <div class="flex-1">
+                <h2 class="text-2xl sm:text-3xl font-bold">
+                  No verification required
+                </h2>
+                <p class="text-white/70 mt-2">
+                  Tournament verification by Government Officials has been
+                  retired. Admins now create and publish tournaments directly.
+                </p>
+              </div>
+            </div>
+
+            <!-- Details -->
+            <div class="grid gap-4 sm:gap-5 mt-6">
+              <div class="rounded-xl border border-white/10 bg-white/5 p-4">
+                <h3 class="text-white font-semibold">What changed?</h3>
+                <ul class="list-disc pl-5 mt-2 text-white/70 space-y-1">
+                  <li>Admins can save as Draft or Publish immediately.</li>
+                  <li>
+                    Players can register as before; Admins approve if needed.
+                  </li>
+                  <li>
+                    Government Officials can still access Reports and Analytics.
+                  </li>
+                </ul>
+              </div>
+
+              <div class="rounded-xl border border-white/10 bg-white/5 p-4">
+                <h3 class="text-white font-semibold">Where to go next</h3>
+                <ul class="list-disc pl-5 mt-2 text-white/70 space-y-1">
+                  <li>Dashboard for your overview and notifications</li>
+                  <li>Reports for insights and data</li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <a
+                href="dashboard.html"
+                class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 hover:border-white/30 transition"
+              >
+                <span class="material-symbols-outlined">home</span>
+                <span>Go to Dashboard</span>
+              </a>
+              <a
+                href="reports.html"
+                class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-primary text-white hover:bg-primary/90 transition"
+              >
+                <span class="material-symbols-outlined">insights</span>
+                <span>Open Reports</span>
+              </a>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <!-- ===========================
+         SCRIPTS
+    =========================== -->
+    <!-- Notifications dot + Bottom Nav -->
+    <script type="module" src="js/notify-dot.js"></script>
+    <script type="module" src="js/nav.js"></script>
+
+    <!-- Simple controller (role guard + back button) -->
+    <script type="module" src="js/govaverify.js"></script>
+  </body>
+</html>

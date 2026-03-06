@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Coach Reports</title>
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
+
+    <!-- Tailwind + plugins (Stitch baseline) -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Material Symbols (for back arrow + notifications icon) -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    />
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#607afb",
+              "background-light": "#f5f6f8",
+              "background-dark": "#0f1323",
+              warning: "#F59E0B",
+              success: "#22C55E",
+            },
+            fontFamily: { display: ["Inter"] },
+            borderRadius: {
+              DEFAULT: "0.5rem",
+              lg: "1rem",
+              xl: "1.5rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+
+    <!-- Stitch glass styles -->
+    <style>
+      .glassmorphic {
+        background-color: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .dark .glassmorphic {
+        background-color: rgba(15, 19, 35, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .glass-pill-warning {
+        background-color: rgba(245, 158, 11, 0.1);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(245, 158, 11, 0.2);
+        box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+      }
+      .glass-pill-success {
+        background-color: rgba(34, 197, 94, 0.1);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(34, 197, 94, 0.2);
+        box-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .motion-safe\:transition,
+        .motion-safe\:transform {
+          transition: none !important;
+          transform: none !important;
+        }
+      }
+      body {
+        min-height: max(884px, 100dvh);
+      }
+    </style>
+  </head>
+
+  <body class="font-display bg-background-light dark:bg-background-dark">
+    <div class="flex min-h-screen w-full flex-col">
+      <!-- Header (replaced to match coach-reports default with back + notify) -->
+      <header
+        class="sticky top-0 z-20 flex items-center justify-between px-4 py-3 glassmorphic"
+        role="banner"
+      >
+        <button
+          id="backBtn"
+          class="flex h-10 w-10 items-center justify-center rounded-full text-white/80 hover:text-white hover:bg-white/10 transition"
+          aria-label="Back"
+          title="Back"
+        >
+          <span class="material-symbols-outlined">arrow_back</span>
+        </button>
+        <h1 class="text-lg font-bold text-white">Reports</h1>
+        <a
+          href="notifications.html"
+          class="relative flex size-10 items-center justify-center text-white/70 hover:text-white hover:bg-white/10 rounded-full transition"
+          aria-label="Notifications"
+          data-notify-bell
+        >
+          <span class="material-symbols-outlined">notifications</span>
+        </a>
+      </header>
+
+      <!-- Sticky Filters (UI placeholder) -->
+      <div class="sticky top-14 z-10 px-4 pt-2">
+        <div
+          class="glassmorphic rounded-xl px-3 py-2 flex items-center gap-2 overflow-x-auto"
+          role="toolbar"
+          aria-label="Report range filters"
+        >
+          <span class="text-xs text-white/60 px-2">Range</span>
+          <button
+            class="chip active rounded-full px-3 py-1 text-xs font-medium text-white bg-primary/20 hover:bg-primary/30 transition"
+            data-range="7d"
+            aria-pressed="false"
+          >
+            7D
+          </button>
+          <button
+            class="chip rounded-full px-3 py-1 text-xs font-medium text-white/80 hover:text-white hover:bg-white/10 transition"
+            data-range="30d"
+            aria-pressed="true"
+          >
+            30D
+          </button>
+          <button
+            class="chip rounded-full px-3 py-1 text-xs font-medium text-white/80 hover:text-white hover:bg-white/10 transition"
+            data-range="90d"
+          >
+            90D
+          </button>
+          <button
+            class="chip rounded-full px-3 py-1 text-xs font-medium text-white/80 hover:text-white hover:bg-white/10 transition"
+            data-range="custom"
+          >
+            Custom
+          </button>
+
+          <span class="ml-auto text-[11px] text-white/50 pr-1"
+            >(filters placeholder)</span
+          >
+        </div>
+      </div>
+
+      <!-- Main -->
+      <main class="flex-1 overflow-y-auto p-4 pb-24" role="main">
+        <!-- KPI Grid -->
+        <section class="space-y-3">
+          <h2 class="text-xl font-bold text-white px-2">Overview</h2>
+          <div
+            id="kpiGrid"
+            class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"
+            data-skeleton
+          >
+            <!-- Attendance Rate (30D) -->
+            <article
+              class="relative overflow-hidden rounded-xl glassmorphic shadow-lg group p-4"
+              aria-label="Attendance rate"
+            >
+              <header class="flex items-center justify-between">
+                <div>
+                  <h3 class="text-base font-bold text-white">
+                    Attendance Rate
+                  </h3>
+                  <p class="text-sm text-white/70">Last 30 days</p>
+                </div>
+                <a
+                  href="coach-reports.html?view=attendance"
+                  class="text-primary"
+                  aria-label="View Attendance details"
+                >
+                  <svg
+                    width="24"
+                    height="24"
+                    fill="currentColor"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 256 256"
+                  >
+                    <path
+                      d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"
+                    />
+                  </svg>
+                </a>
+              </header>
+              <!-- Updated body: attendanceValue + progress bar -->
+              <div class="mt-4">
+                <div
+                  id="attendanceValue"
+                  class="text-3xl font-extrabold text-white tracking-tight"
+                  data-skel="attendance"
+                >
+                  —
+                </div>
+                <div
+                  class="mt-3 h-2 w-full rounded-full bg-white/10 overflow-hidden"
+                >
+                  <div
+                    id="attendanceBar"
+                    class="h-2 rounded-full bg-primary w-0"
+                  ></div>
+                </div>
+              </div>
+            </article>
+
+            <!-- Approved vs Pending Achievements -->
+            <article
+              class="relative overflow-hidden rounded-xl glassmorphic shadow-lg group p-4"
+              aria-label="Achievements status"
+            >
+              <header class="flex items-center justify-between">
+                <div>
+                  <h3 class="text-base font-bold text-white">Achievements</h3>
+                  <p class="text-sm text-white/70">Approved vs Pending</p>
+                </div>
+                <a
+                  href="coach-reports.html?view=achievements"
+                  class="text-primary"
+                  aria-label="View Achievements details"
+                >
+                  <svg
+                    width="24"
+                    height="24"
+                    fill="currentColor"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 256 256"
+                  >
+                    <path
+                      d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"
+                    />
+                  </svg>
+                </a>
+              </header>
+              <div class="mt-4 flex items-center gap-3">
+                <span
+                  class="inline-block glass-pill-success text-success text-xs font-semibold px-3 py-1 rounded-full"
+                  id="achApproved"
+                  >—</span
+                >
+                <span
+                  class="inline-block glass-pill-warning text-warning text-xs font-semibold px-3 py-1 rounded-full"
+                  id="achPending"
+                  >—</span
+                >
+              </div>
+            </article>
+
+            <!-- Active Players This Week -->
+            <article
+              class="relative overflow-hidden rounded-xl glassmorphic shadow-lg group p-4"
+              aria-label="Active players this week"
+            >
+              <header class="flex items-center justify-between">
+                <div>
+                  <h3 class="text-base font-bold text-white">Active Players</h3>
+                  <p class="text-sm text-white/70">This week</p>
+                </div>
+                <a
+                  href="coach-reports.html?view=players"
+                  class="text-primary"
+                  aria-label="View Active Players details"
+                >
+                  <svg
+                    width="24"
+                    height="24"
+                    fill="currentColor"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 256 256"
+                  >
+                    <path
+                      d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"
+                    />
+                  </svg>
+                </a>
+              </header>
+              <!-- Updated body: activePlayersValue -->
+              <div class="mt-4">
+                <div
+                  id="activePlayersValue"
+                  class="text-3xl font-extrabold text-white"
+                  data-skel="activePlayers"
+                >
+                  —
+                </div>
+              </div>
+            </article>
+
+            <!-- Upcoming Sessions (Next 7 Days) -->
+            <article
+              class="relative overflow-hidden rounded-xl glassmorphic shadow-lg group p-4"
+              aria-label="Upcoming sessions next 7 days"
+            >
+              <header class="flex items-center justify-between">
+                <div>
+                  <h3 class="text-base font-bold text-white">
+                    Upcoming Sessions
+                  </h3>
+                  <p class="text-sm text-white/70">Next 7 days</p>
+                </div>
+                <a
+                  href="coach-reports.html?view=schedules"
+                  class="text-primary"
+                  aria-label="View Schedules details"
+                >
+                  <svg
+                    width="24"
+                    height="24"
+                    fill="currentColor"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 256 256"
+                  >
+                    <path
+                      d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"
+                    />
+                  </svg>
+                </a>
+              </header>
+              <!-- Updated body: upcomingValue -->
+              <div class="mt-4">
+                <div
+                  id="upcomingValue"
+                  class="text-3xl font-extrabold text-white"
+                  data-skel="upcoming"
+                >
+                  —
+                </div>
+              </div>
+            </article>
+
+            <!-- Tournament Registrations (PENDING/CONFIRMED) -->
+            <article
+              class="relative overflow-hidden rounded-xl glassmorphic shadow-lg group p-4"
+              aria-label="Tournament registrations breakdown"
+            >
+              <header class="flex items-center justify-between">
+                <div>
+                  <h3 class="text-base font-bold text-white">
+                    Tournament Registrations
+                  </h3>
+                  <p class="text-sm text-white/70">Pending vs Confirmed</p>
+                </div>
+                <a
+                  href="coach-reports.html?view=tournaments"
+                  class="text-primary"
+                  aria-label="View Tournament Registrations details"
+                >
+                  <svg
+                    width="24"
+                    height="24"
+                    fill="currentColor"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 256 256"
+                  >
+                    <path
+                      d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"
+                    />
+                  </svg>
+                </a>
+              </header>
+              <div class="mt-4 flex items-center gap-3">
+                <span
+                  class="inline-block glass-pill-warning text-warning text-xs font-semibold px-3 py-1 rounded-full"
+                  id="regPending"
+                  >—</span
+                >
+                <span
+                  class="inline-block glass-pill-success text-success text-xs font-semibold px-3 py-1 rounded-full"
+                  id="regConfirmed"
+                  >—</span
+                >
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <!-- Lazy section placeholder -->
+        <section class="mt-6" id="moreReports" data-lazy>
+          <h2 class="text-xl font-bold text-white px-2 mb-3">More Reports</h2>
+          <div class="glassmorphic rounded-xl p-4 text-white/70">
+            Coming soon — deeper drilldowns and visuals.
+          </div>
+        </section>
+      </main>
+
+      <!-- Bottom Nav (replaced with default injected nav like coach-reports.html) -->
+      <!-- Bell dot helper -->
+      <script type="module" src="js/notify-dot.js"></script>
+      <!-- Bottom navigation injection (uses isReports logic in nav.js) -->
+      <script type="module" src="js/nav.js"></script>
+      <script type="module">
+        (async () => {
+          try {
+            const res = await fetch("/api/me", { credentials: "same-origin" });
+            if (!res.ok) {
+              const returnTo = encodeURIComponent(
+                location.pathname + location.search
+              );
+              location.href = `login.html?returnTo=${returnTo}`;
+            }
+          } catch {
+            const returnTo = encodeURIComponent(
+              location.pathname + location.search
+            );
+            location.href = `login.html?returnTo=${returnTo}`;
+          }
+        })();
+      </script>
+      <!-- Page controller -->
+      <script type="module" src="js/reports.js" defer></script>
+    </div>
+
+    <!-- Back button handler (same pattern) -->
+    <script>
+      document
+        .getElementById("backBtn")
+        ?.addEventListener("click", function () {
+          if (window.history.length > 1 && document.referrer) {
+            window.history.back();
+          } else {
+            window.location.href = "dashboard.html";
+          }
+        });
+    </script>
+  </body>
+</html>

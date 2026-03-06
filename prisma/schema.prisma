@@ -1,0 +1,264 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                    String                 @id @default(cuid())
+  username              String                 @unique
+  email                 String                 @unique
+  passwordHash          String
+  role                  String
+  sport                 String?
+  name                  String?
+  dob                   DateTime?
+  gender                String?
+  mobile                String?
+  profilePic            String?
+  height                Int?
+  weight                Int?
+  bloodgroup            String?
+  address               String?
+  district              String?
+  state                 String?
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+
+  // Relations
+  achievements          Achievement[]
+  createdTournaments    Tournament[]           @relation("AdminTournaments")
+  reviewedTournaments   Tournament[]           @relation("OfficialReviews")
+  publishedTournaments  Tournament[]           @relation("AdminPublished")
+  registrations         TournamentRegistration[]
+  schedules             Schedule[]
+  scheduleRequests      ScheduleRequest[]
+  onboardingDocs        OnboardingDoc[]
+  assessments           Assessment[]           // NEW
+  auditLogs             AuditLog[]
+  impactScore           Float?                 @default(0)
+  consistencyIndex      Float?                 @default(0)
+  matchesAsTeamA        Match[]                @relation("TeamAMatches")
+  matchesAsTeamB        Match[]                @relation("TeamBMatches")
+  playerMatchStats      PlayerMatchStats[]
+}
+
+model OnboardingDoc {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  forRole     String   // Coach | Admin | Government Official
+  fileName    String
+  mimeType    String
+  size        Int?
+  url         String
+  status      String   @default("SUBMITTED")
+  uploadedAt  DateTime @default(now())
+}
+
+model Achievement {
+  id              String   @id @default(cuid())
+  title           String
+  date            DateTime
+  description     String?
+  proof           String?
+  sport           String
+  venue           String
+  status          String   @default("PENDING")
+  decisionReason  String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  ownerId         String
+  owner           User     @relation(fields: [ownerId], references: [id])
+
+  verifiedById    String?
+  verifiedByName  String?
+  verifiedAt      DateTime?
+}
+
+model Tournament {
+  id                String   @id @default(cuid())
+  name              String
+  sport             String
+  startDateTime     DateTime
+  endDateTime       DateTime
+  state             String
+  district          String
+  venue             String
+  description       String?
+  needsApproval     Boolean  @default(true)
+  status            String   @default("DRAFT")
+
+  createdBy         String
+  creator           User     @relation("AdminTournaments", fields: [createdBy], references: [id])
+
+  reviewedBy        String?
+  reviewer          User?    @relation("OfficialReviews", fields: [reviewedBy], references: [id])
+  reviewNote        String?
+  reviewedAt        DateTime?
+
+  publishedBy       String?
+  publisher         User?    @relation("AdminPublished", fields: [publishedBy], references: [id])
+  publishedAt       DateTime?
+
+  // ========== NEW: Wizard metadata ==========
+  organizerName         String?
+  organizerMobile       String?
+  organizerEmail        String?
+
+  eligibility           Json?     // { ageMin, ageMax, gender, districtRestricted }
+  format                String?   // "KNOCKOUT" | "LEAGUE" | "POINTS" | "ANY"
+  limits                Json?     // { maxTeams, maxPlayers }
+
+  registrationFee       Int?
+  registrationDocs      Json?     // string[] of doc labels
+  registrationLastDate  DateTime?
+
+  media                 Json?     // { banner: dataUrl or future URL }
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  registrations     TournamentRegistration[]
+  matches           Match[]
+}
+
+model TournamentRegistration {
+  id                String   @id @default(cuid())
+  tournamentId      String
+  playerId          String
+  regStatus         String   @default("PENDING")
+  registeredAt      DateTime @default(now())
+
+  // ==================== NEW FIELDS ====================
+  regDecisionAt     DateTime?
+  regDecisionBy     String?
+  regDecisionReason String?
+  updatedAt         DateTime @updatedAt
+  // ==================== END NEW FIELDS ====================
+
+  tournament Tournament @relation(fields: [tournamentId], references: [id])
+  player     User       @relation(fields: [playerId], references: [id])
+
+  @@unique([tournamentId, playerId])
+}
+
+model Schedule {
+  id          String   @id @default(cuid())
+  coachId     String
+  sport       String
+  date        DateTime
+  startTime   String
+  endTime     String?
+  venue       String
+  entrance    String
+  createdAt   DateTime @default(now())
+
+  coach       User     @relation(fields: [coachId], references: [id])
+  requests    ScheduleRequest[]
+}
+
+model ScheduleRequest {
+  id          String   @id @default(cuid())
+  scheduleId  String
+  playerId    String
+  status      String   @default("PENDING")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  schedule    Schedule @relation(fields: [scheduleId], references: [id])
+  player      User     @relation(fields: [playerId], references: [id])
+
+  @@unique([scheduleId, playerId])
+}
+
+model Assessment {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+
+  drill       String
+  rawMetrics  Json
+  score       Float
+  unit        String
+  confidence  Float?
+  status      String
+  mediaUrl    String?
+
+  reviewedBy  String?
+  reviewNote  String?
+  reviewedAt  DateTime?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}
+
+// ========== NEW: Audit log ==========
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id])
+  action     String   // e.g. "tournament.create", "registration.approve"
+  entityType String   // e.g. "Tournament", "TournamentRegistration"
+  entityId   String
+  meta       Json?
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@index([entityType])
+  @@index([createdAt])
+  @@index([action])
+}
+
+model Match {
+  id            String   @id @default(cuid())
+  tournamentId  String
+  tournament    Tournament @relation(fields: [tournamentId], references: [id])
+
+  round         Int
+  matchNumber   Int
+
+  teamA         String
+  teamAId       String?
+  teamAPlayer   User?    @relation("TeamAMatches", fields: [teamAId], references: [id])
+
+  teamB         String
+  teamBId       String?
+  teamBPlayer   User?    @relation("TeamBMatches", fields: [teamBId], references: [id])
+
+  scoreA        Int?
+  scoreB        Int?
+  winner        String?
+  status        String   @default("SCHEDULED")
+  venue         String?
+  scheduledAt   DateTime?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  playerStats   PlayerMatchStats[]
+}
+
+model PlayerMatchStats {
+  id              String   @id @default(cuid())
+  matchId         String
+  match           Match    @relation(fields: [matchId], references: [id])
+  playerId        String
+  player          User     @relation(fields: [playerId], references: [id])
+  battingRuns     Int?
+  bowlingWickets  Int?
+  catches         Int?
+  runOuts         Int?
+  economyRate     Float?
+  strikeRate      Float?
+  createdAt       DateTime @default(now())
+
+  @@unique([matchId, playerId])
+}

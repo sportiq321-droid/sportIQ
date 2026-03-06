@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Find Tournaments - SportIQ</title>
+
+    <!-- Tailwind tokens + CDN (utilities only; page styles in tournament.css) -->
+    <script src="js/tailwind-config.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <link rel="stylesheet" href="css/global.css" />
+    <link rel="stylesheet" href="css/tournament.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body
+    class="bg-background-light dark:bg-background-dark font-display text-white min-h-screen"
+    data-page="find-tournaments"
+  >
+    <main class="relative flex flex-col min-h-screen max-w-xl mx-auto w-full">
+      <!-- Header -->
+      <header
+        class="sticky top-0 z-20 p-4 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm"
+      >
+        <div class="flex flex-col gap-4">
+          <div class="flex items-center justify-between">
+            <!-- Avatar (profile link) -->
+            <a href="profile.html" class="block" aria-label="Profile">
+              <img
+                id="headerAvatar"
+                src="img/defaultavatar.jpg"
+                alt="Profile avatar"
+                class="w-10 h-10 rounded-full object-cover border-2 border-primary"
+              />
+            </a>
+
+            <h1 class="text-lg font-bold">Tournaments</h1>
+
+            <!-- Bell with dot support -->
+            <a
+              href="notifications.html"
+              class="text-gray-300"
+              aria-label="Notifications"
+              data-notify-bell
+            >
+              <span class="material-symbols-outlined">notifications</span>
+            </a>
+          </div>
+
+          <!-- Toggle -->
+          <div class="line-toggle">
+            <div class="flex-1">
+              <span class="line-toggle-option active">
+                Find Tournaments
+                <span
+                  id="findResultsBadge"
+                  class="badge-soft hidden"
+                  aria-live="polite"
+                  >0</span
+                >
+              </span>
+            </div>
+            <div class="flex-1">
+              <a href="mytournaments.html" class="line-toggle-option relative">
+                <span>My Tournaments</span>
+                <span
+                  id="myTournamentsCount"
+                  class="badge-soft"
+                  aria-label="Ongoing tournaments count"
+                  >0</span
+                >
+              </a>
+            </div>
+            <div class="line-toggle-slider"></div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Content -->
+      <section class="flex-grow p-4">
+        <!-- Search block (hidden after Show) -->
+        <div class="space-y-4" id="searchBlock">
+          <!-- Search -->
+          <div class="relative glassmorphic rounded-xl">
+            <span class="material-symbols-outlined abs-icon" aria-hidden="true"
+              >search</span
+            >
+            <input
+              id="query"
+              type="search"
+              placeholder="Search by name or location"
+              class="form-input w-full h-14 pl-12 pr-4 rounded-xl bg-transparent text-white placeholder:text-white/40 border-none outline-none"
+            />
+          </div>
+
+          <!-- State -->
+          <div class="relative glassmorphic rounded-xl">
+            <span class="material-symbols-outlined abs-icon" aria-hidden="true"
+              >public</span
+            >
+            <input
+              id="stateInput"
+              type="text"
+              list="stateList"
+              autocomplete="off"
+              placeholder="Select State"
+              class="form-input w-full h-14 pl-12 pr-4 rounded-xl bg-transparent text-white placeholder:text-white/40 border-none outline-none"
+            />
+            <datalist id="stateList"></datalist>
+            <p id="stateErr" class="field-error px-3 pb-2"></p>
+          </div>
+
+          <!-- District -->
+          <div class="relative glassmorphic rounded-xl">
+            <span class="material-symbols-outlined abs-icon" aria-hidden="true"
+              >location_on</span
+            >
+            <input
+              id="districtInput"
+              type="text"
+              list="districtList"
+              autocomplete="off"
+              placeholder="Select District"
+              class="form-input w-full h-14 pl-12 pr-4 rounded-xl bg-transparent text-white placeholder:text-white/40 border-none outline-none"
+            />
+            <datalist id="districtList"></datalist>
+            <p id="districtErr" class="field-error px-3 pb-2"></p>
+          </div>
+
+          <!-- CTA -->
+          <div class="btn-row hidden" id="showRow">
+            <button class="btn btn-neon-blue btn-pill w-full" id="showBtn">
+              Show Tournaments
+            </button>
+          </div>
+        </div>
+
+        <!-- Results list lives here (Step 2) -->
+        <div class="t-step t-step-2">
+          <p id="fallbackHint" class="muted fallback-hint hidden"></p>
+          <div id="tournamentList" class="space-y-4"></div>
+        </div>
+
+        <!-- Details (Step 3 updated UI) -->
+        <div class="t-step t-step-3">
+          <!-- Step 3 header -->
+          <div class="flex items-center justify-between px-4 pt-4">
+            <button
+              id="backToList"
+              type="button"
+              aria-label="Back"
+              class="text-white hover:text-white/80 transition"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="28"
+                height="28"
+                fill="currentColor"
+                viewBox="0 0 256 256"
+                aria-hidden="true"
+              >
+                <path
+                  d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"
+                />
+              </svg>
+            </button>
+            <h1 class="text-lg font-bold text-white">Tournament Details</h1>
+            <a
+              href="notifications.html"
+              aria-label="Notifications"
+              class="text-white/80 hover:text-white transition"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="26"
+                height="26"
+                fill="currentColor"
+                viewBox="0 0 256 256"
+                aria-hidden="true"
+              >
+                <path
+                  d="M221.8,175.94C216.25,166.38,208,139.33,208,104a80,80,0,1,0-160,0c0,35.34-8.26,62.38-13.81,71.94A16,16,0,0,0,48,200H88.81a40,40,0,0,0,78.38,0H208a16,16,0,0,0,13.8-24.06Z"
+                />
+              </svg>
+            </a>
+          </div>
+
+          <!-- Banner -->
+          <div class="relative h-48 w-full mt-2">
+            <div
+              id="dBanner"
+              class="absolute inset-0 bg-center bg-cover rounded-b-xl"
+            ></div>
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-background-dark via-background-dark/70 to-transparent rounded-b-xl"
+            ></div>
+          </div>
+
+          <!-- Details card -->
+          <div class="px-4 -mt-10">
+            <div class="glassmorphic rounded-xl p-6 shadow-2xl">
+              <h2 id="dName" class="text-2xl font-bold text-white"></h2>
+              <p id="dDesc" class="mt-2 text-gray-300"></p>
+
+              <!-- Key facts -->
+              <div class="mt-6 space-y-4 border-l-2 border-primary pl-4">
+                <div class="flex justify-between gap-4">
+                  <span class="text-sm text-gray-400">Location</span>
+                  <span
+                    id="dVenue"
+                    class="text-sm font-medium text-white truncate max-w-[65%] text-right"
+                  ></span>
+                </div>
+                <div class="flex justify-between gap-4">
+                  <span class="text-sm text-gray-400">Date</span>
+                  <span
+                    id="dDate"
+                    class="text-sm font-medium text-white truncate max-w-[65%] text-right"
+                  ></span>
+                </div>
+                <div class="flex justify-between gap-4">
+                  <span class="text-sm text-gray-400">Sport</span>
+                  <span
+                    id="dSport"
+                    class="text-sm font-medium text-white truncate max-w-[65%] text-right"
+                  ></span>
+                </div>
+              </div>
+
+              <!-- Collapsible: Required Documents -->
+              <details class="group mt-6">
+                <summary
+                  class="flex cursor-pointer items-center justify-between rounded-lg px-3 py-2 text-white"
+                >
+                  <span class="text-lg font-semibold">Required Documents</span>
+                  <span
+                    class="ml-2 text-white/70 transition group-open:rotate-180"
+                    >⌄</span
+                  >
+                </summary>
+                <div class="mt-2 border-l-2 border-primary pl-4">
+                  <ul
+                    id="dDocsList"
+                    class="list-disc space-y-2 pl-4 text-white"
+                  ></ul>
+                  <p id="dDocsNone" class="text-gray-400 text-sm">None</p>
+                </div>
+              </details>
+
+              <!-- Collapsible: Fees & Deadlines -->
+              <details class="group mt-4">
+                <summary
+                  class="flex cursor-pointer items-center justify-between rounded-lg px-3 py-2 text-white"
+                >
+                  <span class="text-lg font-semibold"
+                    >Fees &amp; Deadlines</span
+                  >
+                  <span
+                    class="ml-2 text-white/70 transition group-open:rotate-180"
+                    >⌄</span
+                  >
+                </summary>
+                <div class="mt-2 border-l-2 border-primary pl-4 space-y-3">
+                  <div id="dFeeRow" class="flex justify-between">
+                    <span class="text-sm text-gray-400">Entry Fee</span>
+                    <span id="dFee" class="text-sm font-medium text-white"
+                      >-</span
+                    >
+                  </div>
+                  <div id="dDeadlineRow" class="flex justify-between">
+                    <span class="text-sm text-gray-400"
+                      >Registration Deadline</span
+                    >
+                    <span id="dDeadline" class="text-sm font-medium text-white"
+                      >-</span
+                    >
+                  </div>
+                  <p id="dFeesNone" class="text-gray-400 text-sm hidden">
+                    None
+                  </p>
+                </div>
+              </details>
+
+              <!-- CTA -->
+              <div class="mt-6">
+                <button
+                  id="registerBtn"
+                  class="flex w-full items-center justify-center rounded-lg h-14 bg-primary text-white text-lg font-bold shadow-[0_0_20px_theme(colors.primary)] transition-all hover:shadow-[0_0_30px_theme(colors.primary)]"
+                >
+                  Register
+                </button>
+                <p
+                  id="dRegistrationNote"
+                  class="mt-2 text-center text-xs text-gray-400 hidden"
+                ></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Data + controller -->
+    <script src="js/districts.js"></script>
+    <script type="module" src="js/tournaments.js"></script>
+
+    <!-- Header avatar setter -->
+    <script type="module">
+      import { getCurrentUser } from "./js/modules/users.js";
+      const img = document.getElementById("headerAvatar");
+      try {
+        const u = getCurrentUser();
+        img.src = u?.profilePic || "img/defaultavatar.jpg";
+      } catch {
+        img.src = "img/defaultavatar.jpg";
+      }
+    </script>
+
+    <!-- Ongoing count (read-only) -->
+    <script type="module">
+      import { getCurrentUser } from "./js/modules/users.js";
+      import { loadData } from "./js/core/storage.js";
+
+      const el = document.getElementById("myTournamentsCount");
+      try {
+        const user = getCurrentUser();
+        const data = loadData();
+        let cnt = 0;
+        if (user && Array.isArray(user.registeredTournaments)) {
+          const now = new Date();
+          user.registeredTournaments.forEach((r) => {
+            const status = String(r.regStatus || "CONFIRMED").toUpperCase();
+            if (status === "REJECTED") return;
+            const admin = (data.tournaments || []).find((t) => t.id === r.id);
+            if (admin && admin.endDateTime) {
+              if (now <= new Date(admin.endDateTime)) cnt++;
+            } else {
+              cnt++;
+            }
+          });
+        }
+        if (el) el.textContent = String(cnt);
+      } catch {}
+    </script>
+
+    <!-- Bell dot helper -->
+    <script type="module" src="js/notify-dot.js"></script>
+
+    <!-- Bottom nav for Player -->
+    <script type="module" src="js/nav.js"></script>
+  </body>
+</html>

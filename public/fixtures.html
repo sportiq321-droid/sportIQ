@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tournament Fixtures - SportIQ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/fixtures.css">
+</head>
+<body class="bg-gray-100 min-h-screen pb-20">
+  
+  <!-- Header -->
+  <header class="bg-blue-600 text-white p-4 sticky top-0 z-10">
+    <div class="flex items-center gap-2">
+      <a href="/dashboard.html" class="text-white">← Back</a>
+      <h1 id="pageTitle" class="text-xl font-bold flex-1">Tournament Fixtures</h1>
+    </div>
+    <p id="tournamentInfo" class="text-sm text-blue-100 mt-1"></p>
+  </header>
+
+  <!-- Loading State -->
+  <div id="loadingState" class="flex justify-center items-center p-12">
+    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+  </div>
+
+  <!-- Error State -->
+  <div id="errorState" class="hidden p-8 text-center">
+    <div class="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md mx-auto">
+      <div class="text-4xl mb-4">❌</div>
+      <p id="errorMessage" class="text-red-700 mb-4">Something went wrong</p>
+      <button onclick="location.reload()" class="text-red-600 underline">Try Again</button>
+    </div>
+  </div>
+
+  <!-- Empty State (No Fixtures Yet) -->
+  <div id="emptyState" class="hidden p-8 text-center">
+    <div class="bg-white rounded-lg shadow p-6 max-w-md mx-auto">
+      <h2 class="text-xl font-semibold mb-4">No Fixtures Yet</h2>
+      <p class="text-gray-600 mb-6">Generate the tournament bracket to start scheduling matches.</p>
+      <button id="generateBtn" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700">
+        Generate Fixtures
+      </button>
+      <p id="generateError" class="text-red-600 mt-4 hidden"></p>
+    </div>
+  </div>
+
+  <!-- Fixtures Display -->
+  <main id="fixturesContainer" class="hidden p-4 space-y-6">
+    <!-- Action Bar -->
+    <div class="flex justify-between items-center">
+      <span id="matchCount" class="text-gray-600"></span>
+      <button id="viewLeaderboardBtn" class="text-blue-600 underline">View Tournament Leaderboard</button>
+    </div>
+    
+    <!-- Rounds will be rendered here -->
+    <div id="roundsContainer"></div>
+  </main>
+
+  <!-- Score Entry Modal -->
+  <dialog id="scoreModal" class="rounded-lg shadow-xl p-0 w-full max-w-md">
+    <div class="bg-white rounded-lg">
+      <div class="bg-blue-600 text-white p-4 rounded-t-lg">
+        <h3 class="font-semibold">Enter Match Score</h3>
+        <p id="modalMatchInfo" class="text-sm text-blue-100"></p>
+      </div>
+      <form id="scoreForm" class="p-4 space-y-4">
+        <input type="hidden" id="scoreMatchId">
+        
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium mb-1" id="teamALabel">Team A</label>
+            <input type="number" id="scoreA" min="0" required 
+              class="w-full border rounded-lg p-2 text-center text-2xl font-bold">
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1" id="teamBLabel">Team B</label>
+            <input type="number" id="scoreB" min="0" required
+              class="w-full border rounded-lg p-2 text-center text-2xl font-bold">
+          </div>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium mb-1">Winner</label>
+          <select id="winner" required class="w-full border rounded-lg p-2">
+            <option value="">Select Winner</option>
+            <option value="A">Team A Wins</option>
+            <option value="B">Team B Wins</option>
+            <option value="DRAW">Draw</option>
+          </select>
+        </div>
+        
+        <p id="scoreValidationError" class="text-red-600 text-sm hidden"></p>
+        
+        <div class="flex gap-2">
+          <button type="button" id="cancelScoreBtn" class="flex-1 border rounded-lg py-2">Cancel</button>
+          <button type="submit" class="flex-1 bg-blue-600 text-white rounded-lg py-2">Save Score</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- Player Stats Modal -->
+  <dialog id="statsModal" class="rounded-lg shadow-xl p-0 w-full max-w-md">
+    <div class="bg-white rounded-lg">
+      <div class="bg-green-600 text-white p-4 rounded-t-lg">
+        <h3 class="font-semibold">Add Player Stats</h3>
+        <p id="statsModalMatchInfo" class="text-sm text-green-100"></p>
+      </div>
+      <form id="statsForm" class="p-4 space-y-4">
+        <input type="hidden" id="statsMatchId">
+        
+        <div>
+          <label class="block text-sm font-medium mb-1">Select Player</label>
+          <select id="statsPlayerId" required class="w-full border rounded-lg p-2">
+            <option value="">Choose player...</option>
+          </select>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium mb-1">Batting Runs</label>
+            <input type="number" id="battingRuns" min="0" class="w-full border rounded-lg p-2">
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Wickets</label>
+            <input type="number" id="bowlingWickets" min="0" class="w-full border rounded-lg p-2">
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Catches</label>
+            <input type="number" id="catches" min="0" class="w-full border rounded-lg p-2">
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Run Outs</label>
+            <input type="number" id="runOuts" min="0" class="w-full border rounded-lg p-2">
+          </div>
+        </div>
+        
+        <p id="statsError" class="text-red-600 text-sm hidden"></p>
+        
+        <div class="flex gap-2">
+          <button type="button" id="cancelStatsBtn" class="flex-1 border rounded-lg py-2">Cancel</button>
+          <button type="submit" class="flex-1 bg-green-600 text-white rounded-lg py-2">Save Stats</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- Confirmation Modal -->
+  <dialog id="confirmModal" class="rounded-lg shadow-xl p-0 w-full max-w-sm">
+    <div class="bg-white rounded-lg p-6 text-center">
+      <div class="text-4xl mb-4">⚠️</div>
+      <h3 class="font-semibold text-lg mb-2">Generate Fixtures?</h3>
+      <p class="text-gray-600 mb-6 text-sm">This will create the tournament bracket. This action cannot be undone.</p>
+      <div class="flex gap-2">
+        <button id="cancelConfirmBtn" class="flex-1 border border-gray-300 rounded-lg py-2 hover:bg-gray-50">
+          Cancel
+        </button>
+        <button id="confirmGenerateBtn" class="flex-1 bg-blue-600 text-white rounded-lg py-2 hover:bg-blue-700">
+          Generate
+        </button>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="/js/utils.js"></script>
+  <script src="/js/api.js"></script>
+  <script type="module" src="/js/fixtures.js"></script>
+  <script type="module" src="/js/nav.js"></script>
+</body>
+</html>

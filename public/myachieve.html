@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Achievements - SportIQ</title>
+
+    <!-- Tailwind (tokens + CDN) -->
+    <script src="js/tailwind-config.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <!-- Global + page CSS (keep achievements.css for edit/delete modal styles) -->
+    <link rel="stylesheet" href="css/global.css" />
+    <link rel="stylesheet" href="css/achievements.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    />
+  </head>
+  <body
+    class="bg-background-light dark:bg-background-dark font-display text-white min-h-screen"
+    data-page="myachievements.html"
+  >
+    <div class="relative flex min-h-screen w-full flex-col max-w-xl mx-auto">
+      <!-- Header: back, title, notifications bell with dot -->
+      <header class="sticky top-0 z-20 glassmorphic">
+        <div class="px-4 py-3 flex items-center justify-between">
+          <a
+            href="achievements.html"
+            id="backBtn"
+            class="flex size-10 items-center justify-center rounded-full text-white/80 hover:text-white transition"
+            aria-label="Back"
+            title="Back"
+          >
+            <span class="material-symbols-outlined"> arrow_back </span>
+          </a>
+          <h1 class="text-lg font-bold">My Achievements</h1>
+          <a
+            href="notifications.html"
+            class="relative flex size-10 items-center justify-center text-white/70 hover:text-white transition"
+            aria-label="Notifications"
+            data-notify-bell
+          >
+            <span class="material-symbols-outlined"> notifications </span>
+          </a>
+        </div>
+      </header>
+
+      <!-- Content -->
+      <main class="flex-1 p-4 space-y-4">
+        <!-- List container (JS renders cards here) -->
+        <div id="achievementList" class="space-y-4"></div>
+      </main>
+
+      <!-- Proof preview overlay (white panel) -->
+      <div id="imgModal" class="fixed inset-0 z-[60] hidden">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/60" id="imgModalBackdrop"></div>
+        <!-- Panel -->
+        <div
+          class="relative mx-auto w-full max-w-xl h-full overflow-y-auto p-4 flex items-center justify-center"
+        >
+          <div class="bg-white text-black rounded-xl shadow-xl max-w-full w-[92%] md:w-[85%]">
+            <div class="flex items-center justify-between px-4 py-3 border-b border-black/10">
+              <h3 class="text-base font-semibold">Proof</h3>
+              <button id="imgModalClose" class="p-2 rounded hover:bg-black/5" aria-label="Close">
+                <span class="material-symbols-outlined"> close </span>
+              </button>
+            </div>
+            <div class="p-4">
+              <img id="modalImg" alt="Proof image" class="block max-w-full h-auto rounded-md mx-auto" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Edit achievement modal (kept) -->
+      <div id="editModal" class="modal hidden" aria-hidden="true">
+        <div class="modal-inner glass-container">
+          <button id="editModalClose" class="modal-close" aria-label="Close">✕</button>
+          <h3>Edit Achievement</h3>
+          <form id="editForm" class="edit-form">
+            <label>
+              Title
+              <input id="editTitle" type="text" placeholder="Tournament name" required />
+            </label>
+            <label>
+              Sport
+              <select id="editSport" required>
+                <option value="">Select sport</option>
+                <option>Cricket</option>
+                <option>Football</option>
+                <option>Kabaddi</option>
+                <option>Volleyball</option>
+                <option>Badminton</option>
+              </select>
+            </label>
+            <label>
+              Date
+              <input id="editDate" type="date" required />
+            </label>
+            <label>
+              Venue
+              <input id="editVenue" type="text" placeholder="Venue" required />
+            </label>
+            <label class="full">
+              Description
+              <textarea id="editDescription" rows="3" placeholder="Write about your achievement"></textarea>
+            </label>
+            <div class="btn-row right">
+              <button type="button" class="btn-tiny" id="editCancel">Cancel</button>
+              <button type="submit" class="btn-tiny edit" id="editSave">Save Changes</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Delete confirmation modal (kept) -->
+      <div id="deleteModal" class="modal hidden" aria-hidden="true">
+        <div class="modal-inner glass-container">
+          <button id="deleteModalClose" class="modal-close" aria-label="Close">✕</button>
+          <h3>Delete Achievement</h3>
+          <p class="confirm-text muted">This action cannot be undone.</p>
+          <div class="btn-row right">
+            <button class="btn-tiny" id="deleteCancel">Cancel</button>
+            <button class="btn-tiny danger" id="deleteConfirm">Delete</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bell dot helper -->
+      <script type="module" src="js/notify-dot.js"></script>
+
+      <!-- Page controller -->
+      <script type="module" src="js/myachieve.js"></script>
+
+      <!-- Smart back -->
+      <script type="module">
+        const back = document.getElementById("backBtn");
+        const backdrop = document.getElementById("imgModalBackdrop");
+        back?.addEventListener("click", (e) => {
+          e.preventDefault();
+          try {
+            const ref = document.referrer || "";
+            const hasHistory = window.history.length > 1;
+            const sameOrigin =
+              ref && new URL(ref, window.location.href).origin === window.location.origin;
+            if ((sameOrigin && ref !== window.location.href) || hasHistory) {
+              window.history.back();
+              return;
+            }
+          } catch {}
+          window.location.href = "achievements.html";
+        });
+        // Allow clicking backdrop to close proof overlay
+        backdrop?.addEventListener("click", () => {
+          const modal = document.getElementById("imgModal");
+          if (modal) modal.classList.add("hidden");
+        });
+      </script>
+
+      <!-- Bottom nav -->
+      <script type="module" src="js/nav.js"></script>
+    </div>
+  </body>
+</html>

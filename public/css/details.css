@@ -1,0 +1,595 @@
+/* --- CSS Variables for Details Page --- */
+:root {
+  --details-light-bg: #f7f7f7;
+  --details-dark-bg: #111111; /* Darker, reddish-black for Step 2 */
+  --details-light-text: #1f2937;
+  --details-dark-text: #f9fafb;
+  --details-light-border: #d1d5db;
+  --details-dark-border: #4b5563;
+  --details-primary-light: #000000;
+  --details-primary-dark: #ea2831; /* Red accent for dark theme */
+}
+
+/* --- Base Shell for the entire 3-step process --- */
+body[data-page="details"] {
+  font-family: "Inter", sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: url("https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=800")
+    no-repeat center/cover;
+}
+
+.details-shell {
+  width: 100%;
+  max-width: 420px;
+  height: 100vh;
+  max-height: 900px; /* Or a fixed height like 850px */
+  display: flex;
+  flex-direction: column;
+  background-color: var(--details-light-bg);
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  position: relative; /* Needed for absolute positioning of steps */
+}
+
+html.dark .details-shell {
+  background-color: var(--details-dark-bg);
+  color: var(--details-dark-text);
+}
+
+/* --- Step Structure & Transitions --- */
+.step {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s ease-in-out, visibility 0.4s;
+}
+.step.active {
+  opacity: 1;
+  visibility: visible;
+  z-index: 10;
+}
+.step-header {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  flex-shrink: 0;
+}
+.dark .step-header {
+  border-color: #374151;
+}
+
+.step-title {
+  flex-grow: 1;
+  text-align: center;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.step-content {
+  flex-grow: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+.step-footer {
+  padding: 1rem;
+  border-top: 1px solid #e5e7eb;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-top: auto;
+  flex-shrink: 0;
+}
+.dark .step-footer {
+  background-color: #1f2937;
+  border-color: #374151;
+}
+
+/* --- Step 1: Personal Info (legacy classes, used by old markup) --- */
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.input-group {
+  position: relative;
+}
+.input-group label {
+  position: absolute;
+  top: -0.6rem;
+  left: 0.75rem;
+  background-color: #ffffff;
+  padding: 0 0.25rem;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+html.dark .input-group label {
+  background-color: var(--details-dark-bg);
+  color: #9ca3af;
+}
+.input-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1rem;
+}
+.form-input {
+  width: 100%;
+  height: 3.5rem;
+  padding: 0 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  background-color: transparent;
+  color: #1f2937;
+}
+html.dark .form-input {
+  border-color: #4b5563;
+  color: #f9fafb;
+}
+.form-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+.otp-input {
+  text-align: center;
+  letter-spacing: 0.5em;
+}
+.select-wrapper {
+  position: relative;
+}
+.select-arrow {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+select.form-input {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+/* --- Step 2: Role & Sport --- */
+.section-heading {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+}
+html.dark .section-heading {
+  color: #fff;
+}
+
+.section-subheading {
+  color: #6b7280;
+  margin-top: 0.25rem;
+  margin-bottom: 1.5rem;
+}
+html.dark .section-subheading {
+  color: #9ca3af;
+}
+
+.role-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.role-card {
+  padding: 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid #d1d5db;
+  background-color: #f9fafb;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+html.dark .role-card {
+  border-color: #4b5563;
+  background-color: #1f2937;
+}
+.role-card:hover {
+  border-color: #9ca3af;
+}
+html.dark .role-card:hover {
+  border-color: #6b7280;
+}
+
+.role-card .card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+.role-card span:first-child {
+  font-size: 2rem;
+}
+.role-card span:last-child {
+  font-weight: 500;
+}
+
+.role-card .peer:checked + .card-content {
+  color: #fff;
+}
+.role-card:has(.peer:checked) {
+  background-color: #ea2831;
+  border-color: #ea2831;
+  color: #fff;
+}
+html.dark .role-card:has(.peer:checked) {
+  background-color: #ea2831;
+  border-color: #ea2831;
+}
+
+.sport-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.75rem;
+}
+.sport-chip span {
+  display: block;
+  padding: 0.75rem;
+  text-align: center;
+  border-radius: 0.5rem;
+  border: 1px solid #d1d5db;
+  background-color: #f9fafb;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+}
+html.dark .sport-chip span {
+  border-color: #4b5563;
+  background-color: #1f2937;
+}
+.sport-chip .peer:checked + span {
+  background-color: #ea2831;
+  border-color: #ea2831;
+  color: #fff;
+  box-shadow: 0 0 0 2px rgba(234, 40, 49, 0.3);
+}
+
+/* --- Step 3: Profile Picture --- */
+.skip-btn {
+  font-weight: 600;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.avatar-preview {
+  width: 150px;
+  height: 150px;
+  margin: 2rem auto;
+  border-radius: 9999px;
+  border: 3px solid #e5e7eb;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f3f4f6;
+}
+.dark .avatar-preview {
+  border-color: #4b5563;
+  background-color: #374151;
+}
+.avatar-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.upload-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+.upload-buttons .btn-secondary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #e5e7eb;
+  color: #1f2937;
+  border: 1px solid #d1d5db;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+}
+.dark .upload-buttons .btn-secondary {
+  background: #374151;
+  color: #f9fafb;
+  border-color: #4b5563;
+}
+
+/* --- General Footer & Buttons --- */
+.icon-button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+.step-indicator {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+.dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+  background-color: #d1d5db;
+}
+.dark .dot {
+  background-color: #4b5563;
+}
+.dot.active {
+  background-color: var(--details-primary);
+}
+.dark .dot.active {
+  background-color: var(--details-primary-dark);
+}
+.btn-primary {
+  width: 100%;
+  height: 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  background-color: var(--details-primary);
+  color: #fff;
+  font-size: 1.125rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.dark .btn-primary {
+  background-color: var(--details-primary-dark);
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ===== Step 1: white container + black text (dark-mode override) ===== */
+#step-1 .step-header,
+#step-1 .step-content,
+#step-1 .step-footer {
+  background-color: #ffffff !important;
+  color: #111827;
+}
+#step-1 .step-title,
+#step-1 .material-symbols-outlined {
+  color: #111827 !important;
+}
+
+/* Step 1 new simple labels + inputs (no floating labels) */
+#step-1 .field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+#step-1 .field-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* Outlined inputs (white, light gray border), black text + placeholder */
+#step-1 .form-input-base {
+  width: 100%;
+  height: 3.25rem;
+  padding: 0 1rem;
+  background-color: #ffffff;
+  color: #111827;
+  border-radius: 0.5rem;
+}
+#step-1 .form-input-base::placeholder {
+  color: rgba(17, 24, 39, 0.7);
+}
+#step-1 .form-outline {
+  border: 1.5px solid #cbd5e1; /* slate-300 */
+  background-color: #ffffff;
+}
+#step-1 .form-outline:focus {
+  outline: none;
+  border-color: #94a3b8; /* slate-400 */
+  box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.25);
+}
+
+/* OTP spacing */
+#step-1 #otp {
+  letter-spacing: 0.5em;
+  text-align: center;
+}
+
+/* Gender dropdown */
+#step-1 select#gender {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: #ffffff;
+  color: #111827;
+}
+#step-1 #gender option {
+  background-color: #ffffff;
+  color: #111827;
+}
+
+/* Footer separation */
+#step-1 .step-footer {
+  border-top: 1px solid #e5e7eb;
+}
+
+/* Black CTA button (centered) */
+.btn-cta-floating {
+  width: min(640px, 92%);
+  height: 3.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0.75rem auto 0;
+  border-radius: 1rem;
+  border: none;
+  background: #000000;
+  color: #ffffff;
+  font-size: 1.125rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+.btn-cta-floating:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.45);
+}
+.btn-cta-floating:active {
+  transform: translateY(0);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+/* Display adaptation like Reports */
+@media (min-width: 768px) {
+  .details-shell {
+    max-width: 640px;
+  }
+}
+/* --- Step 2 enhancements --- */
+#step-2 #primarySportBlock .form-input-base.form-outline {
+  background-color: #ffffff;
+  color: #111827;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 0.5rem;
+}
+#step-2 #sportSearch::placeholder {
+  color: rgba(17, 24, 39, 0.6);
+}
+
+#step-2 .btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #e5e7eb;
+  color: #1f2937;
+  border: 1px solid #d1d5db;
+  padding: 0.6rem 1rem;
+  border-radius: 0.5rem;
+}
+.dark #step-2 .btn-secondary {
+  background: #374151;
+  color: #f9fafb;
+  border-color: #4b5563;
+}
+
+/* Make the section spacing consistent */
+#step-2 section {
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
+}
+/* --- Step 3: new preview with overlay and blue CTA --- */
+#step-3 .section-heading {
+  color: #ffffff;
+}
+#step-3 .section-subheading {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Glass overlay over the image */
+.preview-glass-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 0.75rem; /* rounded-xl */
+  background: rgba(15, 20, 35, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  pointer-events: none; /* overlay is decorative; buttons are above it */
+}
+
+/* Action buttons at the bottom of the image */
+.preview-actions {
+  position: absolute;
+  left: 1rem;
+  right: 1rem;
+  bottom: 1rem;
+  display: flex;
+  gap: 1rem;
+}
+
+/* Library = primary, Camera = secondary */
+.btn-overlay-primary,
+.btn-overlay-secondary {
+  height: 3rem;
+  flex: 1 1 0%;
+  border-radius: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: #ffffff;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.btn-overlay-primary {
+  background: #3365fa; /* primary */
+}
+.btn-overlay-primary:hover {
+  background: #2b57d4;
+}
+
+.btn-overlay-secondary {
+  background: rgba(51, 101, 250, 0.2); /* primary/20 */
+}
+.btn-overlay-secondary:hover {
+  background: rgba(51, 101, 250, 0.3);
+}
+
+/* Blue floating CTA for Finish */
+.btn-cta-blue {
+  width: min(640px, 92%);
+  height: 3.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0.75rem auto 0;
+  border-radius: 1rem;
+  border: none;
+  background: #3365fa;
+  color: #ffffff;
+  font-size: 1.125rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 28px rgba(51, 101, 250, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+.btn-cta-blue:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 34px rgba(51, 101, 250, 0.45);
+}
+.btn-cta-blue:active {
+  transform: translateY(0);
+  box-shadow: 0 6px 18px rgba(51, 101, 250, 0.35);
+}

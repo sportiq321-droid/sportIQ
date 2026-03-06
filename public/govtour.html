@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tournaments — Government Monitoring</title>
+
+    <!-- Tailwind tokens + CDN -->
+    <script src="js/tailwind-config.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <!-- CSS (existing) -->
+    <link rel="stylesheet" href="css/global.css" />
+    <link rel="stylesheet" href="css/admin-components.css" />
+
+    <!-- Icons -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    />
+  </head>
+
+  <body class="font-display text-white min-h-screen bg-background-dark">
+    <div class="relative flex min-h-screen w-full flex-col">
+      <!-- Header -->
+      <header
+        class="sticky top-0 z-20 glassmorphic backdrop-blur-md border-b border-white/10"
+      >
+        <div class="flex items-center justify-between px-4 sm:px-6 py-4">
+          <button
+            id="backBtn"
+            class="flex size-10 sm:size-11 items-center justify-center rounded-full text-white/80 hover:text-white hover:bg-white/10 transition-all active:scale-95"
+            aria-label="Back"
+            title="Back"
+            type="button"
+          >
+            <span class="material-symbols-outlined">arrow_back</span>
+          </button>
+
+          <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight">
+            Tournaments
+          </h1>
+
+          <a
+            href="notifications.html"
+            class="relative flex items-center justify-center size-10 sm:size-11 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition"
+            aria-label="Notifications"
+            data-notify-bell
+          >
+            <span class="material-symbols-outlined">notifications</span>
+          </a>
+        </div>
+      </header>
+
+      <!-- Main -->
+      <main
+        class="flex-grow p-4 sm:p-6 lg:p-8 pb-28 sm:pb-32 max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto w-full"
+      >
+        <!-- Filters -->
+        <section
+          class="glassmorphic rounded-xl p-4 border border-white/10 mb-4"
+        >
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+            <!-- State -->
+            <div>
+              <label for="fState" class="block text-white/70 text-sm mb-1"
+                >State</label
+              >
+              <select id="fState" class="w-full select-dark rounded-lg p-2">
+                <option value="">All India</option>
+              </select>
+            </div>
+
+            <!-- District -->
+            <div>
+              <label for="fDistrict" class="block text-white/70 text-sm mb-1"
+                >District</label
+              >
+              <select
+                id="fDistrict"
+                class="w-full select-dark rounded-lg p-2"
+                disabled
+                title="Select a state first"
+              >
+                <option value="">All Districts</option>
+              </select>
+            </div>
+
+            <!-- Status -->
+            <div>
+              <label for="fStatus" class="block text-white/70 text-sm mb-1"
+                >Status</label
+              >
+              <select id="fStatus" class="w-full select-dark rounded-lg p-2">
+                <option value="">All</option>
+                <option value="PUBLISHED">Published</option>
+                <option value="DRAFT">Draft</option>
+              </select>
+            </div>
+
+            <!-- Search -->
+            <div>
+              <label for="fSearch" class="block text-white/70 text-sm mb-1"
+                >Search</label
+              >
+              <input
+                id="fSearch"
+                type="search"
+                placeholder="Search by name/sport/venue"
+                class="w-full rounded-lg p-2 select-dark"
+              />
+            </div>
+          </div>
+
+          <div class="mt-3 flex flex-wrap gap-2 items-center">
+            <button id="btnReset" class="btn-admin btn-admin-secondary">
+              Reset
+            </button>
+            <button id="btnExport" class="btn-admin btn-admin-secondary">
+              Export CSV
+            </button>
+            <span id="resultMeta" class="text-subtle text-sm ml-auto"
+              >Loading…</span
+            >
+          </div>
+        </section>
+
+        <!-- List -->
+        <section aria-live="polite">
+          <div
+            id="list"
+            class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"
+          ></div>
+
+          <!-- Empty state -->
+          <div id="empty" class="empty-state hidden">
+            <svg
+              class="empty-state-icon"
+              width="64"
+              height="64"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <h3>No tournaments found</h3>
+            <p>Try a different state, district, or search</p>
+          </div>
+        </section>
+
+        <!-- Pagination -->
+        <nav
+          id="pager"
+          class="admin-pagination mt-4 hidden"
+          aria-label="Pagination"
+        >
+          <div class="pagination-info" id="pageInfo">Page 1</div>
+          <div class="pagination-controls">
+            <button id="prevPage" class="pagination-btn" disabled>
+              <span class="material-symbols-outlined text-sm"
+                >chevron_left</span
+              >
+              Prev
+            </button>
+            <button id="nextPage" class="pagination-btn">
+              Next
+              <span class="material-symbols-outlined text-sm"
+                >chevron_right</span
+              >
+            </button>
+          </div>
+        </nav>
+      </main>
+    </div>
+
+    <!-- Registrations Modal -->
+    <div id="regModal" class="admin-modal hidden" aria-hidden="true">
+      <div class="modal-overlay"></div>
+      <div class="modal-container">
+        <div class="modal-header">
+          <h3 id="regTitle">Registrations</h3>
+          <button id="regClose" class="modal-close" aria-label="Close">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="text-subtle text-sm">Filter:</span>
+            <button class="chip" data-regstatus="ALL">All</button>
+            <button class="chip" data-regstatus="PENDING">Pending</button>
+            <button class="chip" data-regstatus="CONFIRMED">Confirmed</button>
+            <button class="chip" data-regstatus="REJECTED">Rejected</button>
+            <span id="regCounts" class="ml-auto text-subtle text-sm"></span>
+          </div>
+
+          <div id="regList" class="table-responsive">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th class="table-actions-header">Player</th>
+                  <th>Email</th>
+                  <th class="hide-mobile">Sport</th>
+                  <th>Status</th>
+                  <th class="hide-mobile">Registered</th>
+                </tr>
+              </thead>
+              <tbody id="regTbody">
+                <tr>
+                  <td colspan="5" class="text-subtle p-4">Loading…</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="regCloseBottom" class="btn-admin btn-admin-secondary">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="js/districts.js"></script>
+    <script type="module" src="js/notify-dot.js"></script>
+    <script type="module" src="js/govtour.js"></script>
+    <script type="module" src="js/nav.js"></script>
+
+    <script>
+      // Back button → dashboard.html
+      document
+        .getElementById("backBtn")
+        ?.addEventListener("click", function () {
+          if (history.length > 1 && document.referrer) history.back();
+          else location.href = "dashboard.html";
+        });
+    </script>
+  </body>
+</html>

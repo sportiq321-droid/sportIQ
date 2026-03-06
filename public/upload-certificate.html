@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Upload Certificate - SportIQ</title>
+
+    <!-- Tailwind config BEFORE CDN -->
+    <script src="js/tailwind-config.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Icons -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+      rel="stylesheet"
+    />
+    <!-- Global CSS (glassmorphic, shared styles) -->
+    <link rel="stylesheet" href="css/global.css" />
+  </head>
+  <body
+    class="font-display bg-background-light dark:bg-background-dark text-white"
+  >
+    <div class="min-h-screen flex flex-col">
+      <header class="glassmorphic px-4 py-3 sticky top-0 z-10">
+        <div class="max-w-xl mx-auto flex items-center justify-between">
+          <button
+            onclick="history.back()"
+            class="rounded-full px-2 py-1 hover:bg-white/10"
+            aria-label="Back"
+          >
+            <span class="material-symbols-outlined">arrow_back_ios_new</span>
+          </button>
+          <h1 class="text-lg font-bold">Upload Certificate</h1>
+          <div class="w-10" aria-hidden="true"></div>
+        </div>
+      </header>
+
+      <main class="flex-1 p-4">
+        <div class="max-w-xl mx-auto glassmorphic rounded-xl p-6">
+          <p class="text-white/80">
+            Please upload a PDF or DOC/DOCX file as your certificate. Max size:
+            5 MB.
+          </p>
+
+          <div class="mt-4">
+            <input
+              id="certFile"
+              type="file"
+              accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+              class="block w-full text-sm text-white file:mr-4 file:rounded-md file:border-0 file:bg-primary file:px-4 file:py-2 file:text-white hover:file:bg-primary/90"
+            />
+            <p id="fileInfo" class="mt-2 text-sm text-white/70"></p>
+            <p
+              id="fileError"
+              class="mt-2 text-sm text-red-300"
+              aria-live="assertive"
+            ></p>
+          </div>
+
+          <div class="mt-6">
+            <button
+              id="verifyBtn"
+              class="w-full h-12 rounded-lg bg-primary text-white font-bold hover:bg-primary/90"
+            >
+              Verify
+            </button>
+          </div>
+
+          <!-- Inline success message (appears after successful verify) -->
+          <p
+            id="fileSuccess"
+            class="mt-3 text-sm text-success hidden"
+            aria-live="polite"
+            role="status"
+          ></p>
+        </div>
+      </main>
+    </div>
+
+    <script type="module" src="js/upload-certificate.js"></script>
+  </body>
+</html>

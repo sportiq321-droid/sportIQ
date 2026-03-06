@@ -1,0 +1,58 @@
+/* =====================================================
+   GOV VERIFY - Informational Page (Schedules-like)
+   Works with global.css + Tailwind CDN
+   ===================================================== */
+
+/* Page background + dark color scheme (match schedules/admin) */
+body[data-page="gov-verify"] {
+  background: #0f1323 !important;
+  background-image: none !important;
+  background-attachment: initial !important;
+  color-scheme: dark;
+}
+
+/* Animation (used by the info section) */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+/* Optional: fine-tune glassmorphic card spacing if needed */
+.glassmorphic {
+  /* global.css already defines base glassmorphic; keep minimal overrides */
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Utilities (local to this page) */
+.text-muted {
+  color: rgba(255, 255, 255, 0.6);
+}
+.hidden {
+  display: none !important;
+}
+
+/* Scrollbar styles (if the page grows tall) */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(31, 41, 55, 0.5);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(75, 85, 99, 0.5);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(107, 114, 128, 0.7);
+}

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registrations - SportIQ</title>
+
+    <!-- Tailwind tokens + CDN (approved) -->
+    <script src="js/tailwind-config.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <!-- Global + Admin shared styles -->
+    <link rel="stylesheet" href="css/global.css" />
+    <link rel="stylesheet" href="css/admin-components.css" />
+    <link rel="stylesheet" href="css/adminregistrations.css" />
+
+    <!-- Icons (Material Symbols, used in header) -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    />
+
+    <!-- Lordicon (kept if used elsewhere) -->
+    <script src="https://cdn.lordicon.com/lordicon.js"></script>
+  </head>
+
+  <body
+    data-page="admin-registrations"
+    class="font-display text-white min-h-screen"
+  >
+    <div class="relative flex min-h-screen w-full flex-col">
+      <!-- ===========================
+           HEADER (Schedules-like)
+      =========================== -->
+      <header
+        class="sticky top-0 z-20 glassmorphic backdrop-blur-md border-b border-white/10"
+      >
+        <div class="flex items-center justify-between px-4 sm:px-6 py-4">
+          <!-- Back Button -->
+          <button
+            id="backBtn"
+            class="flex size-10 sm:size-11 items-center justify-center rounded-full text-white/80 hover:text-white hover:bg-white/10 transition-all active:scale-95"
+            aria-label="Back to Dashboard"
+            title="Back"
+            type="button"
+          >
+            <span class="material-symbols-outlined">arrow_back</span>
+          </button>
+
+          <!-- Title -->
+          <h1
+            class="text-xl sm:text-2xl lg:text-3xl font-bold text-white tracking-tight"
+          >
+            Tournaments & Registrations
+          </h1>
+
+          <!-- Notifications -->
+          <a
+            href="notifications.html"
+            class="relative flex items-center justify-center size-10 sm:size-11 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-all duration-200"
+            aria-label="Notifications"
+            data-notify-bell
+          >
+            <span class="material-symbols-outlined">notifications</span>
+          </a>
+        </div>
+      </header>
+
+      <!-- ===========================
+           CONTENT
+      =========================== -->
+      <main class="flex-grow p-4 sm:p-6 lg:p-8 pb-28 sm:pb-32">
+        <div class="adminreg-giant">
+          <div class="reg-columns animate-fade-in-up">
+            <!-- ========== LEFT: Tournament picker ========== -->
+            <section class="pane left-pane">
+              <!-- Picker header: search + toggle -->
+              <div class="picker-header">
+                <div class="search-box">
+                  <svg
+                    class="search-icon"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                  <input
+                    type="text"
+                    id="tSearch"
+                    placeholder="Search tournaments..."
+                    aria-label="Search tournaments"
+                  />
+                </div>
+                <label class="filter-toggle">
+                  <input type="checkbox" id="showAll" />
+                  <span class="muted small text-muted"
+                    >Show drafts & all statuses</span
+                  >
+                </label>
+              </div>
+
+              <!-- Picker list -->
+              <div id="tournamentPicker" class="tournament-picker"></div>
+
+              <!-- Empty state -->
+              <div id="noTournaments" class="empty-state hidden">
+                <svg
+                  class="empty-state-icon"
+                  width="64"
+                  height="64"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                <h3>No tournaments found</h3>
+                <p>Create your first tournament to get started</p>
+                <a
+                  href="admintournament.html"
+                  class="btn-admin btn-admin-primary"
+                  >Create Tournament</a
+                >
+              </div>
+            </section>
+
+            <!-- ========== RIGHT: Registrations ========== -->
+            <section class="pane right-pane">
+              <!-- Tournament info header (shown when selected) -->
+              <div
+                id="tournamentInfoHeader"
+                class="tournament-info-header hidden"
+              >
+                <div class="tournament-info-content">
+                  <h3 id="selectedTournamentName">Select a tournament</h3>
+                  <div class="tournament-meta">
+                    <span
+                      id="selectedTournamentSport"
+                      class="sport-badge"
+                      aria-label="Sport"
+                    ></span>
+                    <span
+                      id="selectedTournamentStatus"
+                      class="badge"
+                      aria-label="Status"
+                    ></span>
+                    <span
+                      id="selectedTournamentDate"
+                      class="text-muted"
+                      aria-label="Date"
+                    ></span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Toolbar: counts + chips -->
+              <div class="reg-toolbar">
+                <div class="counts" role="status" aria-live="polite">
+                  <span id="countAll" class="badge">All: 0</span>
+                  <span id="countPending" class="badge-pending"
+                    >Pending: 0</span
+                  >
+                  <span id="countConfirmed" class="badge-confirmed"
+                    >Confirmed: 0</span
+                  >
+                  <span id="countRejected" class="badge-rejected"
+                    >Rejected: 0</span
+                  >
+                </div>
+                <div
+                  class="filters"
+                  role="tablist"
+                  aria-label="Registration status filters"
+                >
+                  <!-- Keep .chip class for JS compatibility -->
+                  <button
+                    class="chip filter-chip active"
+                    data-status="ALL"
+                    role="tab"
+                    aria-selected="true"
+                  >
+                    All
+                  </button>
+                  <button
+                    class="chip filter-chip"
+                    data-status="PENDING"
+                    role="tab"
+                    aria-selected="false"
+                  >
+                    Pending
+                  </button>
+                  <button
+                    class="chip filter-chip"
+                    data-status="CONFIRMED"
+                    role="tab"
+                    aria-selected="false"
+                  >
+                    Confirmed
+                  </button>
+                  <button
+                    class="chip filter-chip"
+                    data-status="REJECTED"
+                    role="tab"
+                    aria-selected="false"
+                  >
+                    Rejected
+                  </button>
+                </div>
+              </div>
+
+              <!-- Actions: search + bulk buttons -->
+              <div class="reg-actions">
+                <div class="search-box" style="flex: 1">
+                  <svg
+                    class="search-icon"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                  <input
+                    type="text"
+                    id="regSearch"
+                    placeholder="Search player name/email..."
+                    aria-label="Search registrations"
+                  />
+                </div>
+                <div class="action-buttons">
+                  <button
+                    id="bulkApprove"
+                    class="btn-admin btn-publish"
+                    type="button"
+                  >
+                    Approve All
+                  </button>
+                  <button
+                    id="bulkReject"
+                    class="btn-admin btn-admin-danger"
+                    type="button"
+                  >
+                    Reject All
+                  </button>
+                  <button
+                    id="exportCsv"
+                    class="btn-admin btn-admin-secondary"
+                    type="button"
+                  >
+                    Export CSV
+                  </button>
+                </div>
+              </div>
+
+              <!-- Registrations list -->
+              <div id="registrantsList" class="registrants-grid"></div>
+
+              <!-- Empty state -->
+              <div id="noRegistrations" class="empty-state hidden">
+                <svg
+                  class="empty-state-icon"
+                  width="64"
+                  height="64"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"
+                  />
+                </svg>
+                <h3>No registrations yet</h3>
+                <p>Players will appear here once they register</p>
+              </div>
+            </section>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- ===========================
+         MODALS (kept structure for JS compatibility)
+    =========================== -->
+    <!-- Reject reason modal -->
+    <div id="rejectModal" class="modal hidden" aria-hidden="true">
+      <div class="modal-inner">
+        <button class="modal-close" id="rejectClose" aria-label="Close">
+          &times;
+        </button>
+        <h3>Reject registration</h3>
+        <div class="input-box">
+          <label>Reason (required)</label>
+          <textarea
+            id="rejectReason"
+            rows="3"
+            placeholder="Enter reason"
+          ></textarea>
+        </div>
+        <div class="btn-row right">
+          <button id="rejectCancel" class="btn-tiny">Cancel</button>
+          <button id="rejectConfirm" class="btn-tiny danger">Reject</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile peek modal -->
+    <div id="profileModal" class="modal hidden" aria-hidden="true">
+      <div class="modal-inner">
+        <button class="modal-close" id="profileClose" aria-label="Close">
+          &times;
+        </button>
+        <div class="profile-peek">
+          <img id="peekAvatar" class="avatar" src="" alt="avatar" />
+          <div>
+            <h3 id="peekName">Player</h3>
+            <p><strong>Sport:</strong> <span id="peekSport">-</span></p>
+            <p><strong>Email:</strong> <span id="peekEmail">-</span></p>
+            <p><strong>Mobile:</strong> <span id="peekMobile">-</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===========================
+         SCRIPTS
+    =========================== -->
+    <script type="module" src="js/adminRegistrations.js"></script>
+    <script>
+      // Back button → dashboard.html (approved)
+      document
+        .getElementById("backBtn")
+        ?.addEventListener("click", function () {
+          window.location.href = "dashboard.html";
+        });
+    </script>
+  </body>
+</html>
+<!-- Bottom Navigation -->
+<script type="module" src="js/nav.js"></script>

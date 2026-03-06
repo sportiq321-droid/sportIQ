@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Tournaments - SportIQ</title>
+
+    <!-- Tailwind tokens + CDN -->
+    <script src="js/tailwind-config.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <link rel="stylesheet" href="css/global.css" />
+    <link rel="stylesheet" href="css/tournament.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    />
+  </head>
+  <body
+    class="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200 min-h-screen"
+    data-page="mytournaments.html"
+  >
+    <main class="relative flex min-h-screen w-full max-w-xl mx-auto flex-col">
+      <!-- Header (avatar left, title center, bell right with dot) -->
+      <header
+        class="sticky top-0 z-20 p-4 bg-background-light/80 dark:bg-background-dark/80 glassmorphic-backdrop"
+      >
+        <div class="flex items-center justify-between">
+          <a href="profile.html" class="block" aria-label="Profile">
+            <img
+              id="headerAvatar"
+              src="img/defaultavatar.jpg"
+              alt="Profile avatar"
+              class="w-10 h-10 rounded-full object-cover border-2 border-primary"
+            />
+          </a>
+          <h1 class="text-lg font-bold text-gray-900 dark:text-white">
+            My Tournaments
+          </h1>
+          <a
+            href="notifications.html"
+            class="text-gray-300"
+            aria-label="Notifications"
+            data-notify-bell
+          >
+            <span class="material-symbols-outlined">notifications</span>
+          </a>
+        </div>
+
+        <!-- Filter chips -->
+        <div class="mt-3 -mx-4 px-4 pb-2 flex space-x-2 overflow-x-auto">
+          <button
+            class="flt-chip shrink-0 rounded-full px-4 py-2 text-sm font-medium"
+            data-filter="ALL"
+          >
+            All
+          </button>
+          <button
+            class="flt-chip shrink-0 rounded-full px-4 py-2 text-sm font-medium"
+            data-filter="PENDING"
+          >
+            Pending
+          </button>
+          <button
+            class="flt-chip shrink-0 rounded-full px-4 py-2 text-sm font-medium"
+            data-filter="CONFIRMED"
+          >
+            Confirmed
+          </button>
+          <button
+            class="flt-chip shrink-0 rounded-full px-4 py-2 text-sm font-medium"
+            data-filter="REJECTED"
+          >
+            Rejected
+          </button>
+        </div>
+      </header>
+
+      <!-- List -->
+      <section class="flex-grow p-4">
+        <div id="myTournamentsList" class="flex flex-col gap-4"></div>
+      </section>
+    </main>
+
+    <!-- Inline details overlay (Step 3-style, animated & above bottom nav) -->
+    <div id="mtOverlay" class="fixed inset-0 z-[60] hidden">
+      <!-- Dim, blurred backdrop (fades in/out) -->
+      <div
+        id="mtOverlayBg"
+        class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-200"
+      ></div>
+
+      <!-- Scrollable content; bottom padding clears fixed bottom nav -->
+      <div
+        id="mtOverlayPanel"
+        class="relative mx-auto w-full max-w-xl h-full overflow-y-auto pb-[104px]
+               transform transition-all duration-200 ease-out opacity-0 translate-y-3"
+      >
+        <div class="flex items-center justify-between px-4 pt-4">
+          <button
+            id="mtClose"
+            type="button"
+            aria-label="Back"
+            class="text-white hover:text-white/80 transition"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="28"
+              height="28"
+              fill="currentColor"
+              viewBox="0 0 256 256"
+              aria-hidden="true"
+            >
+              <path
+                d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"
+              />
+            </svg>
+          </button>
+          <h2 class="text-lg font-bold text-white">Tournament Details</h2>
+          <div class="w-8"></div>
+        </div>
+
+        <!-- Banner -->
+        <div class="relative h-44 w-full mt-2">
+          <div
+            id="mtBanner"
+            class="absolute inset-0 bg-center bg-cover rounded-b-xl"
+          ></div>
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-background-dark via-background-dark/70 to-transparent rounded-b-xl"
+          ></div>
+        </div>
+
+        <!-- Details body -->
+        <div class="px-4 -mt-8 pb-8">
+          <div class="glassmorphic rounded-xl p-6 shadow-2xl">
+            <h3 id="mtName" class="text-2xl font-bold text-white"></h3>
+            <p id="mtDesc" class="mt-2 text-gray-300"></p>
+
+            <div class="mt-6 space-y-4 border-l-2 border-primary pl-4">
+              <div class="flex justify-between gap-4">
+                <span class="text-sm text-gray-400">Location</span>
+                <span
+                  id="mtVenue"
+                  class="text-sm font-medium text-white truncate max-w-[65%] text-right"
+                ></span>
+              </div>
+              <div class="flex justify-between gap-4">
+                <span class="text-sm text-gray-400">Date</span>
+                <span
+                  id="mtDate"
+                  class="text-sm font-medium text-white truncate max-w-[65%] text-right"
+                ></span>
+              </div>
+              <div class="flex justify-between gap-4">
+                <span class="text-sm text-gray-400">Sport</span>
+                <span
+                  id="mtSport"
+                  class="text-sm font-medium text-white truncate max-w-[65%] text-right"
+                ></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controllers -->
+    <script type="module" src="js/mytournaments.js"></script>
+    <script type="module" src="js/notify-dot.js"></script>
+
+    <!-- Header avatar setter -->
+    <script type="module">
+      import { getCurrentUser } from "./js/modules/users.js";
+      const img = document.getElementById("headerAvatar");
+      try {
+        const u = getCurrentUser();
+        img.src = u?.profilePic || "img/defaultavatar.jpg";
+      } catch {
+        img.src = "img/defaultavatar.jpg";
+      }
+    </script>
+
+    <!-- Bottom nav -->
+    <script type="module" src="js/nav.js"></script>
+  </body>
+</html>

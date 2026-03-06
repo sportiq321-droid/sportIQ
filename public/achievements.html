@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Achievements - SportIQ</title>
+
+    <!-- Tailwind tokens + CDN -->
+    <script src="js/tailwind-config.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <!-- Global + page CSS (achievements.css kept as requested) -->
+    <link rel="stylesheet" href="css/global.css" />
+    <link rel="stylesheet" href="css/achievements.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    />
+  </head>
+
+  <body
+    class="font-display bg-background-light dark:bg-background-dark text-stone-900 dark:text-stone-100 min-h-screen"
+    data-page="achievements.html"
+  >
+    <div class="relative flex min-h-screen w-full flex-col max-w-xl mx-auto">
+      <!-- Header: back (returns to last visited page), centered title, notifications bell with dot -->
+      <header
+        class="sticky top-0 z-20 flex items-center justify-between bg-background-light/80 px-4 py-3 backdrop-blur-sm dark:bg-background-dark/80"
+      >
+        <a
+          href="dashboard.html"
+          id="backBtn"
+          class="flex size-10 items-center justify-center rounded-full text-stone-900 dark:text-stone-100"
+          aria-label="Back"
+          title="Back"
+        >
+          <span class="material-symbols-outlined"> arrow_back </span>
+        </a>
+        <h1 class="text-lg font-bold">Achievements</h1>
+        <a
+          href="notifications.html"
+          class="relative flex size-10 items-center justify-center text-stone-300 hover:text-white transition"
+          aria-label="Notifications"
+          data-notify-bell
+        >
+          <span class="material-symbols-outlined"> notifications </span>
+        </a>
+      </header>
+
+      <!-- Content -->
+      <main class="flex-1 space-y-6 p-4">
+        <!-- Upload Achievement card -->
+        <div
+          class="group relative overflow-hidden rounded-2xl bg-background-light/50 shadow-lg backdrop-blur-xl dark:bg-background-dark/50"
+        >
+          <div
+            class="absolute inset-0 bg-primary/20 opacity-0 transition-opacity group-hover:opacity-100"
+          ></div>
+          <div class="relative flex flex-col gap-4">
+            <div class="aspect-video w-full overflow-hidden rounded-t-2xl">
+              <img
+                alt="Achievement graphic with a person holding a trophy"
+                class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAslhK7mI1YJxryvV-kla6qyoNdzU9Z8MEcFYZyeoKKLDt2gaxCbPM5IL1sbyLfDNcLEyxHezhIpbjIBZpgmeXwTz-gK-RZ5Qu2NZ-6X2tPhssMD90ZHxP7l-absz3TY5jomzjxsgBrwg-M4-8ZcG_jreyUV3VILBNpjJej794cOvFqOfVRywpUZX_l0ijE3U6sKHYpbRfvvGE1rvM1t49rVGvv0OqqJJs7MVd1sOImpEGoBPAEn7-p-ymS9XnzXOZ-NwNeYYdyxh0"
+              />
+            </div>
+
+            <div class="flex flex-col gap-4 p-4 pt-0">
+              <div class="flex items-start justify-between gap-4">
+                <div class="flex flex-col gap-1">
+                  <h2 class="text-xl font-bold">Upload Achievement</h2>
+                  <p class="text-sm text-stone-400">
+                    Share your latest victories and milestones with the
+                    community.
+                  </p>
+                </div>
+                <a
+                  href="upload.html"
+                  class="flex h-10 shrink-0 items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-medium text-white shadow-[0_0_20px_rgba(96,122,251,0.55)] transition-transform active:scale-95"
+                  aria-label="Upload Achievement"
+                >
+                  <span class="material-symbols-outlined text-base">
+                    upload
+                  </span>
+                  <span>Upload</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- My Achievements card -->
+        <div
+          class="group relative overflow-hidden rounded-2xl bg-background-light/50 shadow-lg backdrop-blur-xl dark:bg-background-dark/50"
+        >
+          <div
+            class="absolute inset-0 bg-primary/20 opacity-0 transition-opacity group-hover:opacity-100"
+          ></div>
+          <div class="relative flex flex-col gap-4">
+            <div class="aspect-video w-full overflow-hidden rounded-t-2xl">
+              <img
+                alt="Collection of medals and trophies"
+                class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0bdFkqUQ-0SuoCzyjvkXeyi5W8F0zcb-fyYzwbAJDQ8yoE17caTshBmqB-pTd8rXeNDbXfmt5hTRxUPKoTNF0VXA6TSEC0rdEsQbNwBWxc_nxKUn8FztLUMkzsIGomyBYQNLot0ioWLdAEQHZN8fj3-6yKvEYPKhkpAfL9LbG5_PXe57_VxoHegRV2yowUhpYYtPF7zOAPhDZ4K_Ad9nV70roaUofHKgoaGAXcdjuKTTN4x6NDuOAfGrFENcnfRT4ldgLysA2_yg"
+              />
+            </div>
+
+            <div class="flex flex-col gap-4 p-4 pt-0">
+              <div class="flex items-start justify-between gap-4">
+                <div class="flex flex-col gap-1">
+                  <h2 class="text-xl font-bold">My Achievements</h2>
+                  <p class="text-sm text-stone-400">
+                    View and manage your personal collection of accomplishments.
+                  </p>
+                </div>
+                <a
+                  href="myachieve.html"
+                  class="flex h-10 shrink-0 items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-medium text-white shadow-[0_0_20px_rgba(96,122,251,0.55)] transition-transform active:scale-95"
+                  aria-label="View My Achievements"
+                >
+                  <span class="material-symbols-outlined text-base">
+                    visibility
+                  </span>
+                  <span>View</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- Bell dot helper -->
+      <script type="module" src="js/notify-dot.js"></script>
+
+      <!-- Player bottom nav (existing shared nav) -->
+      <script type="module" src="js/nav.js"></script>
+
+      <!-- Back behavior: return to last visited page; fallback to dashboard.html -->
+      <script type="module">
+        const back = document.getElementById("backBtn");
+        back?.addEventListener("click", (e) => {
+          // Always prevent default so we can decide smartly
+          e.preventDefault();
+          try {
+            const ref = document.referrer || "";
+            const hasHistory = window.history.length > 1;
+            const sameOrigin =
+              ref &&
+              new URL(ref, window.location.href).origin ===
+                window.location.origin;
+
+            // Prefer history back when possible (same-origin or history stack > 1)
+            if ((sameOrigin && ref !== window.location.href) || hasHistory) {
+              window.history.back();
+              return;
+            }
+          } catch {}
+          // Fallback
+          window.location.href = "dashboard.html";
+        });
+      </script>
+    </div>
+  </body>
+</html>

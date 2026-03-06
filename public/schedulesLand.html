@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Schedules - SportIQ</title>
+
+    <!-- Tailwind tokens + CDN -->
+    <script src="js/tailwind-config.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+      rel="stylesheet"
+    />
+
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="css/global.css" />
+
+    <!-- Schedules CSS -->
+    <link rel="stylesheet" href="css/schedules.css" />
+  </head>
+
+  <body
+    data-page="schedules-landing"
+    class="font-display text-white min-h-screen"
+  >
+    <div class="relative flex min-h-screen w-full flex-col">
+      <!-- ===========================
+           HEADER
+      =========================== -->
+      <header
+        class="sticky top-0 z-20 glassmorphic backdrop-blur-md border-b border-white/10"
+      >
+        <div class="flex items-center justify-between px-4 sm:px-6 py-4">
+          <!-- Back Button -->
+          <button
+            id="backBtn"
+            class="flex size-10 sm:size-11 items-center justify-center rounded-full text-white/80 hover:text-white hover:bg-white/10 transition-all active:scale-95"
+            aria-label="Back to previous page"
+            title="Back"
+          >
+            <span class="material-symbols-outlined">arrow_back</span>
+          </button>
+
+          <!-- Title -->
+          <h1
+            class="text-xl sm:text-2xl lg:text-3xl font-bold text-white tracking-tight"
+          >
+            Schedules
+          </h1>
+
+          <!-- Notifications -->
+          <a
+            href="notifications.html"
+            class="relative flex items-center justify-center size-10 sm:size-11 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-all duration-200"
+            aria-label="Notifications"
+            data-notify-bell
+          >
+            <span class="material-symbols-outlined">notifications</span>
+          </a>
+        </div>
+      </header>
+
+      <!-- ===========================
+           MAIN CONTENT
+      =========================== -->
+      <main class="flex-grow p-4 sm:p-6 lg:p-8 pb-28 sm:pb-32">
+        <div class="max-w-7xl mx-auto w-full">
+          <!-- Two Tiles Grid -->
+          <div
+            class="grid gap-6 sm:gap-8 grid-cols-1 sm:grid-cols-2 max-w-5xl mx-auto"
+          >
+            <!-- Create New Schedule Tile -->
+            <article
+              class="group tile-hover glassmorphic rounded-2xl shadow-2xl cursor-pointer overflow-hidden"
+            >
+              <a href="schedules.html?view=create" class="block">
+                <!-- Image Section -->
+                <div
+                  class="tile-image-wrapper aspect-video w-full bg-gradient-to-br from-blue-600/30 to-purple-600/30"
+                >
+                  <img
+                    alt="Players running - Create schedule"
+                    class="h-full w-full object-cover"
+                    src="https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=800&q=80"
+                    loading="lazy"
+                  />
+                </div>
+
+                <!-- Content Section -->
+                <div class="p-6 sm:p-8 space-y-4">
+                  <!-- Icon -->
+                  <div class="flex items-center justify-center">
+                    <div
+                      class="flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/30"
+                    >
+                      <span
+                        class="material-symbols-outlined text-5xl text-blue-400"
+                        >calendar_today</span
+                      >
+                    </div>
+                  </div>
+
+                  <!-- Title & Description -->
+                  <div class="text-center space-y-2">
+                    <h2 class="text-xl sm:text-2xl font-bold text-white">
+                      Create New Schedule
+                    </h2>
+                    <p class="text-sm sm:text-base text-white/70">
+                      Plan practice sessions, matches, or team events
+                    </p>
+                  </div>
+
+                  <!-- Action Button -->
+                  <div
+                    class="w-full btn-primary flex items-center justify-center gap-2 h-12 sm:h-14 rounded-xl text-white font-semibold text-sm sm:text-base transition-all duration-200 active:scale-95"
+                  >
+                    <span class="material-symbols-outlined text-xl"
+                      >add_circle</span
+                    >
+                    <span>Create Schedule</span>
+                  </div>
+                </div>
+              </a>
+            </article>
+
+            <!-- Requests from Players Tile -->
+            <article
+              class="group tile-hover glassmorphic rounded-2xl shadow-2xl cursor-pointer overflow-hidden"
+            >
+              <a href="schedules.html?view=requests" class="block">
+                <!-- Image Section -->
+                <div
+                  class="tile-image-wrapper aspect-video w-full bg-gradient-to-br from-green-600/30 to-teal-600/30"
+                >
+                  <img
+                    alt="Players standing in line - Requests"
+                    class="h-full w-full object-cover"
+                    src="https://images.unsplash.com/photo-1517466787929-bc90951d0974?w=800&q=80"
+                    loading="lazy"
+                  />
+                </div>
+
+                <!-- Content Section -->
+                <div class="p-6 sm:p-8 space-y-4">
+                  <!-- Icon -->
+                  <div class="flex items-center justify-center">
+                    <div
+                      class="flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-green-500/20 to-teal-500/20 border border-green-500/30"
+                    >
+                      <span
+                        class="material-symbols-outlined text-5xl text-green-400"
+                        >groups</span
+                      >
+                    </div>
+                  </div>
+
+                  <!-- Title & Description -->
+                  <div class="text-center space-y-2">
+                    <h2 class="text-xl sm:text-2xl font-bold text-white">
+                      Player Requests
+                    </h2>
+                    <p class="text-sm sm:text-base text-white/70">
+                      Review and manage player schedule requests
+                    </p>
+                  </div>
+
+                  <!-- Action Button -->
+                  <div
+                    class="w-full btn-primary flex items-center justify-center gap-2 h-12 sm:h-14 rounded-xl text-white font-semibold text-sm sm:text-base transition-all duration-200 active:scale-95"
+                  >
+                    <span class="material-symbols-outlined text-xl"
+                      >people</span
+                    >
+                    <span>View Requests</span>
+                  </div>
+                </div>
+              </a>
+            </article>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- ===========================
+         SCRIPTS
+    =========================== -->
+
+    <!-- Bell dot helper -->
+    <script type="module" src="js/notify-dot.js"></script>
+
+    <!-- Bottom Navigation -->
+    <script type="module" src="js/nav.js"></script>
+
+    <!-- Back button handler -->
+    <script>
+      document
+        .getElementById("backBtn")
+        ?.addEventListener("click", function () {
+          if (window.history.length > 1 && document.referrer) {
+            window.history.back();
+          } else {
+            window.location.href = "dashboard.html";
+          }
+        });
+    </script>
+  </body>
+</html>
