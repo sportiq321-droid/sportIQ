@@ -1,112 +1,295 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Verification - Government Official</title>
 
-    <!-- Tailwind tokens + CDN (approved) -->
     <script src="js/tailwind-config.js"></script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
-    <!-- Icons (Material Symbols, for header + hero) -->
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
-    />
-
-    <!-- Global + page styles -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
     <link rel="stylesheet" href="css/global.css" />
     <link rel="stylesheet" href="css/govaverify.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      :root {
+        --blue-950: #020B18;
+        --blue-900: #061527;
+        --blue-600: #1146A0;
+        --blue-500: #1A5FD4;
+        --blue-400: #3B82F6;
+        --blue-300: #6EA8FE;
+        --white-pure: #FFFFFF;
+        --white-ghost: #A8BBDA;
+        --accent-sky: #38BDF8;
+        --card-bg: rgba(6,21,39,0.78);
+        --border: rgba(59,130,246,0.20);
+      }
+
+      html, body {
+        min-height: 100vh;
+        background: var(--blue-950);
+        color: var(--white-pure);
+        font-family: 'Rajdhani', sans-serif;
+        overflow-x: hidden;
+      }
+
+      /* ── BG ── */
+      body::before {
+        content: '';
+        position: fixed; inset: 0; z-index: 0;
+        background:
+          radial-gradient(ellipse at 20% 20%, rgba(26,95,212,0.18) 0%, transparent 55%),
+          radial-gradient(ellipse at 80% 80%, rgba(56,189,248,0.07) 0%, transparent 50%),
+          linear-gradient(135deg, #020B18 0%, #040F20 100%);
+        pointer-events: none;
+      }
+      body::after {
+        content: '';
+        position: fixed; inset: 0; z-index: 0;
+        background-image:
+          linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+        background-size: 40px 40px;
+        pointer-events: none;
+      }
+
+      /* ── PARTICLES ── */
+      .particles { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
+      .p { position:absolute; border-radius:50%; animation:floatUp linear infinite; opacity:0; }
+      @keyframes floatUp {
+        0%   { transform:translateY(100vh) scale(0); opacity:0; }
+        10%  { opacity:0.4; }
+        90%  { opacity:0.15; }
+        100% { transform:translateY(-10vh) scale(1.2); opacity:0; }
+      }
+
+      /* ── PAGE WRAP ── */
+      .page-wrap {
+        position: relative; z-index: 1;
+        display: flex; flex-direction: column;
+        min-height: 100vh;
+      }
+
+      /* ── HEADER ── */
+      header {
+        position: sticky; top: 0; z-index: 20;
+        background: rgba(2,11,24,0.92);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(59,130,246,0.14);
+        animation: fadeDown .5s ease both;
+      }
+      @keyframes fadeDown {
+        from { opacity:0; transform:translateY(-14px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+      .header-inner {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 14px 20px;
+      }
+      .header-btn {
+        width: 40px; height: 40px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--white-ghost);
+        background: rgba(59,130,246,0.08);
+        border: 1px solid rgba(59,130,246,0.15);
+        cursor: pointer; transition: all .3s;
+        text-decoration: none; outline: none; flex-shrink: 0;
+      }
+      .header-btn:hover { color: var(--white-pure); background: rgba(59,130,246,0.16); border-color: var(--blue-400); }
+      .header-btn .material-symbols-outlined { font-size: 20px; }
+      .header-title {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.2rem; letter-spacing: .18em;
+        color: var(--white-pure); flex: 1; text-align: center;
+      }
+      .notif-wrap { position: relative; }
+      .notif-dot {
+        position: absolute; top: 1px; right: 1px;
+        width: 8px; height: 8px; background: #ef4444;
+        border-radius: 50%; border: 1.5px solid var(--blue-950);
+      }
+
+      /* ── MAIN ── */
+      main {
+        flex: 1; padding: 28px 16px 120px;
+        animation: fadeUp .5s ease .1s both;
+      }
+      @keyframes fadeUp {
+        from { opacity:0; transform:translateY(20px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+      .content-wrap { max-width: 760px; margin: 0 auto; }
+
+      /* ── INFO CARD ── */
+      .info-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        backdrop-filter: blur(20px);
+        padding: 28px 24px;
+        position: relative; overflow: hidden;
+      }
+      .info-card::before {
+        content: ''; position: absolute;
+        top: 0; left: 0; right: 0; height: 2px;
+        background: linear-gradient(90deg, var(--blue-500), var(--accent-sky));
+      }
+      .info-card::after {
+        content: ''; position: absolute;
+        bottom: 14px; right: 14px;
+        width: 22px; height: 22px;
+        border-bottom: 1.5px solid rgba(59,130,246,0.25);
+        border-right:  1.5px solid rgba(59,130,246,0.25);
+        border-radius: 0 0 4px 0;
+      }
+      .corner-tl {
+        position: absolute; top: 14px; left: 14px;
+        width: 22px; height: 22px;
+        border-top:  1.5px solid rgba(59,130,246,0.25);
+        border-left: 1.5px solid rgba(59,130,246,0.25);
+        border-radius: 4px 0 0 0;
+      }
+
+      /* hero row */
+      .hero-row {
+        display: flex; align-items: flex-start; gap: 16px;
+        margin-bottom: 22px;
+      }
+      .hero-icon {
+        width: 56px; height: 56px; border-radius: 14px;
+        display: flex; align-items: center; justify-content: center;
+        background: rgba(5,150,105,0.12);
+        border: 1px solid rgba(5,150,105,0.28);
+        flex-shrink: 0;
+      }
+      .hero-icon .material-symbols-outlined {
+        font-size: 28px; color: #34D399;
+      }
+      .hero-text h2 {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.45rem; letter-spacing: .07em;
+        color: var(--white-pure); margin-bottom: 6px;
+      }
+      .hero-text p {
+        font-size: .88rem; color: var(--white-ghost);
+        line-height: 1.6; letter-spacing: .03em;
+      }
+
+      /* detail blocks */
+      .detail-blocks {
+        display: flex; flex-direction: column; gap: 12px;
+        margin-bottom: 22px;
+      }
+      .detail-block {
+        background: rgba(59,130,246,0.05);
+        border: 1px solid rgba(59,130,246,0.14);
+        border-radius: 13px; padding: 16px 18px;
+      }
+      .detail-block h3 {
+        font-family: 'Oswald', sans-serif;
+        font-size: .95rem; letter-spacing: .1em;
+        color: var(--white-pure); margin-bottom: 10px;
+      }
+      .detail-block ul {
+        list-style: disc; padding-left: 18px;
+        display: flex; flex-direction: column; gap: 5px;
+      }
+      .detail-block li {
+        font-size: .85rem; color: var(--white-ghost); line-height: 1.5;
+      }
+      /* bullet color */
+      .detail-block ul li::marker { color: var(--blue-300); }
+
+      /* action btns */
+      .action-row {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      @media(min-width:480px) { .action-row { grid-template-columns: 1fr 1fr; } }
+
+      .btn-ghost-action {
+        display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+        padding: 13px 20px; border-radius: 12px;
+        background: rgba(59,130,246,0.08);
+        border: 1px solid rgba(59,130,246,0.22);
+        color: var(--white-ghost); text-decoration: none;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .9rem; font-weight: 700; letter-spacing: .1em;
+        text-transform: uppercase; transition: all .25s;
+      }
+      .btn-ghost-action:hover { background: rgba(59,130,246,0.15); color: var(--white-pure); border-color: var(--blue-400); }
+      .btn-ghost-action .material-symbols-outlined { font-size: 18px; }
+
+      .btn-primary-action {
+        display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+        padding: 13px 20px; border-radius: 12px;
+        background: linear-gradient(135deg, var(--blue-500), var(--blue-600));
+        border: none; color: #fff; text-decoration: none;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .9rem; font-weight: 700; letter-spacing: .1em;
+        text-transform: uppercase;
+        box-shadow: 0 0 18px rgba(26,95,212,0.4);
+        transition: transform .2s, box-shadow .3s;
+      }
+      .btn-primary-action:hover { transform: translateY(-1px); box-shadow: 0 0 28px rgba(59,130,246,0.55); }
+      .btn-primary-action .material-symbols-outlined { font-size: 18px; }
+    </style>
   </head>
 
-  <body data-page="gov-verify" class="font-display text-white min-h-screen">
-    <div class="relative flex min-h-screen w-full flex-col">
-      <!-- ===========================
-           HEADER (schedules-like)
-      =========================== -->
-      <header
-        class="sticky top-0 z-20 glassmorphic backdrop-blur-md border-b border-white/10"
-      >
-        <div class="flex items-center justify-between px-4 sm:px-6 py-4">
-          <!-- Back Button -->
-          <button
-            id="backBtn"
-            class="flex size-10 sm:size-11 items-center justify-center rounded-full text-white/80 hover:text-white hover:bg-white/10 transition-all active:scale-95"
-            aria-label="Back to Dashboard"
-            title="Back"
-            type="button"
-          >
+  <body data-page="gov-verify">
+    <div class="particles" id="particles"></div>
+
+    <div class="page-wrap">
+
+      <!-- HEADER -->
+      <header>
+        <div class="header-inner">
+          <button id="backBtn" class="header-btn" aria-label="Back to Dashboard" type="button">
             <span class="material-symbols-outlined">arrow_back</span>
           </button>
-
-          <!-- Title -->
-          <h1
-            class="text-xl sm:text-2xl lg:text-3xl font-bold text-white tracking-tight"
-          >
-            Verification
-          </h1>
-
-          <!-- Notifications -->
-          <a
-            href="notifications.html"
-            class="relative flex items-center justify-center size-10 sm:size-11 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-all duration-200"
-            aria-label="Notifications"
-            data-notify-bell
-          >
+          <h1 class="header-title">Verification</h1>
+          <a href="notifications.html" class="header-btn notif-wrap" aria-label="Notifications" data-notify-bell>
             <span class="material-symbols-outlined">notifications</span>
+            <span class="notif-dot"></span>
           </a>
         </div>
       </header>
 
-      <!-- ===========================
-           MAIN CONTENT (Information)
-      =========================== -->
-      <main class="flex-grow p-4 sm:p-6 lg:p-8 pb-28 sm:pb-32">
-        <div class="max-w-4xl mx-auto w-full">
-          <section
-            class="glassmorphic rounded-2xl p-6 sm:p-10 shadow-2xl animate-fade-in-up"
-          >
+      <!-- MAIN -->
+      <main>
+        <div class="content-wrap">
+          <div class="info-card">
+            <div class="corner-tl"></div>
+
             <!-- Hero -->
-            <div class="flex items-start gap-4">
-              <div
-                class="flex items-center justify-center w-14 h-14 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 shrink-0"
-                aria-hidden="true"
-              >
-                <span
-                  class="material-symbols-outlined text-3xl text-emerald-300"
-                  >verified</span
-                >
+            <div class="hero-row">
+              <div class="hero-icon" aria-hidden="true">
+                <span class="material-symbols-outlined">verified</span>
               </div>
-              <div class="flex-1">
-                <h2 class="text-2xl sm:text-3xl font-bold">
-                  No verification required
-                </h2>
-                <p class="text-white/70 mt-2">
-                  Tournament verification by Government Officials has been
-                  retired. Admins now create and publish tournaments directly.
-                </p>
+              <div class="hero-text">
+                <h2>No verification required</h2>
+                <p>Tournament verification by Government Officials has been retired. Admins now create and publish tournaments directly.</p>
               </div>
             </div>
 
-            <!-- Details -->
-            <div class="grid gap-4 sm:gap-5 mt-6">
-              <div class="rounded-xl border border-white/10 bg-white/5 p-4">
-                <h3 class="text-white font-semibold">What changed?</h3>
-                <ul class="list-disc pl-5 mt-2 text-white/70 space-y-1">
+            <!-- Detail blocks -->
+            <div class="detail-blocks">
+              <div class="detail-block">
+                <h3>What changed?</h3>
+                <ul>
                   <li>Admins can save as Draft or Publish immediately.</li>
-                  <li>
-                    Players can register as before; Admins approve if needed.
-                  </li>
-                  <li>
-                    Government Officials can still access Reports and Analytics.
-                  </li>
+                  <li>Players can register as before; Admins approve if needed.</li>
+                  <li>Government Officials can still access Reports and Analytics.</li>
                 </ul>
               </div>
-
-              <div class="rounded-xl border border-white/10 bg-white/5 p-4">
-                <h3 class="text-white font-semibold">Where to go next</h3>
-                <ul class="list-disc pl-5 mt-2 text-white/70 space-y-1">
+              <div class="detail-block">
+                <h3>Where to go next</h3>
+                <ul>
                   <li>Dashboard for your overview and notifications</li>
                   <li>Reports for insights and data</li>
                 </ul>
@@ -114,35 +297,37 @@
             </div>
 
             <!-- Actions -->
-            <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <a
-                href="dashboard.html"
-                class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 hover:border-white/30 transition"
-              >
+            <div class="action-row">
+              <a href="dashboard.html" class="btn-ghost-action">
                 <span class="material-symbols-outlined">home</span>
                 <span>Go to Dashboard</span>
               </a>
-              <a
-                href="reports.html"
-                class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-primary text-white hover:bg-primary/90 transition"
-              >
+              <a href="reports.html" class="btn-primary-action">
                 <span class="material-symbols-outlined">insights</span>
                 <span>Open Reports</span>
               </a>
             </div>
-          </section>
+          </div>
         </div>
       </main>
+
     </div>
 
-    <!-- ===========================
-         SCRIPTS
-    =========================== -->
-    <!-- Notifications dot + Bottom Nav -->
+    <!-- SCRIPTS — untouched -->
     <script type="module" src="js/notify-dot.js"></script>
     <script type="module" src="js/nav.js"></script>
-
-    <!-- Simple controller (role guard + back button) -->
     <script type="module" src="js/govaverify.js"></script>
+
+    <script>
+      const pc = document.getElementById('particles');
+      const cols = ['#3B82F6','#6EA8FE','#38BDF8','#ffffff'];
+      for (let i = 0; i < 18; i++) {
+        const p = document.createElement('div');
+        p.className = 'p';
+        const s = Math.random() * 3 + 1.5;
+        p.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${9+Math.random()*12}s;animation-delay:${Math.random()*10}s;`;
+        pc.appendChild(p);
+      }
+    </script>
   </body>
 </html>

@@ -1,381 +1,456 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Schedules - SportIQ</title>
 
-    <!-- Tailwind tokens + CDN -->
     <script src="js/tailwind-config.js"></script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
-    <!-- Global CSS -->
     <link rel="stylesheet" href="css/global.css" />
-
-    <!-- Schedules CSS -->
     <link rel="stylesheet" href="css/schedules.css" />
+
+    <style>
+      :root {
+        --blue-950: #020B18;
+        --blue-900: #061527;
+        --blue-800: #0A2040;
+        --blue-700: #0D3060;
+        --blue-600: #1146A0;
+        --blue-500: #1A5FD4;
+        --blue-400: #3B82F6;
+        --blue-300: #6EA8FE;
+        --blue-200: #A8CCFF;
+        --white-pure: #FFFFFF;
+        --white-warm: #F8FAFF;
+        --white-ghost: #A8BBDA;
+        --accent-sky: #38BDF8;
+        --accent-cyan: #06B6D4;
+        --card-bg: rgba(6,21,39,0.78);
+        --border: rgba(59,130,246,0.20);
+      }
+
+      *, *::before, *::after { box-sizing: border-box; }
+
+      body {
+        font-family: 'Rajdhani', sans-serif;
+        background: var(--blue-950);
+        color: var(--white-pure);
+        min-height: 100vh;
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      body::before {
+        content: '';
+        position: fixed; inset: 0; z-index: 0; pointer-events: none;
+        background:
+          radial-gradient(ellipse at 20% 20%, rgba(26,95,212,0.18) 0%, transparent 55%),
+          radial-gradient(ellipse at 80% 80%, rgba(56,189,248,0.07) 0%, transparent 50%),
+          linear-gradient(135deg, #020B18 0%, #040F20 100%);
+      }
+      body::after {
+        content: '';
+        position: fixed; inset: 0; z-index: 0; pointer-events: none;
+        background-image:
+          linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+        background-size: 40px 40px;
+      }
+
+      .particles { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+      .p { position: absolute; border-radius: 50%; animation: floatUp linear infinite; opacity: 0; }
+      @keyframes floatUp {
+        0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+        10%  { opacity: 0.4; }
+        90%  { opacity: 0.15; }
+        100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+      }
+
+      .page-wrap {
+        position: relative; z-index: 1;
+        display: flex; flex-direction: column; min-height: 100vh; width: 100%;
+      }
+
+      /* Header */
+      header {
+        position: sticky; top: 0; z-index: 20;
+        background: rgba(2,11,24,0.92);
+        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(59,130,246,0.14);
+        animation: fadeDown .5s ease both;
+      }
+      @keyframes fadeDown {
+        from { opacity: 0; transform: translateY(-14px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      .header-inner {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 12px 16px;
+      }
+      @media(min-width:640px){ .header-inner { padding: 14px 24px; } }
+
+      #pageTitle {
+        font-family: 'Oswald', sans-serif;
+        font-weight: 700; letter-spacing: .16em; text-transform: uppercase;
+        color: var(--white-pure); font-size: 1.1rem;
+      }
+      @media(min-width:640px){ #pageTitle { font-size: 1.3rem; } }
+      @media(min-width:1024px){ #pageTitle { font-size: 1.5rem; } }
+
+      .header-btn {
+        width: 38px; height: 38px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--white-ghost);
+        background: rgba(59,130,246,0.08);
+        border: 1px solid rgba(59,130,246,0.15);
+        transition: all .3s; cursor: pointer; text-decoration: none; flex-shrink: 0;
+      }
+      @media(min-width:640px){ .header-btn { width: 42px; height: 42px; } }
+      .header-btn:hover { color: var(--white-pure); background: rgba(59,130,246,0.16); border-color: var(--blue-400); }
+      .header-btn:active { transform: scale(.95); }
+
+      /* Main */
+      main {
+        flex-grow: 1; padding: 16px 16px 112px;
+        animation: fadeUp .5s ease .1s both;
+      }
+      @media(min-width:640px){ main { padding: 24px 24px 128px; } }
+      @media(min-width:1024px){ main { padding: 32px 32px 128px; } }
+      @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(18px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      .inner { max-width: 1280px; margin: 0 auto; width: 100%; }
+
+      /* SIQ Card */
+      .siq-card {
+        background: rgba(6,21,39,0.78);
+        border: 1px solid rgba(59,130,246,0.20);
+        border-radius: 16px;
+        backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+        position: relative; overflow: hidden;
+        box-shadow: 0 16px 48px rgba(0,0,0,0.3);
+      }
+      .siq-card::before {
+        content: ''; position: absolute;
+        top: 0; left: 0; right: 0; height: 2px;
+        background: linear-gradient(90deg, var(--blue-500), var(--accent-sky));
+      }
+      .siq-card-body { padding: 24px; }
+      @media(min-width:640px){ .siq-card-body { padding: 32px; } }
+
+      /* Card section header */
+      .card-section-header {
+        border-bottom: 1px solid rgba(59,130,246,0.14);
+        padding-bottom: 16px; margin-bottom: 24px;
+        display: flex; align-items: center; gap: 12px;
+      }
+      .card-section-header .material-symbols-outlined { font-size: 28px; }
+      .icon-blue  { color: var(--blue-300); }
+      .icon-sky   { color: var(--accent-sky); }
+      .icon-green { color: #34D399; }
+
+      .card-title {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.2rem; font-weight: 700;
+        letter-spacing: .06em; color: var(--white-pure);
+      }
+      .card-sub { font-size: .82rem; font-weight: 500; color: var(--white-ghost); margin-top: 3px; }
+
+      /* Form label */
+      .form-label {
+        display: block;
+        font-size: .72rem; font-weight: 700;
+        letter-spacing: .14em; text-transform: uppercase;
+        color: var(--blue-300); margin-bottom: 8px;
+      }
+
+      /* Inputs */
+      input[type="text"],
+      input[type="date"],
+      input[type="time"],
+      select {
+        width: 100%; height: 48px;
+        padding: 0 14px;
+        background: rgba(59,130,246,0.07);
+        border: 1px solid rgba(59,130,246,0.22);
+        border-radius: 10px;
+        color: var(--white-pure);
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .95rem; font-weight: 500;
+        outline: none;
+        transition: border-color .2s, box-shadow .2s;
+        -webkit-appearance: none; appearance: none;
+      }
+      input:disabled { color: var(--white-ghost); cursor: not-allowed; opacity: .7; }
+      input::placeholder { color: var(--white-ghost); opacity: .7; }
+      input:focus, select:focus {
+        border-color: var(--blue-400);
+        box-shadow: 0 0 0 3px rgba(59,130,246,0.10);
+      }
+      select option { background: #061527; color: #fff; }
+
+      /* Buttons */
+      .btn-primary {
+        display: flex; align-items: center; justify-content: center; gap: 8px;
+        flex: 1; min-height: 48px; padding: 0 24px;
+        background: linear-gradient(135deg, #1A5FD4, #1146A0);
+        border: none; border-radius: 10px; color: #fff;
+        font-family: 'Rajdhani', sans-serif; font-weight: 700;
+        font-size: .92rem; letter-spacing: .10em; text-transform: uppercase;
+        cursor: pointer;
+        box-shadow: 0 0 14px rgba(26,95,212,0.4);
+        transition: box-shadow .25s, transform .2s;
+      }
+      .btn-primary:hover { box-shadow: 0 0 22px rgba(59,130,246,0.55); transform: translateY(-1px); }
+      .btn-primary:active { transform: scale(.99); }
+
+      .btn-cancel {
+        display: flex; align-items: center; justify-content: center; gap: 8px;
+        flex: 1; min-height: 48px; padding: 0 24px;
+        background: rgba(217,119,6,0.12);
+        border: 1px solid rgba(217,119,6,0.28);
+        border-radius: 10px; color: #FCD34D;
+        font-family: 'Rajdhani', sans-serif; font-weight: 700;
+        font-size: .92rem; letter-spacing: .10em; text-transform: uppercase;
+        cursor: pointer;
+        transition: background .2s, color .2s;
+      }
+      .btn-cancel:hover { background: rgba(217,119,6,0.22); color: #fff; }
+
+      .btn-ghost {
+        display: inline-flex; align-items: center; gap: 12px;
+        padding: 14px 32px; border-radius: 10px;
+        background: rgba(59,130,246,0.08);
+        border: 1px solid rgba(59,130,246,0.22);
+        color: var(--white-ghost);
+        font-family: 'Rajdhani', sans-serif; font-weight: 700;
+        font-size: .92rem; letter-spacing: .10em; text-transform: uppercase;
+        text-decoration: none; min-height: 56px;
+        transition: background .2s, color .2s, border-color .2s;
+      }
+      .btn-ghost:hover { background: rgba(59,130,246,0.15); color: var(--white-pure); border-color: var(--blue-400); }
+
+      /* Error */
+      #formMsg { font-size: .82rem; font-weight: 600; color: #f87171; margin-top: 16px; }
+      #formMsg.hidden { display: none !important; }
+
+      /* Empty state */
+      .empty-state {
+        display: flex; flex-direction: column; align-items: center;
+        justify-content: center; padding: 48px 16px; gap: 8px;
+        color: var(--white-ghost); text-align: center;
+      }
+      .empty-state .material-symbols-outlined { font-size: 48px; color: var(--blue-300); margin-bottom: 8px; }
+      .empty-state p { font-weight: 600; font-size: .95rem; }
+      .empty-state p + p { font-size: .82rem; margin-top: 4px; font-weight: 500; }
+
+      /* Scrollable panels */
+      .panel-scroll { overflow-y: auto; max-height: 800px; }
+      .panel-scroll::-webkit-scrollbar { width: 4px; }
+      .panel-scroll::-webkit-scrollbar-track { background: transparent; }
+      .panel-scroll::-webkit-scrollbar-thumb { background: rgba(59,130,246,0.3); border-radius: 99px; }
+
+      /* Layout helpers */
+      .hidden { display: none !important; }
+      .animate-fade-in-up { animation: fadeUp .4s ease both; }
+
+      .two-col { display: grid; grid-template-columns: 1fr; gap: 24px; }
+      @media(min-width:1024px){ .two-col { grid-template-columns: 1fr 1fr; gap: 32px; } }
+
+      .space-y > * + * { margin-top: 20px; }
+      .grid-2 { display: grid; grid-template-columns: 1fr; gap: 16px; }
+      @media(min-width:640px){ .grid-2 { grid-template-columns: 1fr 1fr; } }
+
+      .btn-row { display: flex; flex-direction: column; gap: 12px; padding-top: 16px; }
+      @media(min-width:640px){ .btn-row { flex-direction: row; } }
+
+      .center { display: flex; justify-content: center; margin-top: 32px; }
+    </style>
   </head>
 
-  <body
-    data-page="coach-schedules"
-    class="font-display text-white min-h-screen"
-  >
-    <div class="relative flex min-h-screen w-full flex-col">
-      <!-- ===========================
-           HEADER
-      =========================== -->
-      <header
-        class="sticky top-0 z-20 glassmorphic backdrop-blur-md border-b border-white/10"
-      >
-        <div class="flex items-center justify-between px-4 sm:px-6 py-4">
-          <!-- Back Button -->
-          <button
-            id="backBtn"
-            class="flex size-10 sm:size-11 items-center justify-center rounded-full text-white/80 hover:text-white hover:bg-white/10 transition-all active:scale-95"
-            aria-label="Back to previous page"
-            title="Back"
-          >
-            <span class="material-symbols-outlined">arrow_back</span>
+  <body data-page="coach-schedules">
+    <div class="particles" id="particles"></div>
+
+    <div class="page-wrap">
+
+      <!-- HEADER -->
+      <header>
+        <div class="header-inner">
+          <button id="backBtn" class="header-btn" aria-label="Back to previous page" title="Back">
+            <span class="material-symbols-outlined" style="font-size:20px;">arrow_back</span>
           </button>
-
-          <!-- Dynamic Title -->
-          <h1
-            id="pageTitle"
-            class="text-xl sm:text-2xl lg:text-3xl font-bold text-white tracking-tight"
-          >
-            Schedules
-          </h1>
-
-          <!-- Notifications -->
-          <a
-            href="notifications.html"
-            class="relative flex items-center justify-center size-10 sm:size-11 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-all duration-200"
-            aria-label="Notifications"
-            data-notify-bell
-          >
-            <span class="material-symbols-outlined">notifications</span>
+          <h1 id="pageTitle">Schedules</h1>
+          <a href="notifications.html" class="header-btn" aria-label="Notifications" data-notify-bell style="position:relative;">
+            <span class="material-symbols-outlined" style="font-size:20px;">notifications</span>
           </a>
         </div>
       </header>
 
-      <!-- ===========================
-           MAIN CONTENT
-      =========================== -->
-      <main class="flex-grow p-4 sm:p-6 lg:p-8 pb-28 sm:pb-32">
-        <div class="max-w-7xl mx-auto w-full space-y-8">
-          <!-- ===========================
-               CREATE SCHEDULE VIEW
-          =========================== -->
+      <!-- MAIN -->
+      <main>
+        <div class="inner">
+
+          <!-- CREATE SCHEDULE VIEW -->
           <div id="schedCreate" class="hidden animate-fade-in-up">
-            <div class="grid gap-6 lg:gap-8 lg:grid-cols-2">
-              <!-- LEFT: Schedule Form -->
-              <div
-                class="glassmorphic rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6"
-              >
-                <!-- Form Header -->
-                <div class="border-b border-white/10 pb-4">
-                  <h3
-                    class="text-2xl font-bold text-white flex items-center gap-3"
-                  >
-                    <span
-                      class="material-symbols-outlined text-3xl text-blue-400"
-                      >event_note</span
-                    >
-                    Schedule Details
-                  </h3>
-                  <p class="text-sm text-white/60 mt-2">
-                    Fill in the information below to create a new schedule
-                  </p>
-                </div>
+            <div class="two-col">
 
-                <!-- Form Fields -->
-                <div class="space-y-5">
-                  <!-- Sport (Disabled) -->
-                  <div>
-                    <label
-                      class="block text-sm font-semibold text-gray-300 mb-2"
-                    >
-                      Sport
-                    </label>
-                    <input
-                      type="text"
-                      id="schSport"
-                      disabled
-                      class="form-input w-full h-12 rounded-xl px-4 text-gray-400 cursor-not-allowed"
-                      placeholder="Auto-filled from your profile"
-                    />
-                  </div>
-
-                  <!-- Date & Start Time -->
-                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <!-- LEFT: Form -->
+              <div class="siq-card">
+                <div class="siq-card-body">
+                  <div class="card-section-header">
+                    <span class="material-symbols-outlined icon-blue">event_note</span>
                     <div>
-                      <label
-                        class="block text-sm font-semibold text-gray-300 mb-2"
-                      >
-                        Date
-                      </label>
-                      <input
-                        type="date"
-                        id="schDate"
-                        class="form-input w-full h-12 rounded-xl px-4"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        class="block text-sm font-semibold text-gray-300 mb-2"
-                      >
-                        Start Time
-                      </label>
-                      <input
-                        type="time"
-                        id="schStart"
-                        class="form-input w-full h-12 rounded-xl px-4"
-                      />
+                      <div class="card-title">Schedule Details</div>
+                      <div class="card-sub">Fill in the information below to create a new schedule</div>
                     </div>
                   </div>
 
-                  <!-- End Time -->
-                  <div>
-                    <label
-                      class="block text-sm font-semibold text-gray-300 mb-2"
-                    >
-                      End Time
-                    </label>
-                    <input
-                      type="time"
-                      id="schEnd"
-                      class="form-input w-full h-12 rounded-xl px-4"
-                    />
+                  <div class="space-y">
+                    <div>
+                      <label class="form-label">Sport</label>
+                      <input type="text" id="schSport" disabled placeholder="Auto-filled from your profile" />
+                    </div>
+                    <div class="grid-2">
+                      <div>
+                        <label class="form-label">Date</label>
+                        <input type="date" id="schDate" />
+                      </div>
+                      <div>
+                        <label class="form-label">Start Time</label>
+                        <input type="time" id="schStart" />
+                      </div>
+                    </div>
+                    <div>
+                      <label class="form-label">End Time</label>
+                      <input type="time" id="schEnd" />
+                    </div>
+                    <div>
+                      <label class="form-label">Venue</label>
+                      <select id="schVenue">
+                        <option value="">Select a venue</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="form-label">Entry Requirements</label>
+                      <select id="schEntrance">
+                        <option value="">Select entry type</option>
+                        <option value="OPEN">Open to all</option>
+                        <option value="APPROVAL">Approval needed</option>
+                      </select>
+                    </div>
                   </div>
 
-                  <!-- Venue -->
-                  <div>
-                    <label
-                      class="block text-sm font-semibold text-gray-300 mb-2"
-                    >
-                      Venue
-                    </label>
-                    <select
-                      id="schVenue"
-                      class="form-input w-full h-12 rounded-xl px-4 cursor-pointer"
-                    >
-                      <option value="">Select a venue</option>
-                    </select>
-                  </div>
+                  <p id="formMsg" class="hidden"></p>
 
-                  <!-- Entrance Type -->
-                  <div>
-                    <label
-                      class="block text-sm font-semibold text-gray-300 mb-2"
-                    >
-                      Entry Requirements
-                    </label>
-                    <select
-                      id="schEntrance"
-                      class="form-input w-full h-12 rounded-xl px-4 cursor-pointer"
-                    >
-                      <option value="">Select entry type</option>
-                      <option value="OPEN">Open to all</option>
-                      <option value="APPROVAL">Approval needed</option>
-                    </select>
-                  </div>
-                </div>
-
-                <!-- Error Message -->
-                <p
-                  id="formMsg"
-                  class="text-sm text-red-400 font-medium hidden"
-                ></p>
-
-                <!-- Action Buttons -->
-                <div class="flex flex-col sm:flex-row gap-3 pt-4">
-                  <button
-                    id="saveSchedule"
-                    class="flex-1 btn btn-neon-blue px-6 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition-all duration-200 active:scale-95 focus:ring-2 focus:ring-emerald-400 focus:outline-none shadow-lg min-h-[48px]"
-                  >
-                    <span class="flex items-center justify-center gap-2">
-                      <span class="material-symbols-outlined text-xl"
-                        >save</span
-                      >
+                  <div class="btn-row">
+                    <button id="saveSchedule" class="btn-primary">
+                      <span class="material-symbols-outlined" style="font-size:18px;">save</span>
                       <span>Save Schedule</span>
-                    </span>
-                  </button>
-                  <button
-                    id="cancelCreate"
-                    class="flex-1 px-6 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold transition-all duration-200 active:scale-95 border border-white/20 hover:border-white/30 min-h-[48px]"
-                  >
-                    <span class="flex items-center justify-center gap-2">
-                      <span class="material-symbols-outlined text-xl"
-                        >close</span
-                      >
+                    </button>
+                    <button id="cancelCreate" class="btn-cancel">
+                      <span class="material-symbols-outlined" style="font-size:18px;">close</span>
                       <span>Cancel</span>
-                    </span>
-                  </button>
+                    </button>
+                  </div>
                 </div>
               </div>
 
-              <!-- RIGHT: My Schedules List -->
-              <div
-                class="glassmorphic rounded-2xl p-6 sm:p-8 shadow-2xl custom-scrollbar overflow-y-auto max-h-[800px]"
-              >
-                <!-- Section Header -->
-                <div class="border-b border-white/10 pb-4 mb-6">
-                  <h3
-                    class="text-2xl font-bold text-white flex items-center gap-3"
-                  >
-                    <span
-                      class="material-symbols-outlined text-3xl text-purple-400"
-                      >schedule</span
-                    >
-                    My Schedules
-                  </h3>
-                  <p class="text-sm text-white/60 mt-2">
-                    Your created schedules appear here
-                  </p>
+              <!-- RIGHT: My Schedules -->
+              <div class="siq-card panel-scroll">
+                <div class="siq-card-body">
+                  <div class="card-section-header">
+                    <span class="material-symbols-outlined icon-sky">schedule</span>
+                    <div>
+                      <div class="card-title">My Schedules</div>
+                      <div class="card-sub">Your created schedules appear here</div>
+                    </div>
+                  </div>
+                  <div id="mySchedulesEmpty" class="empty-state">
+                    <span class="material-symbols-outlined">event_busy</span>
+                    <p>No schedules created yet</p>
+                    <p>Create your first schedule to get started</p>
+                  </div>
+                  <div id="mySchedulesList" class="schedules-grid"></div>
                 </div>
-
-                <!-- Empty State -->
-                <div id="mySchedulesEmpty" class="empty-state">
-                  <span class="material-symbols-outlined animate-pulse-slow"
-                    >event_busy</span
-                  >
-                  <p class="text-base font-medium">No schedules created yet</p>
-                  <p class="text-sm mt-1">
-                    Create your first schedule to get started
-                  </p>
-                </div>
-
-                <!-- Schedules Grid -->
-                <div id="mySchedulesList" class="schedules-grid"></div>
               </div>
             </div>
           </div>
 
-          <!-- ===========================
-               REQUESTS VIEW
-          =========================== -->
+          <!-- REQUESTS VIEW -->
           <div id="schedRequests" class="hidden animate-fade-in-up">
-            <div class="grid gap-6 lg:gap-8 lg:grid-cols-2">
-              <!-- LEFT: Coach Schedules -->
-              <div
-                class="glassmorphic rounded-2xl p-6 sm:p-8 shadow-2xl custom-scrollbar overflow-y-auto max-h-[800px]"
-              >
-                <!-- Section Header -->
-                <div class="border-b border-white/10 pb-4 mb-6">
-                  <h3
-                    class="text-2xl font-bold text-white flex items-center gap-3"
-                  >
-                    <span
-                      class="material-symbols-outlined text-3xl text-blue-400"
-                      >event</span
-                    >
-                    All Schedules
-                  </h3>
-                  <p class="text-sm text-white/60 mt-2">
-                    View all your created schedules
-                  </p>
-                </div>
+            <div class="two-col">
 
-                <!-- Empty State -->
-                <div id="coachSchedulesEmpty" class="empty-state">
-                  <span class="material-symbols-outlined animate-pulse-slow"
-                    >event_busy</span
-                  >
-                  <p class="text-base font-medium">No schedules available</p>
-                  <p class="text-sm mt-1">Create a schedule to see it here</p>
+              <!-- LEFT: All Schedules -->
+              <div class="siq-card panel-scroll">
+                <div class="siq-card-body">
+                  <div class="card-section-header">
+                    <span class="material-symbols-outlined icon-blue">event</span>
+                    <div>
+                      <div class="card-title">All Schedules</div>
+                      <div class="card-sub">View all your created schedules</div>
+                    </div>
+                  </div>
+                  <div id="coachSchedulesEmpty" class="empty-state">
+                    <span class="material-symbols-outlined">event_busy</span>
+                    <p>No schedules available</p>
+                    <p>Create a schedule to see it here</p>
+                  </div>
+                  <div id="coachSchedulesGrid" class="schedules-grid"></div>
                 </div>
-
-                <!-- Schedules Grid -->
-                <div id="coachSchedulesGrid" class="schedules-grid"></div>
               </div>
 
               <!-- RIGHT: Player Requests -->
-              <div
-                class="glassmorphic rounded-2xl p-6 sm:p-8 shadow-2xl custom-scrollbar overflow-y-auto max-h-[800px]"
-              >
-                <!-- Section Header -->
-                <div class="border-b border-white/10 pb-4 mb-6">
-                  <h3
-                    class="text-2xl font-bold text-white flex items-center gap-3"
-                  >
-                    <span
-                      class="material-symbols-outlined text-3xl text-green-400"
-                      >person_raised_hand</span
-                    >
-                    Player Requests
-                  </h3>
-                  <p class="text-sm text-white/60 mt-2">
-                    Approve or reject player requests
-                  </p>
+              <div class="siq-card panel-scroll">
+                <div class="siq-card-body">
+                  <div class="card-section-header">
+                    <span class="material-symbols-outlined icon-green">person_raised_hand</span>
+                    <div>
+                      <div class="card-title">Player Requests</div>
+                      <div class="card-sub">Approve or reject player requests</div>
+                    </div>
+                  </div>
+                  <div id="noRequestsMsg" class="empty-state">
+                    <span class="material-symbols-outlined">person_off</span>
+                    <p>No pending requests</p>
+                    <p>Player requests will appear here</p>
+                  </div>
+                  <div id="requestsGrid" class="requests-grid"></div>
                 </div>
-
-                <!-- Empty State -->
-                <div id="noRequestsMsg" class="empty-state">
-                  <span class="material-symbols-outlined animate-pulse-slow"
-                    >person_off</span
-                  >
-                  <p class="text-base font-medium">No pending requests</p>
-                  <p class="text-sm mt-1">Player requests will appear here</p>
-                </div>
-
-                <!-- Requests Grid -->
-                <div id="requestsGrid" class="requests-grid"></div>
               </div>
             </div>
 
-            <!-- Back to Landing Button -->
-            <div class="flex justify-center mt-8">
-              <a
-                href="schedulesLand.html"
-                class="inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold transition-all duration-200 active:scale-95 border border-white/20 hover:border-white/30 shadow-lg min-h-[56px]"
-              >
-                <span class="material-symbols-outlined text-xl"
-                  >arrow_back</span
-                >
+            <div class="center">
+              <a href="schedulesLand.html" class="btn-ghost">
+                <span class="material-symbols-outlined" style="font-size:20px;">arrow_back</span>
                 <span>Back to Schedules</span>
               </a>
             </div>
           </div>
+
         </div>
       </main>
     </div>
 
-    <!-- ===========================
-         SCRIPTS
-    =========================== -->
-
-    <!-- Bell dot helper -->
+    <!-- SCRIPTS (preserved exactly) -->
     <script type="module" src="js/notify-dot.js"></script>
-
-    <!-- Controller -->
     <script type="module" src="js/coachSchedules.js"></script>
-
-    <!-- Bottom Navigation -->
     <script type="module" src="js/nav.js"></script>
 
-    <!-- View Handler & Back Button -->
     <script>
-      // Handle view switching based on URL parameter
       document.addEventListener("DOMContentLoaded", function () {
         const urlParams = new URLSearchParams(window.location.search);
         const view = urlParams.get("view");
-
         const createView = document.getElementById("schedCreate");
         const requestsView = document.getElementById("schedRequests");
         const pageTitle = document.getElementById("pageTitle");
-
         if (view === "create") {
           createView?.classList.remove("hidden");
           requestsView?.classList.add("hidden");
@@ -385,19 +460,26 @@
           createView?.classList.add("hidden");
           pageTitle.textContent = "Player Requests";
         } else {
-          // Default to create view if no param
           createView?.classList.remove("hidden");
           requestsView?.classList.add("hidden");
         }
       });
 
-      // Back button handler
-      document
-        .getElementById("backBtn")
-        ?.addEventListener("click", function () {
-          // Always go back to schedulesLand.html
-          window.location.href = "schedulesLand.html";
-        });
+      document.getElementById("backBtn")?.addEventListener("click", function () {
+        window.location.href = "schedulesLand.html";
+      });
+    </script>
+
+    <script>
+      const pc = document.getElementById('particles');
+      const cols = ['#3B82F6','#6EA8FE','#38BDF8','#ffffff'];
+      for (let i = 0; i < 18; i++) {
+        const p = document.createElement('div');
+        p.className = 'p';
+        const s = Math.random() * 3 + 1.5;
+        p.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${9+Math.random()*12}s;animation-delay:${Math.random()*10}s;`;
+        pc.appendChild(p);
+      }
     </script>
   </body>
 </html>

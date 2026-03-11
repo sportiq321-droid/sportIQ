@@ -1,180 +1,385 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Analytics - SportIQ</title>
 
-    <!-- Tailwind tokens + CDN -->
+    <!-- Existing scripts — untouched -->
     <script src="js/tailwind-config.js"></script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
-    <!-- CSS (existing) -->
     <link rel="stylesheet" href="css/global.css" />
     <link rel="stylesheet" href="css/admin-components.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Icons -->
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
-    />
+    <style>
+      *, *::before, *::after { box-sizing: border-box; }
+
+      :root {
+        --blue-950: #020B18;
+        --blue-900: #061527;
+        --blue-800: #0A2040;
+        --blue-700: #0D3060;
+        --blue-600: #1146A0;
+        --blue-500: #1A5FD4;
+        --blue-400: #3B82F6;
+        --blue-300: #6EA8FE;
+        --blue-200: #A8CCFF;
+        --white-pure: #FFFFFF;
+        --white-ghost: #A8BBDA;
+        --accent-sky: #38BDF8;
+        --card-bg: rgba(6,21,39,0.75);
+        --border: rgba(59,130,246,0.20);
+      }
+
+      html, body {
+        min-height: 100vh;
+        background: var(--blue-950);
+        color: var(--white-pure);
+        font-family: 'Rajdhani', sans-serif;
+        overflow-x: hidden;
+      }
+
+      /* ── BG ── */
+      body::before {
+        content: '';
+        position: fixed; inset: 0; z-index: 0;
+        background:
+          radial-gradient(ellipse at 20% 25%, rgba(26,95,212,0.18) 0%, transparent 55%),
+          radial-gradient(ellipse at 80% 75%, rgba(56,189,248,0.07) 0%, transparent 50%),
+          linear-gradient(135deg, #020B18 0%, #040F20 100%);
+        pointer-events: none;
+      }
+      body::after {
+        content: '';
+        position: fixed; inset: 0; z-index: 0;
+        background-image:
+          linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+        background-size: 40px 40px;
+        pointer-events: none;
+      }
+
+      /* ── PARTICLES ── */
+      .particles { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
+      .p { position:absolute; border-radius:50%; animation:floatUp linear infinite; opacity:0; }
+      @keyframes floatUp {
+        0%   { transform:translateY(100vh) scale(0); opacity:0; }
+        10%  { opacity:0.4; }
+        90%  { opacity:0.15; }
+        100% { transform:translateY(-10vh) scale(1.2); opacity:0; }
+      }
+
+      /* ── PAGE WRAP ── */
+      .page-wrap {
+        position: relative; z-index: 1;
+        display: flex; flex-direction: column;
+        min-height: 100vh;
+      }
+
+      /* ── HEADER ── */
+      header {
+        position: sticky; top: 0; z-index: 20;
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 14px 20px;
+        background: rgba(2,11,24,0.90);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(59,130,246,0.14);
+        animation: fadeDown .5s ease both;
+      }
+      @keyframes fadeDown {
+        from { opacity:0; transform:translateY(-14px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+      .header-btn {
+        width: 40px; height: 40px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--white-ghost); background: rgba(59,130,246,0.08);
+        border: 1px solid rgba(59,130,246,0.15);
+        cursor: pointer; transition: all .3s;
+        text-decoration: none;
+      }
+      .header-btn:hover {
+        color: var(--white-pure);
+        background: rgba(59,130,246,0.16);
+        border-color: var(--blue-400);
+      }
+      .header-btn .material-symbols-outlined { font-size: 20px; }
+      header h1 {
+        font-family: 'Oswald', sans-serif;
+        font-size: clamp(1rem, 3vw, 1.3rem);
+        letter-spacing: .14em; color: var(--white-pure);
+        text-align: center; flex: 1; padding: 0 12px;
+      }
+      .notif-wrap { position: relative; }
+      .notif-dot {
+        position: absolute; top: 1px; right: 1px;
+        width: 8px; height: 8px; background: #ef4444;
+        border-radius: 50%; border: 1.5px solid var(--blue-950);
+      }
+
+      /* ── MAIN ── */
+      main {
+        flex: 1;
+        padding: 20px 16px 100px;
+        max-width: 1400px; margin: 0 auto; width: 100%;
+        animation: fadeUp .5s ease .1s both;
+      }
+      @keyframes fadeUp {
+        from { opacity:0; transform:translateY(18px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+
+      /* ── FILTER CARD ── */
+      .filter-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        backdrop-filter: blur(20px);
+        padding: 18px;
+        margin-bottom: 16px;
+        position: relative;
+        overflow: hidden;
+      }
+      .filter-card::before {
+        content: ''; position: absolute;
+        top: 0; left: 0; right: 0; height: 2px;
+        background: linear-gradient(90deg, var(--blue-500), var(--accent-sky));
+      }
+
+      /* filter grid */
+      .filter-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      .filter-group { display: flex; flex-direction: column; gap: 5px; }
+      .filter-group label {
+        font-size: .72rem; font-weight: 700;
+        letter-spacing: .14em; text-transform: uppercase;
+        color: var(--blue-300);
+      }
+
+      /* ── SELECT / INPUT (override) ── */
+      .select-dark, select, input[type="search"] {
+        background: rgba(59,130,246,0.07) !important;
+        border: 1px solid rgba(59,130,246,0.22) !important;
+        border-radius: 10px !important;
+        padding: 9px 12px !important;
+        color: var(--white-pure) !important;
+        font-family: 'Rajdhani', sans-serif !important;
+        font-size: .92rem !important; font-weight: 500 !important;
+        outline: none !important; width: 100%;
+        transition: border-color .3s, box-shadow .3s;
+        appearance: none; -webkit-appearance: none;
+      }
+      .select-dark:focus, select:focus, input[type="search"]:focus {
+        border-color: var(--blue-400) !important;
+        box-shadow: 0 0 0 3px rgba(59,130,246,0.12) !important;
+      }
+      select option, .select-dark option { background: #061527; color: #fff; }
+      input[type="search"]::placeholder { color: var(--white-ghost) !important; }
+      select:disabled { opacity: 0.45; cursor: not-allowed; }
+
+      /* reset btn */
+      .btn-admin { 
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 8px 18px; border-radius: 10px;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .85rem; font-weight: 700; letter-spacing: .1em;
+        text-transform: uppercase; cursor: pointer; border: none;
+        transition: transform .2s, background .3s;
+      }
+      .btn-admin:hover { transform: translateY(-1px); }
+      .btn-admin-secondary {
+        background: rgba(59,130,246,0.1);
+        color: var(--blue-300);
+        border: 1px solid rgba(59,130,246,0.25) !important;
+      }
+      .btn-admin-secondary:hover { background: rgba(59,130,246,0.18); }
+      .btn-admin-primary {
+        background: linear-gradient(135deg, var(--blue-500), var(--blue-600));
+        color: #fff;
+        box-shadow: 0 0 14px rgba(26,95,212,0.35);
+      }
+      .btn-admin-primary:hover { box-shadow: 0 0 22px rgba(59,130,246,0.5); }
+
+      /* ── TABS ── */
+      .tabs-wrap {
+        border-bottom: 1px solid rgba(59,130,246,0.15);
+        margin-bottom: 16px;
+      }
+      #tabs {
+        display: flex; gap: 4px;
+        margin-bottom: -1px;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+      #tabs::-webkit-scrollbar { display: none; }
+
+      /* JS injects tab buttons — style them */
+      #tabs button, #tabs [role="tab"] {
+        padding: 10px 20px;
+        background: none; border: none;
+        border-bottom: 2px solid transparent;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .88rem; font-weight: 700;
+        letter-spacing: .1em; text-transform: uppercase;
+        color: var(--white-ghost); cursor: pointer;
+        white-space: nowrap;
+        transition: color .3s, border-color .3s;
+      }
+      #tabs button:hover, #tabs [role="tab"]:hover { color: var(--white-pure); }
+      #tabs button.active,
+      #tabs button[aria-selected="true"],
+      #tabs [role="tab"].active,
+      #tabs [role="tab"][aria-selected="true"] {
+        color: var(--white-pure);
+        border-bottom: 2px solid var(--blue-400);
+      }
+
+      /* ── TAB PANELS ── */
+      #panels .hidden { display: none !important; }
+
+      /* JS-injected content cards — override */
+      #playersContent, #coachesContent, #achievementsContent {
+        display: flex; flex-direction: column; gap: 12px;
+      }
+
+      /* Any cards/tables injected by analytics.js */
+      .analytics-card, .stat-card {
+        background: var(--card-bg) !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 14px !important;
+        backdrop-filter: blur(16px) !important;
+        padding: 18px !important;
+        color: var(--white-pure) !important;
+      }
+      .analytics-card table, .stat-card table {
+        width: 100%; border-collapse: collapse;
+      }
+      .analytics-card th {
+        font-size: .72rem; font-weight: 700;
+        letter-spacing: .14em; text-transform: uppercase;
+        color: var(--blue-300);
+        padding: 8px 10px; text-align: left;
+        border-bottom: 1px solid rgba(59,130,246,0.15);
+      }
+      .analytics-card td {
+        padding: 10px 10px; font-size: .9rem; font-weight: 500;
+        color: rgba(255,255,255,0.82);
+        border-bottom: 1px solid rgba(59,130,246,0.08);
+      }
+      .analytics-card tr:last-child td { border-bottom: none; }
+      .analytics-card tr:hover td { background: rgba(59,130,246,0.05); }
+
+      /* chart containers */
+      canvas { max-width: 100%; }
+    </style>
   </head>
 
-  <body class="font-display text-white min-h-screen bg-background-dark">
-    <div class="relative flex min-h-screen w-full flex-col">
-      <!-- Header -->
-      <header
-        class="sticky top-0 z-20 glassmorphic backdrop-blur-md border-b border-white/10"
-      >
-        <div class="flex items-center justify-between px-4 sm:px-6 py-4">
-          <button
-            id="backBtn"
-            class="flex size-10 sm:size-11 items-center justify-center rounded-full text-white/80 hover:text-white hover:bg-white/10 transition-all active:scale-95"
-            aria-label="Back"
-            title="Back"
-            type="button"
-          >
-            <span class="material-symbols-outlined">arrow_back</span>
-          </button>
-          <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight">
-            Analytics
-          </h1>
-          <a
-            href="notifications.html"
-            class="relative flex items-center justify-center size-10 sm:size-11 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition"
-            aria-label="Notifications"
-            data-notify-bell
-          >
-            <span class="material-symbols-outlined">notifications</span>
-          </a>
-        </div>
+  <body>
+    <div class="particles" id="particles"></div>
+
+    <div class="page-wrap">
+
+      <!-- HEADER -->
+      <header>
+        <button id="backBtn" class="header-btn" aria-label="Back" type="button">
+          <span class="material-symbols-outlined">arrow_back</span>
+        </button>
+        <h1>Analytics</h1>
+        <a href="notifications.html" class="header-btn notif-wrap" aria-label="Notifications" data-notify-bell>
+          <span class="material-symbols-outlined">notifications</span>
+          <span class="notif-dot"></span>
+        </a>
       </header>
 
-      <!-- Main Content -->
-      <main
-        class="flex-grow p-4 sm:p-6 lg:p-8 pb-28 sm:pb-32 mx-auto w-full max-w-4xl md:max-w-6xl lg:max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px]"
-      >
-        <!-- Filters -->
-        <section
-          class="glassmorphic rounded-xl p-4 border border-white/10 mb-4"
-        >
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-            <div id="stateFilterContainer">
-              <label for="fState" class="block text-white/70 text-sm mb-1"
-                >State</label
-              >
-              <select id="fState" class="w-full select-dark rounded-lg p-2">
+      <!-- MAIN -->
+      <main>
+
+        <!-- FILTERS -->
+        <section class="filter-card" aria-label="Filters">
+          <div class="filter-grid">
+            <div class="filter-group" id="stateFilterContainer">
+              <label for="fState">State</label>
+              <select id="fState" class="select-dark">
                 <option value="">All India</option>
               </select>
             </div>
-            <div id="districtFilterContainer">
-              <label for="fDistrict" class="block text-white/70 text-sm mb-1"
-                >District</label
-              >
-              <select
-                id="fDistrict"
-                class="w-full select-dark rounded-lg p-2"
-                disabled
-                title="Select a state first"
-              >
+            <div class="filter-group" id="districtFilterContainer">
+              <label for="fDistrict">District</label>
+              <select id="fDistrict" class="select-dark" disabled title="Select a state first">
                 <option value="">All Districts</option>
               </select>
             </div>
-            <div id="sportFilterContainer">
-              <label for="fSport" class="block text-white/70 text-sm mb-1"
-                >Sport</label
-              >
-              <select
-                id="fSport"
-                class="w-full select-dark rounded-lg p-2"
-              ></select>
+            <div class="filter-group" id="sportFilterContainer">
+              <label for="fSport">Sport</label>
+              <select id="fSport" class="select-dark"></select>
             </div>
-            <div>
-              <label for="fSearch" class="block text-white/70 text-sm mb-1"
-                >Search</label
-              >
-              <input
-                id="fSearch"
-                type="search"
-                placeholder="Search by name/email..."
-                class="w-full rounded-lg p-2 select-dark"
-              />
+            <div class="filter-group">
+              <label for="fSearch">Search</label>
+              <input id="fSearch" type="search" placeholder="Search by name/email..." class="select-dark"/>
             </div>
           </div>
-          <div class="mt-3 flex flex-wrap gap-2 items-center">
-            <button id="btnReset" class="btn-admin btn-admin-secondary">
-              Reset Filters
-            </button>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+            <button id="btnReset" class="btn-admin btn-admin-secondary">Reset Filters</button>
           </div>
         </section>
 
-        <!-- Tab Navigation -->
-        <div class="border-b border-white/10 mb-4">
-          <div
-            id="tabs"
-            role="tablist"
-            aria-label="Analytics Tabs"
-            class="flex gap-4 -mb-px"
-          >
-            <!-- Tabs will be injected here by JS based on user role -->
-          </div>
+        <!-- TABS -->
+        <div class="tabs-wrap">
+          <div id="tabs" role="tablist" aria-label="Analytics Tabs"></div>
         </div>
 
-        <!-- Tab Panels -->
+        <!-- TAB PANELS -->
         <div id="panels">
-          <!-- Player Panel -->
-          <div
-            id="playersPanel"
-            role="tabpanel"
-            aria-labelledby="playersTab"
-            class="hidden"
-          >
+          <div id="playersPanel" role="tabpanel" aria-labelledby="playersTab" class="hidden">
             <div id="playersContent"></div>
           </div>
-          <!-- Coaches Panel -->
-          <div
-            id="coachesPanel"
-            role="tabpanel"
-            aria-labelledby="coachesTab"
-            class="hidden"
-          >
+          <div id="coachesPanel" role="tabpanel" aria-labelledby="coachesTab" class="hidden">
             <div id="coachesContent"></div>
           </div>
-          <!-- Achievements Panel -->
-          <div
-            id="achievementsPanel"
-            role="tabpanel"
-            aria-labelledby="achievementsTab"
-            class="hidden"
-          >
+          <div id="achievementsPanel" role="tabpanel" aria-labelledby="achievementsTab" class="hidden">
             <div id="achievementsContent"></div>
           </div>
         </div>
+
       </main>
     </div>
 
-    <!-- Scripts -->
+    <!-- SCRIPTS — all untouched -->
     <script src="js/districts.js"></script>
     <script type="module" src="js/notify-dot.js"></script>
     <script type="module" src="js/analytics.js"></script>
     <script type="module" src="js/nav.js"></script>
     <script>
-      // Smart Back Button
-      document
-        .getElementById("backBtn")
-        ?.addEventListener("click", function (e) {
-          e.preventDefault();
-          try {
-            const last = JSON.parse(
-              sessionStorage.getItem("lastSection") || "null"
-            );
-            if (last && last.href && !/analytics\.html/i.test(last.href)) {
-              window.location.href = last.href;
-              return;
-            }
-          } catch {}
-          window.location.href = "dashboard.html";
-        });
+      document.getElementById("backBtn")?.addEventListener("click", function (e) {
+        e.preventDefault();
+        try {
+          const last = JSON.parse(sessionStorage.getItem("lastSection") || "null");
+          if (last && last.href && !/analytics\.html/i.test(last.href)) {
+            window.location.href = last.href;
+            return;
+          }
+        } catch {}
+        window.location.href = "dashboard.html";
+      });
+    </script>
+
+    <script>
+      // Particles
+      const pc = document.getElementById('particles');
+      const cols = ['#3B82F6','#6EA8FE','#38BDF8','#ffffff'];
+      for (let i = 0; i < 20; i++) {
+        const p = document.createElement('div');
+        p.className = 'p';
+        const s = Math.random() * 3 + 1.5;
+        p.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${9+Math.random()*12}s;animation-delay:${Math.random()*10}s;`;
+        pc.appendChild(p);
+      }
     </script>
   </body>
 </html>

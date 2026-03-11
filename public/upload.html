@@ -1,82 +1,348 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Upload Achievement - SportIQ</title>
 
-    <!-- Tailwind tokens + CDN -->
     <script src="js/tailwind-config.js"></script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
-    <!-- Global + page CSS (keep upload.css for Step 2 styles and legacy controls) -->
     <link rel="stylesheet" href="css/global.css" />
     <link rel="stylesheet" href="css/upload.css" />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
-    />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Rajdhani:wght@500;600;700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+
+    <style>
+      :root {
+        --blue-950: #020B18;
+        --blue-900: #061527;
+        --blue-800: #0A2040;
+        --blue-700: #0D3060;
+        --blue-600: #1146A0;
+        --blue-500: #1A5FD4;
+        --blue-400: #3B82F6;
+        --blue-300: #6EA8FE;
+        --blue-200: #A8CCFF;
+        --white-pure: #FFFFFF;
+        --white-warm: #F8FAFF;
+        --white-ghost: #A8BBDA;
+        --accent-sky: #38BDF8;
+        --accent-cyan: #06B6D4;
+        --card-bg: rgba(6,21,39,0.78);
+        --border: rgba(59,130,246,0.20);
+      }
+
+      *, *::before, *::after { box-sizing: border-box; }
+
+      body {
+        font-family: 'Rajdhani', sans-serif;
+        background: var(--blue-950);
+        color: var(--white-pure);
+        min-height: 100vh;
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      body::before {
+        content: '';
+        position: fixed; inset: 0; z-index: 0; pointer-events: none;
+        background:
+          radial-gradient(ellipse at 20% 20%, rgba(26,95,212,0.18) 0%, transparent 55%),
+          radial-gradient(ellipse at 80% 80%, rgba(56,189,248,0.07) 0%, transparent 50%),
+          linear-gradient(135deg, #020B18 0%, #040F20 100%);
+      }
+      body::after {
+        content: '';
+        position: fixed; inset: 0; z-index: 0; pointer-events: none;
+        background-image:
+          linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+        background-size: 40px 40px;
+      }
+
+      .particles { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+      .p { position: absolute; border-radius: 50%; animation: floatUp linear infinite; opacity: 0; }
+      @keyframes floatUp {
+        0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+        10%  { opacity: 0.4; }
+        90%  { opacity: 0.15; }
+        100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+      }
+
+      .page-wrap {
+        position: relative; z-index: 1;
+        display: flex; flex-direction: column;
+        min-height: 100vh; width: 100%;
+        max-width: 576px; margin: 0 auto;
+      }
+
+      /* Header */
+      header {
+        position: sticky; top: 0; z-index: 20;
+        background: rgba(2,11,24,0.92);
+        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(59,130,246,0.14);
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 12px 16px;
+        animation: fadeDown .5s ease both;
+      }
+      @keyframes fadeDown {
+        from { opacity: 0; transform: translateY(-14px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+
+      header h1 {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.1rem; font-weight: 700;
+        letter-spacing: .16em; text-transform: uppercase;
+        color: var(--white-pure);
+      }
+
+      .header-btn {
+        width: 38px; height: 38px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--white-ghost);
+        background: rgba(59,130,246,0.08);
+        border: 1px solid rgba(59,130,246,0.15);
+        transition: all .3s; cursor: pointer; text-decoration: none;
+        flex-shrink: 0;
+      }
+      .header-btn:hover { color: var(--white-pure); background: rgba(59,130,246,0.16); border-color: var(--blue-400); }
+      .header-btn:active { transform: scale(.95); }
+
+      /* Main */
+      main {
+        flex: 1; padding: 16px 16px 96px;
+        animation: fadeUp .5s ease .1s both;
+      }
+      @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(18px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+
+      /* Upload container (replaces glassmorphic rounded-xl) */
+      .upload-container {
+        background: rgba(6,21,39,0.78);
+        border: 1px solid rgba(59,130,246,0.20);
+        border-radius: 14px;
+        backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+        position: relative; overflow: hidden;
+        padding: 24px;
+        box-shadow: 0 16px 48px rgba(0,0,0,0.3);
+      }
+      .upload-container::before {
+        content: ''; position: absolute;
+        top: 0; left: 0; right: 0; height: 2px;
+        background: linear-gradient(90deg, var(--blue-500), var(--accent-sky));
+      }
+
+      /* Section title */
+      .section-title {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.2rem; font-weight: 700;
+        letter-spacing: .08em; color: var(--white-pure);
+        margin-bottom: 20px;
+      }
+
+      /* Form labels */
+      .form-label {
+        display: block;
+        font-size: .72rem; font-weight: 700;
+        letter-spacing: .14em; text-transform: uppercase;
+        color: var(--blue-300); margin-bottom: 7px;
+      }
+
+      /* Inputs */
+      input[type="text"],
+      input[type="date"],
+      select,
+      textarea {
+        width: 100%;
+        background: rgba(59,130,246,0.07);
+        border: 1px solid rgba(59,130,246,0.22);
+        border-radius: 10px;
+        color: var(--white-pure);
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .95rem; font-weight: 500;
+        outline: none;
+        transition: border-color .2s, box-shadow .2s;
+        padding: 0 14px;
+        height: 48px;
+        -webkit-appearance: none; appearance: none;
+      }
+      textarea { height: auto; min-height: 110px; padding: 12px 14px; resize: vertical; }
+      input::placeholder, textarea::placeholder { color: var(--white-ghost); opacity: .7; }
+      input:focus, select:focus, textarea:focus {
+        border-color: var(--blue-400);
+        box-shadow: 0 0 0 3px rgba(59,130,246,0.10);
+      }
+      select option { background: #061527; color: #fff; }
+
+      /* Input box spacing */
+      .input-box { margin-bottom: 16px; }
+      .input-box:last-child { margin-bottom: 0; }
+
+      /* Parent grid */
+      .parent { display: grid; grid-template-columns: 1fr; gap: 0; }
+      @media(min-width:768px){
+        .parent { grid-template-columns: 1fr auto; gap: 24px; }
+        .div2 { display: block !important; }
+      }
+
+      /* Next / Save button */
+      .btn-primary-full {
+        display: flex; align-items: center; justify-content: center;
+        width: 100%; height: 48px; margin-top: 20px;
+        background: linear-gradient(135deg, #1A5FD4, #1146A0);
+        border: none; border-radius: 10px; color: #fff;
+        font-family: 'Rajdhani', sans-serif; font-weight: 700;
+        font-size: 1rem; letter-spacing: .10em; text-transform: uppercase;
+        cursor: pointer;
+        box-shadow: 0 0 14px rgba(26,95,212,0.4);
+        transition: box-shadow .25s, transform .2s;
+      }
+      .btn-primary-full:hover { box-shadow: 0 0 22px rgba(59,130,246,0.55); transform: translateY(-1px); }
+      .btn-primary-full:active { transform: scale(.99); }
+
+      /* Section 2 */
+      #section-2 { padding-top: 4px; }
+
+      .section-subtitle {
+        font-size: .88rem; font-weight: 500;
+        color: var(--white-ghost); text-align: center;
+        margin-bottom: 20px; line-height: 1.5;
+      }
+
+      /* Capture / Upload tiles */
+      .proof-tiles {
+        display: grid; grid-template-columns: 1fr 1fr;
+        gap: 14px; margin-bottom: 24px;
+      }
+
+      .proof-tile {
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        padding: 24px 16px;
+        background: rgba(59,130,246,0.07);
+        border: 2px dashed rgba(59,130,246,0.30);
+        border-radius: 12px;
+        color: var(--white-pure);
+        cursor: pointer; text-decoration: none;
+        transition: background .2s, border-color .2s;
+        gap: 8px;
+      }
+      .proof-tile:hover { background: rgba(59,130,246,0.15); border-color: var(--blue-400); }
+      .proof-tile .material-symbols-outlined { font-size: 36px; color: var(--blue-300); }
+      .proof-tile span:last-child { font-size: .88rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+
+      /* Preview section */
+      .preview-heading {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1rem; font-weight: 700;
+        letter-spacing: .06em; color: var(--white-pure);
+        margin-bottom: 12px;
+      }
+
+      .preview-container {
+        position: relative; width: 100%;
+        background: rgba(59,130,246,0.05);
+        border: 1px solid rgba(59,130,246,0.15);
+        border-radius: 12px; overflow: hidden;
+        display: flex; align-items: center; justify-content: center;
+        margin-bottom: 16px;
+      }
+
+      .preview-wrap { width: 100%; }
+      .preview-wrap img { width: 100%; display: block; border-radius: 10px; }
+      .preview-meta { font-size: .78rem; color: var(--white-ghost); padding: 8px 12px; }
+
+      #emptyPreviewHint {
+        text-align: center; padding: 40px 16px;
+        color: var(--white-ghost); font-size: .88rem; font-weight: 500;
+      }
+
+      /* Delete preview btn */
+      #deletePreviewBtn {
+        position: absolute; top: 10px; right: 10px;
+        width: 34px; height: 34px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        background: rgba(239,68,68,0.08);
+        border: 1px solid rgba(239,68,68,0.25);
+        color: #f87171; cursor: pointer;
+        transition: background .2s, color .2s;
+      }
+      #deletePreviewBtn:hover { background: rgba(239,68,68,0.20); color: #fff; }
+
+      /* Big save button */
+      #saveProxy {
+        display: flex; align-items: center; justify-content: center;
+        width: 100%; height: 56px;
+        background: linear-gradient(135deg, #1A5FD4, #1146A0);
+        border: none; border-radius: 12px; color: #fff;
+        font-family: 'Rajdhani', sans-serif; font-weight: 700;
+        font-size: 1.05rem; letter-spacing: .10em; text-transform: uppercase;
+        cursor: pointer;
+        box-shadow: 0 0 24px rgba(26,95,212,0.45);
+        transition: box-shadow .25s, transform .2s;
+      }
+      #saveProxy:hover { box-shadow: 0 0 32px rgba(59,130,246,0.6); transform: translateY(-1px); }
+      #saveProxy:active { transform: scale(.99); }
+
+      #saveHint {
+        margin-top: 8px; text-align: center;
+        font-size: .78rem; font-weight: 600;
+        color: var(--blue-300);
+      }
+      #saveHint.hidden { display: none !important; }
+
+      /* Keep upload-section classes from upload.css working */
+      .upload-section { display: none; }
+      .upload-section.active { display: block; }
+
+      /* sr-only */
+      .sr-only {
+        position: absolute; width: 1px; height: 1px;
+        padding: 0; margin: -1px; overflow: hidden;
+        clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+      }
+    </style>
   </head>
-  <body
-    class="font-display bg-background-light dark:bg-background-dark text-stone-900 dark:text-stone-100 min-h-screen"
-    data-page="upload.html"
-  >
-    <div class="relative flex min-h-screen w-full flex-col max-w-xl mx-auto">
-      <!-- Header: smart back, centered title, notifications bell with dot -->
-      <header
-        class="sticky top-0 z-20 flex items-center justify-between bg-background-light/80 px-4 py-3 backdrop-blur-sm dark:bg-background-dark/80"
-      >
-        <a
-          href="achievements.html"
-          id="backBtn"
-          class="flex size-10 items-center justify-center rounded-full text-stone-900 dark:text-stone-100"
-          aria-label="Back"
-          title="Back"
-        >
-          <span class="material-symbols-outlined"> arrow_back </span>
+
+  <body data-page="upload.html">
+    <div class="particles" id="particles"></div>
+
+    <div class="page-wrap">
+
+      <!-- HEADER -->
+      <header>
+        <a href="achievements.html" id="backBtn" class="header-btn" aria-label="Back" title="Back">
+          <span class="material-symbols-outlined" style="font-size:20px;">arrow_back</span>
         </a>
-        <h1 class="text-lg font-bold">Upload Achievement</h1>
-        <a
-          href="notifications.html"
-          class="relative flex size-10 items-center justify-center text-stone-300 hover:text-white transition"
-          aria-label="Notifications"
-          data-notify-bell
-        >
-          <span class="material-symbols-outlined"> notifications </span>
+        <h1>Upload Achievement</h1>
+        <a href="notifications.html" class="header-btn" aria-label="Notifications" data-notify-bell style="position:relative;">
+          <span class="material-symbols-outlined" style="font-size:20px;">notifications</span>
         </a>
       </header>
 
-      <main class="flex-1 p-4">
-        <div class="upload-container glassmorphic rounded-xl">
-          <!-- ========== SECTION 1 (unchanged logic; modern styling only) ========== -->
+      <main>
+        <div class="upload-container">
+
+          <!-- SECTION 1 -->
           <div id="section-1" class="upload-section active">
-            <h2 class="section-title text-white text-xl font-bold mb-4">
-              Achievement Details
-            </h2>
+            <h2 class="section-title">Achievement Details</h2>
 
             <div class="parent gap-4">
               <div class="div1">
-                <!-- Tournament Name -->
+
                 <div class="input-box">
-                  <label class="block mb-1 text-white/80"
-                    >Tournament Name</label
-                  >
-                  <input
-                    type="text"
-                    id="title"
-                    placeholder="Tournament name"
-                    required
-                    class="form-input w-full h-12 rounded-lg bg-white/10 border border-white/20 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-primary px-3"
-                  />
+                  <label class="form-label">Tournament Name</label>
+                  <input type="text" id="title" placeholder="Tournament name" required />
                 </div>
 
-                <!-- Sport -->
                 <div class="input-box">
-                  <label class="block mb-1 text-white/80">Sport</label>
-                  <select
-                    id="sportCategory"
-                    class="form-select w-full h-12 rounded-lg bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-primary px-3"
-                  >
+                  <label class="form-label">Sport</label>
+                  <select id="sportCategory">
                     <option value="">Select sport</option>
                     <option>Cricket</option>
                     <option>Football</option>
@@ -86,166 +352,87 @@
                   </select>
                 </div>
 
-                <!-- Date -->
                 <div class="input-box">
-                  <label class="block mb-1 text-white/80">Date</label>
-                  <input
-                    type="date"
-                    id="date"
-                    required
-                    class="form-input w-full h-12 rounded-lg bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-primary px-3"
-                  />
+                  <label class="form-label">Date</label>
+                  <input type="date" id="date" required />
                 </div>
 
-                <!-- Venue -->
                 <div class="input-box">
-                  <label class="block mb-1 text-white/80">Venue</label>
-                  <input
-                    type="text"
-                    id="venue"
-                    placeholder="Venue"
-                    required
-                    class="form-input w-full h-12 rounded-lg bg-white/10 border border-white/20 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-primary px-3"
-                  />
+                  <label class="form-label">Venue</label>
+                  <input type="text" id="venue" placeholder="Venue" required />
                 </div>
 
-                <!-- Description -->
                 <div class="input-box">
-                  <label class="block mb-1 text-white/80">Description</label>
-                  <textarea
-                    id="description"
-                    placeholder="Write about your achievement"
-                    class="form-textarea w-full min-h-[110px] rounded-lg bg-white/10 border border-white/20 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-primary px-3 py-2"
-                  ></textarea>
+                  <label class="form-label">Description</label>
+                  <textarea id="description" placeholder="Write about your achievement"></textarea>
                 </div>
               </div>
 
-              <!-- Right helper area (kept empty) -->
-              <div class="div2 hidden md:block"></div>
+              <div class="div2 hidden"></div>
             </div>
 
-            <div class="btn-row mt-4">
-              <button
-                class="btn btn-neon-blue btn-pill w-full h-12 text-white font-semibold"
-                id="nextBtn"
-              >
-                Next
-              </button>
-            </div>
+            <button class="btn-primary-full" id="nextBtn">Next</button>
           </div>
 
-          <!-- ========== SECTION 2 (NEW UI; logic/IDs unchanged) ========== -->
+          <!-- SECTION 2 -->
           <div id="section-2" class="upload-section">
-            <h2 class="section-title text-white text-xl font-bold">Proof</h2>
-            <p class="text-sm text-white/70 text-center mb-3">
-              Capture or upload proof of your achievement. For faster uploads,
-              we recommend compressing your files.
+            <h2 class="section-title">Proof</h2>
+            <p class="section-subtitle">
+              Capture or upload proof of your achievement. For faster uploads, we recommend compressing your files.
             </p>
 
-            <!-- Capture / Upload tiles -->
-            <div class="grid grid-cols-2 gap-4 mb-6">
-              <button
-                id="captureBtn"
-                type="button"
-                class="flex flex-col items-center justify-center p-6 rounded-xl glassmorphic border-2 border-dashed border-primary/50 hover:bg-primary/20 transition-colors"
-              >
-                <span class="material-symbols-outlined text-4xl text-primary"
-                  >photo_camera</span
-                >
-                <span class="mt-2 text-sm font-medium text-white">Capture</span>
+            <div class="proof-tiles">
+              <button id="captureBtn" type="button" class="proof-tile">
+                <span class="material-symbols-outlined">photo_camera</span>
+                <span>Capture</span>
               </button>
-
-              <!-- Label opens picker natively (avoid double open by not adding JS click) -->
-              <label
-                for="proof"
-                class="flex flex-col items-center justify-center p-6 rounded-xl glassmorphic border-2 border-dashed border-primary/50 hover:bg-primary/20 transition-colors cursor-pointer"
-              >
-                <span class="material-symbols-outlined text-4xl text-primary"
-                  >upload_file</span
-                >
-                <span class="mt-2 text-sm font-medium text-white">Upload</span>
+              <label for="proof" class="proof-tile">
+                <span class="material-symbols-outlined">upload_file</span>
+                <span>Upload</span>
               </label>
             </div>
 
-            <!-- Hidden real input used by js/upload.js -->
             <input type="file" id="proof" accept="image/*" class="sr-only" />
 
-            <!-- Preview -->
-            <h3 class="text-white font-bold mb-3">Preview</h3>
-            <div
-              class="relative w-full rounded-xl overflow-hidden glassmorphic flex items-center justify-center"
-            >
+            <div class="preview-heading">Preview</div>
+            <div class="preview-container">
               <div class="w-full">
                 <div id="previewWrap" class="preview-wrap" hidden>
-                  <img
-                    id="previewImg"
-                    alt="Certificate preview"
-                    class="rounded-lg"
-                  />
+                  <img id="previewImg" alt="Certificate preview" />
                   <div class="preview-meta text-white/70">
                     <span id="previewSize"></span>
                   </div>
                 </div>
-                <!-- Empty state helper (shown by default via CSS hidden attr on previewWrap) -->
-                <div
-                  id="emptyPreviewHint"
-                  class="text-center text-white/50 py-8"
-                >
-                  No file selected yet.
-                </div>
+                <div id="emptyPreviewHint">No file selected yet.</div>
               </div>
-
-              <!-- Delete preview (proxy) -->
-              <button
-                id="deletePreviewBtn"
-                type="button"
-                class="absolute top-3 right-3 p-2 rounded-full bg-black/30 text-white/80 hover:bg-black/50 hover:text-white transition-colors"
-                title="Remove"
-                aria-label="Remove"
-              >
-                <span class="material-symbols-outlined text-xl">delete</span>
+              <button id="deletePreviewBtn" type="button" title="Remove" aria-label="Remove">
+                <span class="material-symbols-outlined" style="font-size:18px;">delete</span>
               </button>
             </div>
 
-            <!-- Big Save (two-click logic: first saves cert, second final-saves) -->
-            <button
-  id="saveProxy"
-  type="button"
-  class="w-full h-14 bg-primary text-white font-bold rounded-xl shadow-[0_10px_30px_-5px_rgba(96,122,251,0.5)] hover:bg-primary/90 transition-all duration-200 active:scale-95"
->
-  Save Achievement
-</button>
-              <p
-                id="saveHint"
-                class="mt-2 text-center text-xs text-white/60 hidden"
-              >
-                Certificate saved. Tap Save again to submit the achievement.
-              </p>
-            </div>
-
-            <!-- Legacy Step 2 buttons (kept for logic; visually hidden) -->
-            <div class="btn-group inline sr-only">
-              <button class="btn-small" id="saveCertBtn">
-                Save Certificate
-              </button>
-              <button class="btn-small logout" id="replaceCertBtn">
-                Replace
-              </button>
-            </div>
-
-            <!-- Wizard controls (hidden as requested) -->
-            <div class="btn-group bottom sr-only">
-              <button class="btn-small dashboard" id="prevBtn">
-                ⬅ Previous
-              </button>
-              <button class="btn-small" id="finalSave">✅ Save</button>
-              <button class="btn-small logout" id="cancelBtn">❌ Cancel</button>
-            </div>
+            <button id="saveProxy" type="button">Save Achievement</button>
+            <p id="saveHint" class="hidden">
+              Certificate saved. Tap Save again to submit the achievement.
+            </p>
           </div>
+
+          <!-- Legacy Step 2 buttons (kept for logic; visually hidden) -->
+          <div class="btn-group inline sr-only">
+            <button class="btn-small" id="saveCertBtn">Save Certificate</button>
+            <button class="btn-small logout" id="replaceCertBtn">Replace</button>
+          </div>
+
+          <!-- Wizard controls (hidden) -->
+          <div class="btn-group bottom sr-only">
+            <button class="btn-small dashboard" id="prevBtn">⬅ Previous</button>
+            <button class="btn-small" id="finalSave">✅ Save</button>
+            <button class="btn-small logout" id="cancelBtn">❌ Cancel</button>
+          </div>
+
         </div>
       </main>
 
-      <!-- Smart back: last page; fallback to achievements.html -->
+      <!-- Smart back (preserved exactly) -->
       <script type="module">
         const back = document.getElementById("backBtn");
         back?.addEventListener("click", (e) => {
@@ -255,9 +442,7 @@
             const hasHistory = window.history.length > 1;
             const sameOrigin =
               ref &&
-              new URL(ref, window.location.href).origin ===
-                window.location.origin;
-
+              new URL(ref, window.location.href).origin === window.location.origin;
             if ((sameOrigin && ref !== window.location.href) || hasHistory) {
               window.history.back();
               return;
@@ -267,13 +452,12 @@
         });
       </script>
 
-      <!-- Proxies (Step 2 only) -->
+      <!-- Proxies (preserved exactly) -->
       <script type="module">
         const proof = document.getElementById("proof");
         const captureBtn = document.getElementById("captureBtn");
         const saveProxy = document.getElementById("saveProxy");
         const deletePreviewBtn = document.getElementById("deletePreviewBtn");
-
         const saveCertBtn = document.getElementById("saveCertBtn");
         const replaceCertBtn = document.getElementById("replaceCertBtn");
         const finalSaveBtn = document.getElementById("finalSave");
@@ -282,7 +466,6 @@
         const emptyPreviewHint = document.getElementById("emptyPreviewHint");
         const saveHint = document.getElementById("saveHint");
 
-        // internal flag: has the certificate been saved (preview visible)?
         let certSaved = false;
 
         function syncCertSaved() {
@@ -290,47 +473,30 @@
             !!previewWrap &&
             !previewWrap.hasAttribute("hidden") &&
             !!(previewImg && previewImg.src && previewImg.src.length > 0);
-          // toggle hint visibility
           if (saveHint) saveHint.classList.toggle("hidden", !certSaved);
         }
 
-        // When user captures via camera
         captureBtn?.addEventListener("click", () => {
-          try {
-            proof.setAttribute("capture", "environment");
-          } catch {}
+          try { proof.setAttribute("capture", "environment"); } catch {}
           proof?.click();
         });
 
-        // When file input changes, we have a selected file but not yet "saved"
         proof?.addEventListener("change", () => {
-          // reset certSaved until user presses Save Certificate
           certSaved = false;
           if (saveHint) saveHint.classList.add("hidden");
         });
 
-        // Big Save:
-        //  - If a file is chosen but not yet compressed/previewed → save certificate only.
-        //  - If already previewed (certificate saved) OR no file chosen → final save.
         saveProxy?.addEventListener("click", () => {
           const hasFile = proof?.files && proof.files.length > 0;
           syncCertSaved();
-
           if (hasFile && !certSaved) {
-            // First click: save the certificate only
             saveCertBtn?.click();
-            // After preview updates, set certSaved true and show hint
-            setTimeout(() => {
-              syncCertSaved();
-            }, 250);
-            return; // stop here (do not final save yet)
+            setTimeout(() => { syncCertSaved(); }, 250);
+            return;
           }
-
-          // Second click (or no file scenario): final save
           finalSaveBtn?.click();
         });
 
-        // Delete icon → forwards to Replace (clears preview)
         deletePreviewBtn?.addEventListener("click", () => {
           replaceCertBtn?.click();
           certSaved = false;
@@ -338,29 +504,36 @@
           if (saveHint) saveHint.classList.add("hidden");
         });
 
-        // Also clear the flag if Replace is clicked elsewhere (safety)
         replaceCertBtn?.addEventListener("click", () => {
           certSaved = false;
           if (saveHint) saveHint.classList.add("hidden");
         });
 
-        // In case another code path shows the preview, keep flag in sync
         const mo = new MutationObserver(syncCertSaved);
-        if (previewWrap)
-          mo.observe(previewWrap, {
-            attributes: true,
-            attributeFilter: ["hidden"],
-          });
+        if (previewWrap) mo.observe(previewWrap, { attributes: true, attributeFilter: ["hidden"] });
       </script>
 
       <!-- Bell dot helper -->
       <script type="module" src="js/notify-dot.js"></script>
 
-      <!-- Page controller (unchanged logic) -->
+      <!-- Page controller (preserved exactly) -->
       <script type="module" src="js/upload.js"></script>
 
-      <!-- Bottom nav for Player -->
+      <!-- Bottom nav -->
       <script type="module" src="js/nav.js"></script>
     </div>
+
+    <!-- Particles -->
+    <script>
+      const pc = document.getElementById('particles');
+      const cols = ['#3B82F6','#6EA8FE','#38BDF8','#ffffff'];
+      for (let i = 0; i < 18; i++) {
+        const p = document.createElement('div');
+        p.className = 'p';
+        const s = Math.random() * 3 + 1.5;
+        p.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${9+Math.random()*12}s;animation-delay:${Math.random()*10}s;`;
+        pc.appendChild(p);
+      }
+    </script>
   </body>
 </html>

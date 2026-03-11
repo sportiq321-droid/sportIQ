@@ -1,175 +1,353 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My Tournaments - SportIQ</title>
 
-    <!-- Tailwind tokens + CDN -->
     <script src="js/tailwind-config.js"></script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
     <link rel="stylesheet" href="css/global.css" />
     <link rel="stylesheet" href="css/tournament.css" />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
-    />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      :root {
+        --blue-950: #020B18;
+        --blue-900: #061527;
+        --blue-600: #1146A0;
+        --blue-500: #1A5FD4;
+        --blue-400: #3B82F6;
+        --blue-300: #6EA8FE;
+        --white-pure: #FFFFFF;
+        --white-ghost: #A8BBDA;
+        --accent-sky: #38BDF8;
+        --card-bg: rgba(6,21,39,0.78);
+        --border: rgba(59,130,246,0.20);
+      }
+
+      html, body {
+        min-height: 100vh;
+        background: var(--blue-950);
+        color: var(--white-pure);
+        font-family: 'Rajdhani', sans-serif;
+        overflow-x: hidden;
+      }
+
+      /* ── BG ── */
+      body::before {
+        content: '';
+        position: fixed; inset: 0; z-index: 0;
+        background:
+          radial-gradient(ellipse at 20% 20%, rgba(26,95,212,0.18) 0%, transparent 55%),
+          radial-gradient(ellipse at 80% 80%, rgba(56,189,248,0.07) 0%, transparent 50%),
+          linear-gradient(135deg, #020B18 0%, #040F20 100%);
+        pointer-events: none;
+      }
+      body::after {
+        content: '';
+        position: fixed; inset: 0; z-index: 0;
+        background-image:
+          linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+        background-size: 40px 40px;
+        pointer-events: none;
+      }
+
+      /* ── PARTICLES ── */
+      .particles { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
+      .p { position:absolute; border-radius:50%; animation:floatUp linear infinite; opacity:0; }
+      @keyframes floatUp {
+        0%   { transform:translateY(100vh) scale(0); opacity:0; }
+        10%  { opacity:0.4; }
+        90%  { opacity:0.15; }
+        100% { transform:translateY(-10vh) scale(1.2); opacity:0; }
+      }
+
+      /* ── PAGE WRAP ── */
+      .page-wrap {
+        position: relative; z-index: 1;
+        display: flex; flex-direction: column;
+        min-height: 100vh;
+        max-width: 580px; margin: 0 auto;
+      }
+
+      /* ── HEADER ── */
+      header {
+        position: sticky; top: 0; z-index: 20;
+        background: rgba(2,11,24,0.92);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(59,130,246,0.14);
+        padding: 13px 16px 0;
+        animation: fadeDown .5s ease both;
+      }
+      @keyframes fadeDown {
+        from { opacity:0; transform:translateY(-14px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+
+      .header-row {
+        display: flex; align-items: center; justify-content: space-between;
+        margin-bottom: 12px;
+      }
+      .header-title {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.1rem; letter-spacing: .16em;
+        color: var(--white-pure);
+      }
+
+      /* avatar */
+      .header-avatar {
+        width: 38px; height: 38px; border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid var(--blue-400);
+        box-shadow: 0 0 10px rgba(59,130,246,0.3);
+        transition: box-shadow .3s; display: block;
+      }
+      .header-avatar:hover { box-shadow: 0 0 20px rgba(59,130,246,0.55); }
+
+      /* notif bell */
+      .header-bell {
+        width: 38px; height: 38px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--white-ghost);
+        background: rgba(59,130,246,0.07);
+        border: 1px solid rgba(59,130,246,0.14);
+        text-decoration: none; transition: all .3s; position: relative;
+      }
+      .header-bell:hover { color: var(--white-pure); background: rgba(59,130,246,0.15); border-color: var(--blue-400); }
+      .header-bell .material-symbols-outlined { font-size: 20px; }
+      .notif-dot {
+        position: absolute; top: 1px; right: 1px;
+        width: 8px; height: 8px; background: #ef4444;
+        border-radius: 50%; border: 1.5px solid var(--blue-950);
+      }
+
+      /* ── FILTER CHIPS ── */
+      .chips-row {
+        display: flex; gap: 7px;
+        overflow-x: auto; padding-bottom: 12px;
+        scrollbar-width: none;
+        margin: 0 -16px; padding-left: 16px; padding-right: 16px;
+      }
+      .chips-row::-webkit-scrollbar { display: none; }
+
+      .flt-chip {
+        flex-shrink: 0;
+        padding: 6px 16px; border-radius: 20px;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .78rem; font-weight: 700; letter-spacing: .1em;
+        text-transform: uppercase; cursor: pointer;
+        background: rgba(59,130,246,0.07);
+        border: 1px solid rgba(59,130,246,0.18);
+        color: var(--white-ghost); transition: all .2s;
+        white-space: nowrap;
+      }
+      .flt-chip:hover {
+        background: rgba(59,130,246,0.14);
+        border-color: rgba(59,130,246,0.38);
+        color: var(--white-pure);
+      }
+      .flt-chip.active,
+      .flt-chip[data-active="true"] {
+        background: linear-gradient(135deg, var(--blue-500), var(--blue-600));
+        border-color: transparent; color: #fff;
+        box-shadow: 0 0 12px rgba(26,95,212,0.4);
+      }
+
+      /* ── MAIN ── */
+      main {
+        flex: 1; padding: 20px 16px 110px;
+        animation: fadeUp .5s ease .1s both;
+      }
+      @keyframes fadeUp {
+        from { opacity:0; transform:translateY(18px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+      #myTournamentsList { display: flex; flex-direction: column; gap: 14px; }
+
+      /* ── DETAILS OVERLAY ── */
+      #mtOverlay {
+        position: fixed; inset: 0; z-index: 60;
+      }
+      #mtOverlay.hidden { display: none !important; }
+
+      #mtOverlayBg {
+        position: absolute; inset: 0;
+        background: rgba(0,0,0,0.65);
+        backdrop-filter: blur(6px);
+        opacity: 0; transition: opacity .2s ease;
+      }
+
+      #mtOverlayPanel {
+        position: relative;
+        margin: 0 auto; width: 100%; max-width: 580px;
+        height: 100%; overflow-y: auto;
+        padding-bottom: 104px;
+        transform: translateY(12px);
+        opacity: 0;
+        transition: transform .2s ease, opacity .2s ease;
+      }
+
+      /* overlay header row */
+      .overlay-header {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 16px 16px 0;
+      }
+      .overlay-back {
+        width: 38px; height: 38px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--white-ghost);
+        background: rgba(59,130,246,0.08);
+        border: 1px solid rgba(59,130,246,0.15);
+        cursor: pointer; transition: all .3s;
+      }
+      .overlay-back:hover { color: var(--white-pure); background: rgba(59,130,246,0.15); border-color: var(--blue-400); }
+      .overlay-title {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.05rem; letter-spacing: .14em;
+        color: var(--white-pure);
+      }
+
+      /* banner */
+      .overlay-banner {
+        position: relative; height: 176px; width: 100%;
+        margin-top: 10px;
+      }
+      #mtBanner {
+        position: absolute; inset: 0;
+        background-size: cover; background-position: center;
+        border-radius: 0 0 16px 16px;
+      }
+      .overlay-banner::after {
+        content: '';
+        position: absolute; inset: 0;
+        background: linear-gradient(to top, rgba(2,11,24,0.96) 0%, rgba(2,11,24,0.45) 55%, transparent 100%);
+        border-radius: 0 0 16px 16px;
+      }
+
+      /* detail card */
+      .overlay-detail {
+        margin: -28px 16px 32px;
+        position: relative; z-index: 1;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 16px; padding: 22px;
+        backdrop-filter: blur(20px);
+      }
+      .overlay-detail::before {
+        content: ''; position: absolute;
+        top: 0; left: 0; right: 0; height: 2px;
+        background: linear-gradient(90deg, var(--blue-500), var(--accent-sky));
+        border-radius: 16px 16px 0 0;
+      }
+
+      #mtName {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.45rem; letter-spacing: .07em;
+        color: var(--white-pure); margin-bottom: 6px;
+      }
+      #mtDesc { font-size: .88rem; color: var(--white-ghost); line-height: 1.55; }
+
+      .facts-list {
+        margin-top: 18px;
+        padding-left: 14px;
+        border-left: 2px solid var(--blue-500);
+        display: flex; flex-direction: column; gap: 12px;
+      }
+      .fact-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+      .fact-label {
+        font-size: .75rem; font-weight: 700; letter-spacing: .1em;
+        text-transform: uppercase; color: var(--white-ghost); white-space: nowrap;
+      }
+      .fact-val { font-size: .85rem; font-weight: 600; color: var(--white-pure); text-align: right; max-width: 65%; }
+    </style>
   </head>
-  <body
-    class="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200 min-h-screen"
-    data-page="mytournaments.html"
-  >
-    <main class="relative flex min-h-screen w-full max-w-xl mx-auto flex-col">
-      <!-- Header (avatar left, title center, bell right with dot) -->
-      <header
-        class="sticky top-0 z-20 p-4 bg-background-light/80 dark:bg-background-dark/80 glassmorphic-backdrop"
-      >
-        <div class="flex items-center justify-between">
-          <a href="profile.html" class="block" aria-label="Profile">
-            <img
-              id="headerAvatar"
-              src="img/defaultavatar.jpg"
-              alt="Profile avatar"
-              class="w-10 h-10 rounded-full object-cover border-2 border-primary"
-            />
+
+  <body data-page="mytournaments.html">
+    <div class="particles" id="particles"></div>
+
+    <div class="page-wrap">
+
+      <!-- HEADER -->
+      <header>
+        <div class="header-row">
+          <a href="profile.html" aria-label="Profile">
+            <img id="headerAvatar" src="img/defaultavatar.jpg" alt="Profile avatar" class="header-avatar" />
           </a>
-          <h1 class="text-lg font-bold text-gray-900 dark:text-white">
-            My Tournaments
-          </h1>
-          <a
-            href="notifications.html"
-            class="text-gray-300"
-            aria-label="Notifications"
-            data-notify-bell
-          >
+          <span class="header-title">My Tournaments</span>
+          <a href="notifications.html" class="header-bell" aria-label="Notifications" data-notify-bell>
             <span class="material-symbols-outlined">notifications</span>
+            <span class="notif-dot"></span>
           </a>
         </div>
 
         <!-- Filter chips -->
-        <div class="mt-3 -mx-4 px-4 pb-2 flex space-x-2 overflow-x-auto">
-          <button
-            class="flt-chip shrink-0 rounded-full px-4 py-2 text-sm font-medium"
-            data-filter="ALL"
-          >
-            All
-          </button>
-          <button
-            class="flt-chip shrink-0 rounded-full px-4 py-2 text-sm font-medium"
-            data-filter="PENDING"
-          >
-            Pending
-          </button>
-          <button
-            class="flt-chip shrink-0 rounded-full px-4 py-2 text-sm font-medium"
-            data-filter="CONFIRMED"
-          >
-            Confirmed
-          </button>
-          <button
-            class="flt-chip shrink-0 rounded-full px-4 py-2 text-sm font-medium"
-            data-filter="REJECTED"
-          >
-            Rejected
-          </button>
+        <div class="chips-row">
+          <button class="flt-chip" data-filter="ALL">All</button>
+          <button class="flt-chip" data-filter="PENDING">Pending</button>
+          <button class="flt-chip" data-filter="CONFIRMED">Confirmed</button>
+          <button class="flt-chip" data-filter="REJECTED">Rejected</button>
         </div>
       </header>
 
-      <!-- List -->
-      <section class="flex-grow p-4">
-        <div id="myTournamentsList" class="flex flex-col gap-4"></div>
-      </section>
-    </main>
+      <!-- LIST -->
+      <main>
+        <div id="myTournamentsList"></div>
+      </main>
 
-    <!-- Inline details overlay (Step 3-style, animated & above bottom nav) -->
-    <div id="mtOverlay" class="fixed inset-0 z-[60] hidden">
-      <!-- Dim, blurred backdrop (fades in/out) -->
-      <div
-        id="mtOverlayBg"
-        class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-200"
-      ></div>
+    </div><!-- /.page-wrap -->
 
-      <!-- Scrollable content; bottom padding clears fixed bottom nav -->
-      <div
-        id="mtOverlayPanel"
-        class="relative mx-auto w-full max-w-xl h-full overflow-y-auto pb-[104px]
-               transform transition-all duration-200 ease-out opacity-0 translate-y-3"
-      >
-        <div class="flex items-center justify-between px-4 pt-4">
-          <button
-            id="mtClose"
-            type="button"
-            aria-label="Back"
-            class="text-white hover:text-white/80 transition"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="28"
-              height="28"
-              fill="currentColor"
-              viewBox="0 0 256 256"
-              aria-hidden="true"
-            >
-              <path
-                d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"
-              />
+    <!-- ── DETAILS OVERLAY ── -->
+    <div id="mtOverlay" class="hidden">
+      <div id="mtOverlayBg"></div>
+      <div id="mtOverlayPanel">
+
+        <div class="overlay-header">
+          <button id="mtClose" type="button" aria-label="Back" class="overlay-back">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256" aria-hidden="true">
+              <path d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"/>
             </svg>
           </button>
-          <h2 class="text-lg font-bold text-white">Tournament Details</h2>
-          <div class="w-8"></div>
+          <span class="overlay-title">Tournament Details</span>
+          <div style="width:38px"></div>
         </div>
 
         <!-- Banner -->
-        <div class="relative h-44 w-full mt-2">
-          <div
-            id="mtBanner"
-            class="absolute inset-0 bg-center bg-cover rounded-b-xl"
-          ></div>
-          <div
-            class="absolute inset-0 bg-gradient-to-t from-background-dark via-background-dark/70 to-transparent rounded-b-xl"
-          ></div>
+        <div class="overlay-banner">
+          <div id="mtBanner"></div>
         </div>
 
-        <!-- Details body -->
-        <div class="px-4 -mt-8 pb-8">
-          <div class="glassmorphic rounded-xl p-6 shadow-2xl">
-            <h3 id="mtName" class="text-2xl font-bold text-white"></h3>
-            <p id="mtDesc" class="mt-2 text-gray-300"></p>
-
-            <div class="mt-6 space-y-4 border-l-2 border-primary pl-4">
-              <div class="flex justify-between gap-4">
-                <span class="text-sm text-gray-400">Location</span>
-                <span
-                  id="mtVenue"
-                  class="text-sm font-medium text-white truncate max-w-[65%] text-right"
-                ></span>
-              </div>
-              <div class="flex justify-between gap-4">
-                <span class="text-sm text-gray-400">Date</span>
-                <span
-                  id="mtDate"
-                  class="text-sm font-medium text-white truncate max-w-[65%] text-right"
-                ></span>
-              </div>
-              <div class="flex justify-between gap-4">
-                <span class="text-sm text-gray-400">Sport</span>
-                <span
-                  id="mtSport"
-                  class="text-sm font-medium text-white truncate max-w-[65%] text-right"
-                ></span>
-              </div>
+        <!-- Detail card -->
+        <div class="overlay-detail">
+          <h3 id="mtName"></h3>
+          <p id="mtDesc"></p>
+          <div class="facts-list">
+            <div class="fact-row">
+              <span class="fact-label">Location</span>
+              <span id="mtVenue" class="fact-val"></span>
+            </div>
+            <div class="fact-row">
+              <span class="fact-label">Date</span>
+              <span id="mtDate" class="fact-val"></span>
+            </div>
+            <div class="fact-row">
+              <span class="fact-label">Sport</span>
+              <span id="mtSport" class="fact-val"></span>
             </div>
           </div>
         </div>
+
       </div>
     </div>
 
-    <!-- Controllers -->
+    <!-- ALL SCRIPTS — untouched -->
     <script type="module" src="js/mytournaments.js"></script>
     <script type="module" src="js/notify-dot.js"></script>
 
-    <!-- Header avatar setter -->
     <script type="module">
       import { getCurrentUser } from "./js/modules/users.js";
       const img = document.getElementById("headerAvatar");
@@ -181,7 +359,18 @@
       }
     </script>
 
-    <!-- Bottom nav -->
     <script type="module" src="js/nav.js"></script>
+
+    <script>
+      const pc = document.getElementById('particles');
+      const cols = ['#3B82F6','#6EA8FE','#38BDF8','#ffffff'];
+      for (let i = 0; i < 18; i++) {
+        const p = document.createElement('div');
+        p.className = 'p';
+        const s = Math.random() * 3 + 1.5;
+        p.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${9+Math.random()*12}s;animation-delay:${Math.random()*10}s;`;
+        pc.appendChild(p);
+      }
+    </script>
   </body>
 </html>

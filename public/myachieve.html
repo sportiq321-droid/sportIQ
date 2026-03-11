@@ -1,82 +1,347 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My Achievements - SportIQ</title>
 
-    <!-- Tailwind (tokens + CDN) -->
     <script src="js/tailwind-config.js"></script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
-    <!-- Global + page CSS (keep achievements.css for edit/delete modal styles) -->
     <link rel="stylesheet" href="css/global.css" />
     <link rel="stylesheet" href="css/achievements.css" />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
-    />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      :root {
+        --blue-950: #020B18;
+        --blue-900: #061527;
+        --blue-600: #1146A0;
+        --blue-500: #1A5FD4;
+        --blue-400: #3B82F6;
+        --blue-300: #6EA8FE;
+        --white-pure: #FFFFFF;
+        --white-ghost: #A8BBDA;
+        --accent-sky: #38BDF8;
+        --card-bg: rgba(6,21,39,0.78);
+        --border: rgba(59,130,246,0.20);
+      }
+
+      html, body {
+        min-height: 100vh;
+        background: var(--blue-950);
+        color: var(--white-pure);
+        font-family: 'Rajdhani', sans-serif;
+        overflow-x: hidden;
+      }
+
+      /* ── BG ── */
+      body::before {
+        content: '';
+        position: fixed; inset: 0; z-index: 0;
+        background:
+          radial-gradient(ellipse at 20% 20%, rgba(26,95,212,0.18) 0%, transparent 55%),
+          radial-gradient(ellipse at 80% 80%, rgba(56,189,248,0.07) 0%, transparent 50%),
+          linear-gradient(135deg, #020B18 0%, #040F20 100%);
+        pointer-events: none;
+      }
+      body::after {
+        content: '';
+        position: fixed; inset: 0; z-index: 0;
+        background-image:
+          linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+        background-size: 40px 40px;
+        pointer-events: none;
+      }
+
+      /* ── PARTICLES ── */
+      .particles { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
+      .p { position:absolute; border-radius:50%; animation:floatUp linear infinite; opacity:0; }
+      @keyframes floatUp {
+        0%   { transform:translateY(100vh) scale(0); opacity:0; }
+        10%  { opacity:0.4; }
+        90%  { opacity:0.15; }
+        100% { transform:translateY(-10vh) scale(1.2); opacity:0; }
+      }
+
+      /* ── PAGE WRAP ── */
+      .page-wrap {
+        position: relative; z-index: 1;
+        display: flex; flex-direction: column;
+        min-height: 100vh;
+        max-width: 580px; margin: 0 auto;
+      }
+
+      /* ── HEADER ── */
+      header {
+        position: sticky; top: 0; z-index: 20;
+        background: rgba(2,11,24,0.92);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(59,130,246,0.14);
+        animation: fadeDown .5s ease both;
+      }
+      @keyframes fadeDown {
+        from { opacity:0; transform:translateY(-14px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+      .header-inner {
+        padding: 13px 16px;
+        display: flex; align-items: center; justify-content: space-between;
+      }
+      .header-btn {
+        width: 38px; height: 38px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--white-ghost);
+        background: rgba(59,130,246,0.08);
+        border: 1px solid rgba(59,130,246,0.15);
+        text-decoration: none; transition: all .3s; cursor: pointer;
+      }
+      .header-btn:hover { color: var(--white-pure); background: rgba(59,130,246,0.16); border-color: var(--blue-400); }
+      .header-btn .material-symbols-outlined { font-size: 20px; }
+      .header-title {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.1rem; letter-spacing: .16em;
+        color: var(--white-pure);
+      }
+      .notif-wrap { position: relative; }
+      .notif-dot {
+        position: absolute; top: 1px; right: 1px;
+        width: 8px; height: 8px; background: #ef4444;
+        border-radius: 50%; border: 1.5px solid var(--blue-950);
+      }
+
+      /* ── MAIN ── */
+      main {
+        flex: 1; padding: 20px 16px 110px;
+        display: flex; flex-direction: column; gap: 14px;
+        animation: fadeUp .5s ease .1s both;
+      }
+      @keyframes fadeUp {
+        from { opacity:0; transform:translateY(18px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+      #achievementList { display: flex; flex-direction: column; gap: 14px; }
+
+      /* ── PROOF MODAL ── */
+      #imgModal {
+        position: fixed; inset: 0; z-index: 60;
+      }
+      #imgModal.hidden { display: none !important; }
+      #imgModalBackdrop {
+        position: absolute; inset: 0;
+        background: rgba(0,0,0,0.7);
+        backdrop-filter: blur(6px);
+      }
+      .img-modal-wrap {
+        position: relative;
+        display: flex; align-items: center; justify-content: center;
+        width: 100%; height: 100%; padding: 16px;
+      }
+      .img-modal-card {
+        position: relative; z-index: 1;
+        background: rgba(4,14,30,0.98);
+        border: 1px solid rgba(59,130,246,0.22);
+        border-radius: 18px; overflow: hidden;
+        width: 92%; max-width: 480px;
+        animation: modalIn .25s ease both;
+      }
+      @keyframes modalIn {
+        from { opacity:0; transform:translateY(18px) scale(.97); }
+        to   { opacity:1; transform:translateY(0) scale(1); }
+      }
+      .img-modal-card::before {
+        content: ''; position: absolute;
+        top: 0; left: 0; right: 0; height: 2px;
+        background: linear-gradient(90deg, var(--blue-500), var(--accent-sky));
+      }
+      .img-modal-header {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 14px 18px;
+        border-bottom: 1px solid rgba(59,130,246,0.12);
+      }
+      .img-modal-header h3 {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1rem; letter-spacing: .12em;
+        color: var(--white-pure);
+      }
+      #imgModalClose {
+        width: 30px; height: 30px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        background: rgba(239,68,68,0.08);
+        border: 1px solid rgba(239,68,68,0.25);
+        color: #f87171; cursor: pointer; transition: all .25s;
+      }
+      #imgModalClose:hover { background: rgba(239,68,68,0.18); color: #fff; }
+      #imgModalClose .material-symbols-outlined { font-size: 16px; }
+      .img-modal-body { padding: 16px; }
+      #modalImg { display: block; max-width: 100%; height: auto; border-radius: 10px; margin: 0 auto; }
+
+      /* ── EDIT MODAL ── */
+      .modal {
+        position: fixed; inset: 0; z-index: 50;
+        display: flex; align-items: flex-end; justify-content: center;
+        background: rgba(0,0,0,0.65);
+        backdrop-filter: blur(6px);
+      }
+      .modal.hidden { display: none !important; }
+      @media(min-width:500px) { .modal { align-items: center; } }
+
+      .modal-inner {
+        position: relative;
+        background: rgba(4,14,30,0.98);
+        border: 1px solid rgba(59,130,246,0.22);
+        border-radius: 20px 20px 0 0;
+        padding: 24px 20px 28px;
+        width: 100%; max-width: 500px;
+        max-height: 90vh; overflow-y: auto;
+        animation: slideUp .3s cubic-bezier(.22,1,.36,1);
+        scrollbar-width: thin; scrollbar-color: rgba(59,130,246,0.2) transparent;
+      }
+      @media(min-width:500px) { .modal-inner { border-radius: 20px; } }
+      @keyframes slideUp {
+        from { opacity:0; transform:translateY(28px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+      /* top accent */
+      .modal-inner::before {
+        content: ''; position: absolute;
+        top: 0; left: 0; right: 0; height: 2px;
+        background: linear-gradient(90deg, var(--blue-500), var(--accent-sky));
+        border-radius: 20px 20px 0 0;
+      }
+
+      .modal-close {
+        position: absolute; top: 14px; right: 16px;
+        width: 30px; height: 30px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        background: rgba(239,68,68,0.08);
+        border: 1px solid rgba(239,68,68,0.25);
+        color: #f87171; cursor: pointer; font-size: .95rem;
+        transition: all .25s; line-height: 1;
+      }
+      .modal-close:hover { background: rgba(239,68,68,0.18); color: #fff; }
+
+      .modal-inner h3 {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.1rem; letter-spacing: .12em;
+        color: var(--white-pure); margin-bottom: 18px;
+        padding-right: 36px;
+      }
+
+      /* edit form */
+      .edit-form {
+        display: flex; flex-direction: column; gap: 14px;
+      }
+      .edit-form label {
+        display: flex; flex-direction: column; gap: 5px;
+        font-size: .72rem; font-weight: 700;
+        letter-spacing: .14em; text-transform: uppercase;
+        color: var(--blue-300);
+      }
+      .edit-form input,
+      .edit-form select,
+      .edit-form textarea {
+        padding: 10px 12px;
+        background: rgba(59,130,246,0.07);
+        border: 1px solid rgba(59,130,246,0.22);
+        border-radius: 10px; color: var(--white-pure);
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .92rem; font-weight: 500;
+        outline: none; transition: border-color .3s, box-shadow .3s;
+        appearance: none; -webkit-appearance: none;
+        resize: vertical;
+      }
+      .edit-form input:focus,
+      .edit-form select:focus,
+      .edit-form textarea:focus {
+        border-color: var(--blue-400);
+        box-shadow: 0 0 0 3px rgba(59,130,246,0.10);
+      }
+      .edit-form input::placeholder,
+      .edit-form textarea::placeholder { color: var(--white-ghost); }
+      .edit-form select option { background: #061527; color: #fff; }
+
+      /* btn row */
+      .btn-row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px; }
+      .btn-tiny {
+        padding: 9px 20px; border-radius: 9px; cursor: pointer;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .82rem; font-weight: 700; letter-spacing: .1em;
+        text-transform: uppercase; transition: all .25s;
+        background: rgba(59,130,246,0.08);
+        border: 1px solid rgba(59,130,246,0.22);
+        color: var(--white-ghost);
+      }
+      .btn-tiny:hover { background: rgba(59,130,246,0.15); color: var(--white-pure); border-color: var(--blue-400); }
+      .btn-tiny.edit {
+        background: linear-gradient(135deg, var(--blue-500), var(--blue-600));
+        border: none; color: #fff;
+        box-shadow: 0 0 14px rgba(26,95,212,0.4);
+      }
+      .btn-tiny.edit:hover { box-shadow: 0 0 22px rgba(59,130,246,0.55); transform: translateY(-1px); }
+      .btn-tiny.danger {
+        background: rgba(239,68,68,0.10);
+        border: 1px solid rgba(239,68,68,0.30);
+        color: #f87171;
+      }
+      .btn-tiny.danger:hover { background: rgba(239,68,68,0.20); color: #fff; }
+
+      /* delete confirm text */
+      .confirm-text {
+        font-size: .88rem; color: var(--white-ghost);
+        margin-bottom: 18px; line-height: 1.5;
+      }
+    </style>
   </head>
-  <body
-    class="bg-background-light dark:bg-background-dark font-display text-white min-h-screen"
-    data-page="myachievements.html"
-  >
-    <div class="relative flex min-h-screen w-full flex-col max-w-xl mx-auto">
-      <!-- Header: back, title, notifications bell with dot -->
-      <header class="sticky top-0 z-20 glassmorphic">
-        <div class="px-4 py-3 flex items-center justify-between">
-          <a
-            href="achievements.html"
-            id="backBtn"
-            class="flex size-10 items-center justify-center rounded-full text-white/80 hover:text-white transition"
-            aria-label="Back"
-            title="Back"
-          >
-            <span class="material-symbols-outlined"> arrow_back </span>
+
+  <body data-page="myachievements.html">
+    <div class="particles" id="particles"></div>
+
+    <div class="page-wrap">
+
+      <!-- HEADER -->
+      <header>
+        <div class="header-inner">
+          <a href="achievements.html" id="backBtn" class="header-btn" aria-label="Back" title="Back">
+            <span class="material-symbols-outlined">arrow_back</span>
           </a>
-          <h1 class="text-lg font-bold">My Achievements</h1>
-          <a
-            href="notifications.html"
-            class="relative flex size-10 items-center justify-center text-white/70 hover:text-white transition"
-            aria-label="Notifications"
-            data-notify-bell
-          >
-            <span class="material-symbols-outlined"> notifications </span>
+          <h1 class="header-title">My Achievements</h1>
+          <a href="notifications.html" class="header-btn notif-wrap" aria-label="Notifications" data-notify-bell>
+            <span class="material-symbols-outlined">notifications</span>
+            <span class="notif-dot"></span>
           </a>
         </div>
       </header>
 
-      <!-- Content -->
-      <main class="flex-1 p-4 space-y-4">
-        <!-- List container (JS renders cards here) -->
-        <div id="achievementList" class="space-y-4"></div>
+      <!-- MAIN -->
+      <main>
+        <div id="achievementList"></div>
       </main>
 
-      <!-- Proof preview overlay (white panel) -->
-      <div id="imgModal" class="fixed inset-0 z-[60] hidden">
-        <!-- Backdrop -->
-        <div class="absolute inset-0 bg-black/60" id="imgModalBackdrop"></div>
-        <!-- Panel -->
-        <div
-          class="relative mx-auto w-full max-w-xl h-full overflow-y-auto p-4 flex items-center justify-center"
-        >
-          <div class="bg-white text-black rounded-xl shadow-xl max-w-full w-[92%] md:w-[85%]">
-            <div class="flex items-center justify-between px-4 py-3 border-b border-black/10">
-              <h3 class="text-base font-semibold">Proof</h3>
-              <button id="imgModalClose" class="p-2 rounded hover:bg-black/5" aria-label="Close">
-                <span class="material-symbols-outlined"> close </span>
+      <!-- PROOF MODAL -->
+      <div id="imgModal" class="hidden">
+        <div id="imgModalBackdrop" class="absolute inset-0"></div>
+        <div class="img-modal-wrap">
+          <div class="img-modal-card">
+            <div class="img-modal-header">
+              <h3>Proof</h3>
+              <button id="imgModalClose" aria-label="Close">
+                <span class="material-symbols-outlined">close</span>
               </button>
             </div>
-            <div class="p-4">
-              <img id="modalImg" alt="Proof image" class="block max-w-full h-auto rounded-md mx-auto" />
+            <div class="img-modal-body">
+              <img id="modalImg" alt="Proof image" />
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Edit achievement modal (kept) -->
+      <!-- EDIT MODAL -->
       <div id="editModal" class="modal hidden" aria-hidden="true">
-        <div class="modal-inner glass-container">
+        <div class="modal-inner">
           <button id="editModalClose" class="modal-close" aria-label="Close">✕</button>
           <h3>Edit Achievement</h3>
           <form id="editForm" class="edit-form">
@@ -103,11 +368,11 @@
               Venue
               <input id="editVenue" type="text" placeholder="Venue" required />
             </label>
-            <label class="full">
+            <label>
               Description
               <textarea id="editDescription" rows="3" placeholder="Write about your achievement"></textarea>
             </label>
-            <div class="btn-row right">
+            <div class="btn-row">
               <button type="button" class="btn-tiny" id="editCancel">Cancel</button>
               <button type="submit" class="btn-tiny edit" id="editSave">Save Changes</button>
             </div>
@@ -115,26 +380,23 @@
         </div>
       </div>
 
-      <!-- Delete confirmation modal (kept) -->
+      <!-- DELETE MODAL -->
       <div id="deleteModal" class="modal hidden" aria-hidden="true">
-        <div class="modal-inner glass-container">
+        <div class="modal-inner">
           <button id="deleteModalClose" class="modal-close" aria-label="Close">✕</button>
           <h3>Delete Achievement</h3>
-          <p class="confirm-text muted">This action cannot be undone.</p>
-          <div class="btn-row right">
+          <p class="confirm-text">This action cannot be undone.</p>
+          <div class="btn-row">
             <button class="btn-tiny" id="deleteCancel">Cancel</button>
             <button class="btn-tiny danger" id="deleteConfirm">Delete</button>
           </div>
         </div>
       </div>
 
-      <!-- Bell dot helper -->
+      <!-- SCRIPTS — untouched -->
       <script type="module" src="js/notify-dot.js"></script>
-
-      <!-- Page controller -->
       <script type="module" src="js/myachieve.js"></script>
 
-      <!-- Smart back -->
       <script type="module">
         const back = document.getElementById("backBtn");
         const backdrop = document.getElementById("imgModalBackdrop");
@@ -143,8 +405,7 @@
           try {
             const ref = document.referrer || "";
             const hasHistory = window.history.length > 1;
-            const sameOrigin =
-              ref && new URL(ref, window.location.href).origin === window.location.origin;
+            const sameOrigin = ref && new URL(ref, window.location.href).origin === window.location.origin;
             if ((sameOrigin && ref !== window.location.href) || hasHistory) {
               window.history.back();
               return;
@@ -152,15 +413,25 @@
           } catch {}
           window.location.href = "achievements.html";
         });
-        // Allow clicking backdrop to close proof overlay
         backdrop?.addEventListener("click", () => {
           const modal = document.getElementById("imgModal");
           if (modal) modal.classList.add("hidden");
         });
       </script>
 
-      <!-- Bottom nav -->
       <script type="module" src="js/nav.js"></script>
     </div>
+
+    <script>
+      const pc = document.getElementById('particles');
+      const cols = ['#3B82F6','#6EA8FE','#38BDF8','#ffffff'];
+      for (let i = 0; i < 18; i++) {
+        const p = document.createElement('div');
+        p.className = 'p';
+        const s = Math.random() * 3 + 1.5;
+        p.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${9+Math.random()*12}s;animation-delay:${Math.random()*10}s;`;
+        pc.appendChild(p);
+      }
+    </script>
   </body>
 </html>

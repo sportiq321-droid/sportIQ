@@ -1,176 +1,343 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Verify - SportIQ</title>
 
-    <!-- Tailwind tokens + CDN -->
+    <!-- Existing scripts — untouched -->
     <script src="js/tailwind-config.js"></script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
-    <!-- Global CSS -->
     <link rel="stylesheet" href="css/global.css" />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
-    />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+      *, *::before, *::after { box-sizing: border-box; }
+
+      :root {
+        --blue-950: #020B18;
+        --blue-900: #061527;
+        --blue-600: #1146A0;
+        --blue-500: #1A5FD4;
+        --blue-400: #3B82F6;
+        --blue-300: #6EA8FE;
+        --white-pure: #FFFFFF;
+        --white-ghost: #A8BBDA;
+        --accent-sky: #38BDF8;
+        --card-bg: rgba(6,21,39,0.78);
+        --border: rgba(59,130,246,0.20);
+      }
+
+      html, body {
+        min-height: 100vh;
+        background: var(--blue-950);
+        color: var(--white-pure);
+        font-family: 'Rajdhani', sans-serif;
+        overflow-x: hidden;
+      }
+
+      /* ── BG ── */
+      body::before {
+        content: '';
+        position: fixed; inset: 0; z-index: 0;
+        background:
+          radial-gradient(ellipse at 20% 20%, rgba(26,95,212,0.18) 0%, transparent 55%),
+          radial-gradient(ellipse at 80% 80%, rgba(56,189,248,0.07) 0%, transparent 50%),
+          linear-gradient(135deg, #020B18 0%, #040F20 100%);
+        pointer-events: none;
+      }
+      body::after {
+        content: '';
+        position: fixed; inset: 0; z-index: 0;
+        background-image:
+          linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+        background-size: 40px 40px;
+        pointer-events: none;
+      }
+
+      /* ── PARTICLES ── */
+      .particles { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
+      .p { position:absolute; border-radius:50%; animation:floatUp linear infinite; opacity:0; }
+      @keyframes floatUp {
+        0%   { transform:translateY(100vh) scale(0); opacity:0; }
+        10%  { opacity:0.4; }
+        90%  { opacity:0.15; }
+        100% { transform:translateY(-10vh) scale(1.2); opacity:0; }
+      }
+
+      /* ── PAGE WRAP ── */
+      .page-wrap {
+        position: relative; z-index: 1;
+        display: flex; flex-direction: column;
+        min-height: 100vh;
+      }
+
+      /* ── HEADER ── */
+      header {
+        position: sticky; top: 0; z-index: 20;
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 13px 20px;
+        background: rgba(2,11,24,0.90);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(59,130,246,0.14);
+        animation: fadeDown .5s ease both;
+      }
+      @keyframes fadeDown {
+        from { opacity:0; transform:translateY(-14px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+      .header-btn {
+        width: 40px; height: 40px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--white-ghost); background: rgba(59,130,246,0.08);
+        border: 1px solid rgba(59,130,246,0.15);
+        cursor: pointer; transition: all .3s;
+        text-decoration: none; outline: none;
+      }
+      .header-btn:hover {
+        color: var(--white-pure);
+        background: rgba(59,130,246,0.16);
+        border-color: var(--blue-400);
+      }
+      .header-btn .material-symbols-outlined { font-size: 20px; }
+      header h1 {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.1rem; letter-spacing: .16em;
+        color: var(--white-pure); flex: 1; text-align: center;
+      }
+      .notif-wrap { position: relative; }
+      .notif-dot {
+        position: absolute; top: 1px; right: 1px;
+        width: 8px; height: 8px; background: #ef4444;
+        border-radius: 50%; border: 1.5px solid var(--blue-950);
+      }
+
+      /* ── MAIN ── */
+      main {
+        flex: 1;
+        padding: 28px 20px 110px;
+        animation: fadeUp .5s ease .1s both;
+      }
+      @keyframes fadeUp {
+        from { opacity:0; transform:translateY(18px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+
+      /* ── CARDS GRID ── */
+      .cards-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+        max-width: 900px; margin: 0 auto;
+      }
+      @media(min-width: 600px) {
+        .cards-grid { grid-template-columns: 1fr 1fr; }
+      }
+
+      /* ── VERIFY CARD ── */
+      .verify-card {
+        position: relative; overflow: hidden;
+        border-radius: 22px;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        backdrop-filter: blur(20px);
+        display: flex; flex-direction: column;
+        transition: border-color .3s, box-shadow .3s, transform .3s;
+        text-decoration: none;
+      }
+      /* top accent line */
+      .verify-card::before {
+        content: ''; position: absolute;
+        top: 0; left: 0; right: 0; height: 2px;
+        opacity: 0; transition: opacity .3s;
+        z-index: 2;
+      }
+      .card-assess::before {
+        background: linear-gradient(90deg, var(--blue-500), var(--accent-sky));
+      }
+      .card-achieve::before {
+        background: linear-gradient(90deg, #D97706, #FCD34D);
+      }
+      /* corner accent */
+      .verify-card::after {
+        content: ''; position: absolute;
+        bottom: 12px; right: 12px;
+        width: 20px; height: 20px;
+        border-bottom: 1.5px solid rgba(59,130,246,0.25);
+        border-right: 1.5px solid rgba(59,130,246,0.25);
+        border-radius: 0 0 4px 0;
+        transition: border-color .3s;
+        z-index: 2;
+      }
+      .verify-card:hover {
+        border-color: rgba(59,130,246,0.42);
+        box-shadow: 0 12px 40px rgba(0,0,0,0.45), 0 0 0 1px rgba(59,130,246,0.1);
+        transform: translateY(-3px);
+      }
+      .verify-card:hover::before { opacity: 1; }
+      .verify-card:hover::after  { border-color: rgba(59,130,246,0.5); }
+      .verify-card:active { transform: scale(.98); }
+
+      /* image area */
+      .card-img-wrap {
+        aspect-ratio: 16/9; overflow: hidden;
+        position: relative;
+      }
+      .card-img-wrap img {
+        width: 100%; height: 100%; object-fit: cover;
+        transition: transform .4s ease;
+        display: block;
+      }
+      .verify-card:hover .card-img-wrap img { transform: scale(1.05); }
+
+      /* image overlay tint */
+      .card-img-wrap::after {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(180deg, transparent 40%, rgba(6,21,39,0.85) 100%);
+      }
+
+      /* card body */
+      .card-body {
+        padding: 20px 20px 20px;
+        display: flex; flex-direction: column; gap: 10px; flex: 1;
+      }
+      .card-title {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.2rem; letter-spacing: .08em;
+        color: var(--white-pure);
+      }
+      .card-desc {
+        font-size: .85rem; font-weight: 500;
+        color: var(--white-ghost); line-height: 1.5;
+        flex: 1;
+      }
+
+      /* view button */
+      .btn-view {
+        display: flex; align-items: center; justify-content: center; gap: 7px;
+        padding: 12px 20px; border-radius: 12px;
+        background: linear-gradient(135deg, var(--blue-500), var(--blue-600));
+        color: #fff;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .92rem; font-weight: 700; letter-spacing: .12em;
+        text-transform: uppercase; text-decoration: none;
+        box-shadow: 0 0 16px rgba(26,95,212,0.35);
+        transition: box-shadow .3s, transform .2s;
+        margin-top: auto;
+      }
+      .btn-view:hover {
+        box-shadow: 0 0 26px rgba(59,130,246,0.55);
+        transform: translateX(2px);
+      }
+      .btn-view .material-symbols-outlined { font-size: 18px; }
+
+      /* achievements card — amber accent btn */
+      .card-achieve .btn-view {
+        background: linear-gradient(135deg, #D97706, #B45309);
+        box-shadow: 0 0 16px rgba(217,119,6,0.3);
+      }
+      .card-achieve .btn-view:hover {
+        box-shadow: 0 0 26px rgba(251,191,36,0.45);
+      }
+      .card-achieve:hover {
+        border-color: rgba(217,119,6,0.38);
+        box-shadow: 0 12px 40px rgba(0,0,0,0.45), 0 0 0 1px rgba(217,119,6,0.1);
+      }
+      .card-achieve::after {
+        border-color: rgba(217,119,6,0.22);
+      }
+      .card-achieve:hover::after { border-color: rgba(251,191,36,0.45); }
+    </style>
   </head>
 
-  <body
-    class="font-display bg-background-light dark:bg-background-dark text-stone-900 dark:text-stone-100 min-h-screen"
-    data-page="coachVerifyLand"
-  >
-    <div class="relative flex min-h-screen w-full flex-col">
-      <!-- Header: back, centered title, notifications bell -->
-      <header
-        class="sticky top-0 z-20 flex items-center justify-between px-4 sm:px-6 lg:px-8 py-3 glassmorphic backdrop-blur-sm"
-      >
-        <button
-          id="backBtn"
-          class="flex size-10 sm:size-11 items-center justify-center rounded-full text-white/80 hover:text-white hover:bg-white/10 transition-all active:scale-95"
-          aria-label="Back to previous page"
-          title="Back"
-        >
+  <body data-page="coachVerifyLand">
+    <div class="particles" id="particles"></div>
+
+    <div class="page-wrap">
+
+      <!-- HEADER -->
+      <header>
+        <button id="backBtn" class="header-btn" aria-label="Back to previous page" title="Back">
           <span class="material-symbols-outlined">arrow_back</span>
         </button>
-        <h1 class="text-lg sm:text-xl font-bold text-white">Verify</h1>
-        <a
-          href="notifications.html"
-          class="relative flex size-10 sm:size-11 items-center justify-center text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-all"
-          aria-label="Notifications"
-          data-notify-bell
-        >
+        <h1>Verify</h1>
+        <a href="notifications.html" class="header-btn notif-wrap" aria-label="Notifications" data-notify-bell>
           <span class="material-symbols-outlined">notifications</span>
+          <span class="notif-dot"></span>
         </a>
       </header>
 
-      <!-- Content - Responsive padding and spacing -->
-      <main class="flex-1 p-4 sm:p-6 lg:p-8 pb-28 sm:pb-32">
-        <div
-          class="grid gap-4 sm:gap-6 lg:gap-8 grid-cols-1 sm:grid-cols-2 max-w-7xl mx-auto"
-        >
-          <!-- Assessments Card -->
-          <article
-            class="group relative overflow-hidden rounded-2xl glassmorphic shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col"
-          >
-            <div
-              class="absolute inset-0 bg-primary/10 opacity-0 transition-opacity group-hover:opacity-100 pointer-events-none"
-            ></div>
-            <div class="relative flex flex-col flex-1">
-              <!-- Image Section -->
-              <div
-                class="aspect-video w-full overflow-hidden bg-gradient-to-br from-blue-500/20 to-purple-500/20"
-              >
-                <img
-                  alt="Assessment review illustration"
-                  class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&q=80"
-                  loading="lazy"
-                />
-              </div>
+      <!-- MAIN -->
+      <main>
+        <div class="cards-grid">
 
-              <!-- Content Section -->
-              <div class="flex flex-col gap-3 sm:gap-4 p-4 sm:p-6 flex-1">
-                <div class="flex items-start justify-between gap-4">
-                  <div class="flex-1">
-                    <h2 class="text-lg sm:text-xl font-bold text-white mb-2">
-                      Assessments
-                    </h2>
-                    <p
-                      class="text-sm sm:text-base text-white/70 leading-relaxed"
-                    >
-                      Review and approve pending physical assessments from
-                      players
-                    </p>
-                  </div>
-                </div>
-
-                <!-- Action Button -->
-                <a
-                  href="coach-assessments.html"
-                  class="flex h-11 sm:h-12 items-center justify-center gap-2 rounded-xl bg-primary text-white font-semibold shadow-lg hover:bg-primary/90 hover:shadow-xl transition-all duration-200 active:scale-95 mt-auto"
-                  aria-label="View Assessments"
-                >
-                  <span class="material-symbols-outlined text-base sm:text-lg">
-                    visibility
-                  </span>
-                  <span class="text-sm sm:text-base">View</span>
-                </a>
-              </div>
+          <!-- ASSESSMENTS CARD -->
+          <article class="verify-card card-assess">
+            <div class="card-img-wrap">
+              <img
+                src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&q=80"
+                alt="Assessment review illustration"
+                loading="lazy"
+              />
+            </div>
+            <div class="card-body">
+              <div class="card-title">Assessments</div>
+              <p class="card-desc">Review and approve pending physical assessments from players</p>
+              <a href="coach-assessments.html" class="btn-view" aria-label="View Assessments">
+                <span class="material-symbols-outlined">visibility</span>
+                View
+              </a>
             </div>
           </article>
 
-          <!-- Achievements Card -->
-          <article
-            class="group relative overflow-hidden rounded-2xl glassmorphic shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col"
-          >
-            <div
-              class="absolute inset-0 bg-primary/10 opacity-0 transition-opacity group-hover:opacity-100 pointer-events-none"
-            ></div>
-            <div class="relative flex flex-col flex-1">
-              <!-- Image Section -->
-              <div
-                class="aspect-video w-full overflow-hidden bg-gradient-to-br from-amber-500/20 to-orange-500/20"
-              >
-                <img
-                  alt="Achievement verification illustration"
-                  class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  src="https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=800&q=80"
-                  loading="lazy"
-                />
-              </div>
-
-              <!-- Content Section -->
-              <div class="flex flex-col gap-3 sm:gap-4 p-4 sm:p-6 flex-1">
-                <div class="flex items-start justify-between gap-4">
-                  <div class="flex-1">
-                    <h2 class="text-lg sm:text-xl font-bold text-white mb-2">
-                      Achievements
-                    </h2>
-                    <p
-                      class="text-sm sm:text-base text-white/70 leading-relaxed"
-                    >
-                      Verify and validate player achievements and milestones
-                    </p>
-                  </div>
-                </div>
-
-                <!-- Action Button -->
-                <a
-                  href="coachVerify.html"
-                  class="flex h-11 sm:h-12 items-center justify-center gap-2 rounded-xl bg-primary text-white font-semibold shadow-lg hover:bg-primary/90 hover:shadow-xl transition-all duration-200 active:scale-95 mt-auto"
-                  aria-label="View Achievements"
-                >
-                  <span class="material-symbols-outlined text-base sm:text-lg">
-                    visibility
-                  </span>
-                  <span class="text-sm sm:text-base">View</span>
-                </a>
-              </div>
+          <!-- ACHIEVEMENTS CARD -->
+          <article class="verify-card card-achieve">
+            <div class="card-img-wrap">
+              <img
+                src="https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=800&q=80"
+                alt="Achievement verification illustration"
+                loading="lazy"
+              />
+            </div>
+            <div class="card-body">
+              <div class="card-title">Achievements</div>
+              <p class="card-desc">Verify and validate player achievements and milestones</p>
+              <a href="coachVerify.html" class="btn-view" aria-label="View Achievements">
+                <span class="material-symbols-outlined">visibility</span>
+                View
+              </a>
             </div>
           </article>
+
         </div>
       </main>
 
-      <!-- Bell dot helper -->
-      <script type="module" src="js/notify-dot.js"></script>
-
-      <!-- Coach bottom nav -->
-      <script type="module" src="js/nav.js"></script>
-
-      <!-- Smart back button handler -->
-      <script>
-        document
-          .getElementById("backBtn")
-          ?.addEventListener("click", function () {
-            if (window.history.length > 1 && document.referrer) {
-              window.history.back();
-            } else {
-              window.location.href = "dashboard.html";
-            }
-          });
-      </script>
     </div>
+
+    <!-- SCRIPTS — all untouched -->
+    <script type="module" src="js/notify-dot.js"></script>
+    <script type="module" src="js/nav.js"></script>
+    <script>
+      document.getElementById("backBtn")?.addEventListener("click", function () {
+        if (window.history.length > 1 && document.referrer) {
+          window.history.back();
+        } else {
+          window.location.href = "dashboard.html";
+        }
+      });
+
+      // Particles
+      const pc = document.getElementById('particles');
+      const cols = ['#3B82F6','#6EA8FE','#38BDF8','#ffffff'];
+      for (let i = 0; i < 18; i++) {
+        const p = document.createElement('div');
+        p.className = 'p';
+        const s = Math.random() * 3 + 1.5;
+        p.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${9+Math.random()*12}s;animation-delay:${Math.random()*10}s;`;
+        pc.appendChild(p);
+      }
+    </script>
   </body>
 </html>

@@ -1,63 +1,165 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Notifications - SportIQ</title>
 
-    <!-- Tailwind tokens + CDN -->
     <script src="js/tailwind-config.js"></script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
     <link rel="stylesheet" href="css/global.css" />
     <link rel="stylesheet" href="css/tournament.css" />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
-    />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      :root {
+        --blue-950: #020B18;
+        --blue-900: #061527;
+        --blue-600: #1146A0;
+        --blue-500: #1A5FD4;
+        --blue-400: #3B82F6;
+        --blue-300: #6EA8FE;
+        --white-pure: #FFFFFF;
+        --white-ghost: #A8BBDA;
+        --accent-sky: #38BDF8;
+        --card-bg: rgba(6,21,39,0.78);
+        --border: rgba(59,130,246,0.20);
+      }
+
+      html, body {
+        min-height: 100vh;
+        background: var(--blue-950);
+        color: var(--white-pure);
+        font-family: 'Rajdhani', sans-serif;
+        overflow-x: hidden;
+      }
+
+      /* ── BG ── */
+      body::before {
+        content: '';
+        position: fixed; inset: 0; z-index: 0;
+        background:
+          radial-gradient(ellipse at 20% 20%, rgba(26,95,212,0.18) 0%, transparent 55%),
+          radial-gradient(ellipse at 80% 80%, rgba(56,189,248,0.07) 0%, transparent 50%),
+          linear-gradient(135deg, #020B18 0%, #040F20 100%);
+        pointer-events: none;
+      }
+      body::after {
+        content: '';
+        position: fixed; inset: 0; z-index: 0;
+        background-image:
+          linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+        background-size: 40px 40px;
+        pointer-events: none;
+      }
+
+      /* ── PARTICLES ── */
+      .particles { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
+      .p { position:absolute; border-radius:50%; animation:floatUp linear infinite; opacity:0; }
+      @keyframes floatUp {
+        0%   { transform:translateY(100vh) scale(0); opacity:0; }
+        10%  { opacity:0.4; }
+        90%  { opacity:0.15; }
+        100% { transform:translateY(-10vh) scale(1.2); opacity:0; }
+      }
+
+      /* ── PAGE WRAP ── */
+      .page-wrap {
+        position: relative; z-index: 1;
+        display: flex; flex-direction: column;
+        min-height: 100vh;
+        max-width: 580px; margin: 0 auto;
+      }
+
+      /* ── HEADER ── */
+      header {
+        position: sticky; top: 0; z-index: 20;
+        background: rgba(2,11,24,0.92);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(59,130,246,0.14);
+        padding: 13px 16px;
+        animation: fadeDown .5s ease both;
+      }
+      @keyframes fadeDown {
+        from { opacity:0; transform:translateY(-14px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+      .header-row {
+        display: flex; align-items: center; justify-content: space-between;
+      }
+      .header-title {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.1rem; letter-spacing: .16em;
+        color: var(--white-pure);
+      }
+
+      /* avatar */
+      .header-avatar {
+        width: 38px; height: 38px; border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid var(--blue-400);
+        box-shadow: 0 0 10px rgba(59,130,246,0.3);
+        transition: box-shadow .3s; display: block;
+      }
+      .header-avatar:hover { box-shadow: 0 0 20px rgba(59,130,246,0.55); }
+
+      /* icon btn (tournaments link) */
+      .header-btn {
+        width: 38px; height: 38px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--white-ghost);
+        background: rgba(59,130,246,0.07);
+        border: 1px solid rgba(59,130,246,0.14);
+        text-decoration: none; transition: all .3s;
+      }
+      .header-btn:hover { color: var(--white-pure); background: rgba(59,130,246,0.15); border-color: var(--blue-400); }
+      .header-btn .material-symbols-outlined { font-size: 20px; }
+
+      /* ── MAIN ── */
+      main {
+        flex: 1; padding: 20px 16px 110px;
+        animation: fadeUp .5s ease .1s both;
+      }
+      @keyframes fadeUp {
+        from { opacity:0; transform:translateY(18px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+      #notifList { display: flex; flex-direction: column; gap: 14px; }
+    </style>
   </head>
-  <body
-    class="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200 min-h-screen"
-    data-page="notifications.html"
-  >
-    <main class="relative flex min-h-screen w-full max-w-xl mx-auto flex-col">
-      <!-- Header (no notify dot on this page) -->
-      <header
-        class="sticky top-0 z-20 p-4 bg-background-light/80 dark:bg-background-dark/80 glassmorphic-backdrop"
-      >
-        <div class="flex items-center justify-between">
-          <a href="profile.html" class="block" aria-label="Profile">
-            <img
-              id="headerAvatar"
-              src="img/defaultavatar.jpg"
-              alt="Profile avatar"
-              class="w-10 h-10 rounded-full object-cover border-2 border-primary"
-            />
+
+  <body data-page="notifications.html">
+    <div class="particles" id="particles"></div>
+
+    <div class="page-wrap">
+
+      <!-- HEADER -->
+      <header>
+        <div class="header-row">
+          <a href="profile.html" aria-label="Profile">
+            <img id="headerAvatar" src="img/defaultavatar.jpg" alt="Profile avatar" class="header-avatar" />
           </a>
-          <h1 class="text-lg font-bold text-gray-900 dark:text-white">
-            Notifications
-          </h1>
-          <!-- Quick link to My Tournaments -->
-          <a
-            href="mytournaments.html"
-            class="text-gray-300"
-            aria-label="My Tournaments"
-          >
+          <span class="header-title">Notifications</span>
+          <a href="mytournaments.html" class="header-btn" aria-label="My Tournaments">
             <span class="material-symbols-outlined">emoji_events</span>
           </a>
         </div>
       </header>
 
-      <!-- Reminder list -->
-      <section class="flex-grow p-4">
-        <div id="notifList" class="flex flex-col gap-4"></div>
-      </section>
-    </main>
+      <!-- LIST -->
+      <main>
+        <div id="notifList"></div>
+      </main>
 
-    <!-- Controller -->
+    </div>
+
+    <!-- ALL SCRIPTS — untouched -->
     <script type="module" src="js/notifications.js"></script>
 
-    <!-- Header avatar setter -->
     <script type="module">
       import { getCurrentUser } from "./js/modules/users.js";
       const img = document.getElementById("headerAvatar");
@@ -69,7 +171,18 @@
       }
     </script>
 
-    <!-- Bottom nav -->
     <script type="module" src="js/nav.js"></script>
+
+    <script>
+      const pc = document.getElementById('particles');
+      const cols = ['#3B82F6','#6EA8FE','#38BDF8','#ffffff'];
+      for (let i = 0; i < 18; i++) {
+        const p = document.createElement('div');
+        p.className = 'p';
+        const s = Math.random() * 3 + 1.5;
+        p.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${9+Math.random()*12}s;animation-delay:${Math.random()*10}s;`;
+        pc.appendChild(p);
+      }
+    </script>
   </body>
 </html>

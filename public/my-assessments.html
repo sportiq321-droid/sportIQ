@@ -1,36 +1,191 @@
 <!DOCTYPE html>
-<html class="dark" lang="en">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My Assessments - SportIQ</title>
 
-    <!-- Tailwind (project-wide tokens) -->
     <script src="js/tailwind-config.js"></script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
     <link rel="stylesheet" href="css/global.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      :root {
+        --blue-950: #020B18;
+        --blue-900: #061527;
+        --blue-600: #1146A0;
+        --blue-500: #1A5FD4;
+        --blue-400: #3B82F6;
+        --blue-300: #6EA8FE;
+        --white-pure: #FFFFFF;
+        --white-ghost: #A8BBDA;
+        --accent-sky: #38BDF8;
+        --card-bg: rgba(6,21,39,0.78);
+        --border: rgba(59,130,246,0.20);
+      }
+
+      html, body {
+        min-height: 100vh;
+        background: var(--blue-950);
+        color: var(--white-pure);
+        font-family: 'Rajdhani', sans-serif;
+        overflow-x: hidden;
+      }
+
+      /* ── BG ── */
+      body::before {
+        content: '';
+        position: fixed; inset: 0; z-index: 0;
+        background:
+          radial-gradient(ellipse at 20% 20%, rgba(26,95,212,0.18) 0%, transparent 55%),
+          radial-gradient(ellipse at 80% 80%, rgba(56,189,248,0.07) 0%, transparent 50%),
+          linear-gradient(135deg, #020B18 0%, #040F20 100%);
+        pointer-events: none;
+      }
+      body::after {
+        content: '';
+        position: fixed; inset: 0; z-index: 0;
+        background-image:
+          linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+        background-size: 40px 40px;
+        pointer-events: none;
+      }
+
+      /* ── PARTICLES ── */
+      .particles { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
+      .p { position:absolute; border-radius:50%; animation:floatUp linear infinite; opacity:0; }
+      @keyframes floatUp {
+        0%   { transform:translateY(100vh) scale(0); opacity:0; }
+        10%  { opacity:0.4; }
+        90%  { opacity:0.15; }
+        100% { transform:translateY(-10vh) scale(1.2); opacity:0; }
+      }
+
+      /* ── HEADER ── */
+      header {
+        position: sticky; top: 0; z-index: 20;
+        background: rgba(2,11,24,0.92);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(59,130,246,0.14);
+        animation: fadeDown .5s ease both;
+      }
+      @keyframes fadeDown {
+        from { opacity:0; transform:translateY(-14px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+      .header-inner {
+        max-width: 580px; margin: 0 auto;
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 14px 18px;
+      }
+      .header-title {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.1rem; letter-spacing: .16em;
+        color: var(--white-pure);
+      }
+
+      /* ── MAIN ── */
+      main {
+        position: relative; z-index: 1;
+        max-width: 580px; margin: 0 auto;
+        padding: 20px 16px 110px;
+        animation: fadeUp .5s ease .1s both;
+      }
+      @keyframes fadeUp {
+        from { opacity:0; transform:translateY(18px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+
+      /* ── FILTERS ── */
+      .filters-row {
+        display: grid; grid-template-columns: 1fr 1fr;
+        gap: 12px; margin-bottom: 18px;
+      }
+      .f-label {
+        display: block; font-size: .7rem; font-weight: 700;
+        letter-spacing: .14em; text-transform: uppercase;
+        color: var(--blue-300); margin-bottom: 5px;
+      }
+      .select-dark {
+        width: 100%; padding: 9px 12px;
+        background: rgba(59,130,246,0.07);
+        border: 1px solid rgba(59,130,246,0.20);
+        border-radius: 10px; color: var(--white-pure);
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .88rem; font-weight: 500;
+        outline: none; transition: border-color .3s, box-shadow .3s;
+        appearance: none; -webkit-appearance: none;
+      }
+      .select-dark:focus {
+        border-color: var(--blue-400);
+        box-shadow: 0 0 0 3px rgba(59,130,246,0.10);
+      }
+      .select-dark option { background: #061527; color: #fff; }
+
+      /* ── SKELETON ── */
+      #loading { display: flex; flex-direction: column; gap: 12px; }
+      .skel-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 16px; padding: 20px;
+        backdrop-filter: blur(16px);
+        animation: pulse 1.6s ease-in-out infinite;
+      }
+      @keyframes pulse {
+        0%,100% { opacity: 1; }
+        50%      { opacity: .45; }
+      }
+      .skel-line {
+        background: rgba(59,130,246,0.12);
+        border-radius: 6px; height: 12px; margin-bottom: 10px;
+      }
+      .skel-line.w-1\/3 { width: 33%; }
+      .skel-line.w-2\/3 { width: 66%; }
+      .skel-line.w-1\/2 { width: 50%; margin-bottom: 0; }
+
+      /* ── EMPTY STATE ── */
+      #emptyState {
+        text-align: center; padding: 60px 20px;
+        font-size: .92rem; color: var(--white-ghost);
+        letter-spacing: .06em;
+      }
+      #emptyState::before {
+        content: '📋';
+        display: block; font-size: 2.4rem; margin-bottom: 12px;
+      }
+
+      /* ── LIST ── */
+      #assessList { display: flex; flex-direction: column; gap: 12px; }
+
+      /* .assessment-card styles — injected by JS, so pre-define base here */
+      /* JS-injected cards will pick up from global.css / my.js */
+
+      .hidden { display: none !important; }
+    </style>
   </head>
-  <body data-page="assessments-list" class="font-display text-white">
-    <!-- Header -->
-    <header class="sticky top-0 z-20 glassmorphic px-4 py-3">
-      <div class="max-w-xl mx-auto flex items-center justify-between">
-        <div class="w-10"></div>
-        <h1 class="text-lg font-bold">My Assessments</h1>
-        <div class="w-10"></div>
+
+  <body data-page="assessments-list">
+    <div class="particles" id="particles"></div>
+
+    <!-- HEADER -->
+    <header>
+      <div class="header-inner">
+        <div style="width:40px"></div>
+        <h1 class="header-title">My Assessments</h1>
+        <div style="width:40px"></div>
       </div>
     </header>
 
-    <main class="max-w-xl mx-auto px-4 pt-4 pb-28">
-      <!-- Filters -->
-      <section class="mb-4 grid grid-cols-2 gap-3">
+    <main>
+      <!-- FILTERS -->
+      <section class="filters-row">
         <div>
-          <label class="block text-xs text-white/60 mb-1">Drill</label>
-          <select
-            id="drillFilter"
-            class="select-dark w-full rounded-lg bg-white/10 border border-white/10 text-white focus:ring-0"
-            aria-label="Filter by drill"
-          >
+          <label for="drillFilter" class="f-label">Drill</label>
+          <select id="drillFilter" class="select-dark" aria-label="Filter by drill">
             <option value="ALL">All</option>
             <option value="SIT_UPS">Sit-ups</option>
             <option value="RUN_800M">Run 800m</option>
@@ -39,12 +194,8 @@
           </select>
         </div>
         <div>
-          <label class="block text-xs text-white/60 mb-1">Timeframe</label>
-          <select
-            id="timeFilter"
-            class="select-dark w-full rounded-lg bg-white/10 border border-white/10 text-white focus:ring-0"
-            aria-label="Filter by timeframe"
-          >
+          <label for="timeFilter" class="f-label">Timeframe</label>
+          <select id="timeFilter" class="select-dark" aria-label="Filter by timeframe">
             <option value="ALL">All time</option>
             <option value="7">Last 7 days</option>
             <option value="30">Last 30 days</option>
@@ -52,40 +203,46 @@
         </div>
       </section>
 
-      <!-- List -->
+      <!-- LIST SECTION -->
       <section id="listSection">
+
         <!-- Loading skeleton -->
-        <div id="loading" class="space-y-3">
-          <div
-            class="glassmorphic rounded-2xl p-5 border border-white/10 animate-pulse"
-          >
-            <div class="h-4 bg-white/10 rounded w-1/3 mb-3"></div>
-            <div class="h-3 bg-white/10 rounded w-2/3 mb-2"></div>
-            <div class="h-3 bg-white/10 rounded w-1/2"></div>
+        <div id="loading">
+          <div class="skel-card">
+            <div class="skel-line w-1/3"></div>
+            <div class="skel-line w-2/3"></div>
+            <div class="skel-line w-1/2"></div>
           </div>
-          <div
-            class="glassmorphic rounded-2xl p-5 border border-white/10 animate-pulse"
-          >
-            <div class="h-4 bg-white/10 rounded w-1/3 mb-3"></div>
-            <div class="h-3 bg-white/10 rounded w-2/3 mb-2"></div>
-            <div class="h-3 bg-white/10 rounded w-1/2"></div>
+          <div class="skel-card">
+            <div class="skel-line w-1/3"></div>
+            <div class="skel-line w-2/3"></div>
+            <div class="skel-line w-1/2"></div>
           </div>
         </div>
 
         <!-- Empty state -->
-        <div id="emptyState" class="hidden text-center text-white/60">
-          No assessments yet.
-        </div>
+        <div id="emptyState" class="hidden">No assessments yet.</div>
 
         <!-- List container -->
-        <div id="assessList" class="space-y-3"></div>
+        <div id="assessList"></div>
+
       </section>
     </main>
 
-    <!-- Controller -->
+    <!-- SCRIPTS — untouched -->
     <script type="module" src="js/assessments/my.js"></script>
-
-    <!-- Shared bottom nav (Player) -->
     <script type="module" src="js/nav.js"></script>
+
+    <script>
+      const pc = document.getElementById('particles');
+      const cols = ['#3B82F6','#6EA8FE','#38BDF8','#ffffff'];
+      for (let i = 0; i < 18; i++) {
+        const p = document.createElement('div');
+        p.className = 'p';
+        const s = Math.random() * 3 + 1.5;
+        p.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${9+Math.random()*12}s;animation-delay:${Math.random()*10}s;`;
+        pc.appendChild(p);
+      }
+    </script>
   </body>
 </html>

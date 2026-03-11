@@ -4,12 +4,356 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>View Players - SportIQ</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+
     <link rel="stylesheet" href="css/global.css" />
     <link rel="stylesheet" href="css/players.css" />
+
+    <style>
+      :root {
+        --blue-950: #020B18;
+        --blue-900: #061527;
+        --blue-800: #0A2040;
+        --blue-700: #0D3060;
+        --blue-600: #1146A0;
+        --blue-500: #1A5FD4;
+        --blue-400: #3B82F6;
+        --blue-300: #6EA8FE;
+        --blue-200: #A8CCFF;
+        --white-pure: #FFFFFF;
+        --white-warm: #F8FAFF;
+        --white-ghost: #A8BBDA;
+        --accent-sky: #38BDF8;
+        --accent-cyan: #06B6D4;
+        --card-bg: rgba(6,21,39,0.78);
+        --border: rgba(59,130,246,0.20);
+      }
+
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        font-family: 'Rajdhani', sans-serif;
+        background: var(--blue-950);
+        color: var(--white-pure);
+        min-height: 100vh;
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      /* Background */
+      body::before {
+        content: '';
+        position: fixed; inset: 0; z-index: 0; pointer-events: none;
+        background:
+          radial-gradient(ellipse at 20% 20%, rgba(26,95,212,0.18) 0%, transparent 55%),
+          radial-gradient(ellipse at 80% 80%, rgba(56,189,248,0.07) 0%, transparent 50%),
+          linear-gradient(135deg, #020B18 0%, #040F20 100%);
+      }
+      body::after {
+        content: '';
+        position: fixed; inset: 0; z-index: 0; pointer-events: none;
+        background-image:
+          linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+        background-size: 40px 40px;
+      }
+
+      /* Particles */
+      .particles { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+      .p { position: absolute; border-radius: 50%; animation: floatUp linear infinite; opacity: 0; }
+      @keyframes floatUp {
+        0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+        10%  { opacity: 0.4; }
+        90%  { opacity: 0.15; }
+        100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+      }
+
+      /* Giant container */
+      .players-giant {
+        position: relative; z-index: 1;
+        max-width: 1100px; margin: 0 auto;
+        padding: 24px 16px 96px;
+        animation: fadeUp .5s ease .1s both;
+      }
+      @media(min-width:640px){ .players-giant { padding: 32px 24px 96px; } }
+      @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(18px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+
+      /* Top bar */
+      .players-topbar {
+        display: flex; align-items: center; gap: 12px;
+        margin-bottom: 20px;
+      }
+
+      .title {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.5rem; font-weight: 700;
+        letter-spacing: .12em; text-transform: uppercase;
+        color: var(--white-pure);
+      }
+
+      .spacer { flex: 1; }
+
+      .muted {
+        font-size: .85rem; font-weight: 600;
+        color: var(--white-ghost); letter-spacing: .04em;
+      }
+
+      /* Filter button */
+      .filter-btn {
+        display: flex; align-items: center; gap: 6px;
+        padding: 7px 14px; border-radius: 20px;
+        background: rgba(59,130,246,0.08);
+        border: 1px solid rgba(59,130,246,0.22);
+        color: var(--white-ghost);
+        font-family: 'Rajdhani', sans-serif; font-weight: 700;
+        font-size: .78rem; letter-spacing: .10em; text-transform: uppercase;
+        cursor: pointer; transition: all .2s;
+      }
+      .filter-btn:hover { background: rgba(59,130,246,0.15); color: var(--white-pure); border-color: var(--blue-400); }
+
+      /* Filter panel */
+      .filter-panel {
+        background: rgba(6,21,39,0.85);
+        border: 1px solid rgba(59,130,246,0.20);
+        border-radius: 12px;
+        backdrop-filter: blur(16px);
+        padding: 20px;
+        margin-bottom: 20px;
+        position: relative; overflow: hidden;
+      }
+      .filter-panel::before {
+        content: ''; position: absolute;
+        top: 0; left: 0; right: 0; height: 2px;
+        background: linear-gradient(90deg, var(--blue-500), var(--accent-sky));
+      }
+      .filter-panel.hidden { display: none !important; }
+
+      .filter-row {
+        display: flex; flex-direction: column; gap: 6px;
+        margin-bottom: 16px;
+      }
+      .filter-row.two { flex-direction: row; gap: 16px; }
+      .filter-row.two > div { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+
+      .filter-row label {
+        font-size: .72rem; font-weight: 700;
+        letter-spacing: .14em; text-transform: uppercase;
+        color: var(--blue-300);
+      }
+
+      .filter-row select,
+      .filter-row input[type="number"] {
+        height: 40px; padding: 0 12px;
+        background: rgba(59,130,246,0.07);
+        border: 1px solid rgba(59,130,246,0.22);
+        border-radius: 8px;
+        color: var(--white-pure);
+        font-family: 'Rajdhani', sans-serif; font-size: .9rem; font-weight: 500;
+        outline: none; transition: border-color .2s, box-shadow .2s;
+        -webkit-appearance: none; appearance: none;
+      }
+      .filter-row input::placeholder { color: var(--white-ghost); opacity: .7; }
+      .filter-row select:focus,
+      .filter-row input:focus {
+        border-color: var(--blue-400);
+        box-shadow: 0 0 0 3px rgba(59,130,246,0.10);
+      }
+      .filter-row select option { background: #061527; color: #fff; }
+
+      .btn-row { display: flex; gap: 10px; }
+      .btn-row.right { justify-content: flex-end; }
+
+      /* Tiny buttons */
+      .btn-tiny {
+        padding: 7px 16px; border-radius: 8px;
+        font-family: 'Rajdhani', sans-serif; font-weight: 700;
+        font-size: .78rem; letter-spacing: .10em; text-transform: uppercase;
+        cursor: pointer; transition: all .2s; border: none;
+      }
+      .btn-tiny:not(.edit) {
+        background: rgba(59,130,246,0.08);
+        border: 1px solid rgba(59,130,246,0.22);
+        color: var(--white-ghost);
+      }
+      .btn-tiny:not(.edit):hover { background: rgba(59,130,246,0.16); color: var(--white-pure); border-color: var(--blue-400); }
+      .btn-tiny.edit {
+        background: linear-gradient(135deg, #1A5FD4, #1146A0);
+        color: #fff;
+        box-shadow: 0 0 12px rgba(26,95,212,0.35);
+        border: none;
+      }
+      .btn-tiny.edit:hover { box-shadow: 0 0 20px rgba(59,130,246,0.5); transform: translateY(-1px); }
+
+      /* Players grid */
+      .players-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 16px;
+      }
+
+      /* Empty message */
+      #emptyMsg { text-align: center; padding: 48px 0; }
+      #emptyMsg.hidden { display: none !important; }
+
+      /* ===== MODAL ===== */
+      .modal {
+        position: fixed; inset: 0; z-index: 50;
+        display: flex; align-items: center; justify-content: center;
+        background: rgba(0,0,0,0.65);
+        backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+        padding: 16px;
+      }
+      .modal.hidden { display: none !important; }
+
+      .modal-inner {
+        background: rgba(4,14,30,0.98);
+        border: 1px solid rgba(59,130,246,0.22);
+        border-radius: 20px;
+        position: relative; overflow: hidden;
+        padding: 28px 24px;
+        width: 100%; max-width: 520px;
+        animation: slideUp .3s cubic-bezier(.22,1,.36,1);
+        box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+      }
+      .modal-inner::before {
+        content: ''; position: absolute;
+        top: 0; left: 0; right: 0; height: 2px;
+        background: linear-gradient(90deg, var(--blue-500), var(--accent-sky));
+      }
+      .modal-inner.two-col.large {
+        max-width: 720px;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 24px;
+        align-items: start;
+      }
+      @media(max-width:600px){
+        .modal-inner.two-col.large {
+          grid-template-columns: 1fr;
+          max-width: 400px;
+        }
+        .modal-col.picture { order: -1; }
+      }
+
+      @keyframes slideUp {
+        from { opacity: 0; transform: translateY(24px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+
+      /* Close button */
+      .modal-close {
+        position: absolute; top: 14px; right: 16px;
+        width: 32px; height: 32px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        background: rgba(239,68,68,0.08);
+        border: 1px solid rgba(239,68,68,0.25);
+        color: #f87171; cursor: pointer; font-size: 1.1rem; line-height: 1;
+        transition: background .2s, color .2s;
+      }
+      .modal-close:hover { background: rgba(239,68,68,0.20); color: #fff; }
+
+      /* Modal columns */
+      .modal-col.details { min-width: 0; }
+      .modal-col.picture {
+        display: flex; align-items: flex-start; justify-content: center;
+        padding-top: 8px;
+      }
+
+      /* Modal headings */
+      #m_name {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.4rem; font-weight: 700;
+        letter-spacing: .06em; color: var(--white-pure);
+        margin-bottom: 16px;
+        padding-right: 32px;
+      }
+
+      .detail-list p {
+        font-size: .9rem; font-weight: 500;
+        color: var(--white-ghost); margin-bottom: 8px;
+        line-height: 1.4;
+      }
+      .detail-list p strong {
+        color: var(--blue-300);
+        font-weight: 700; letter-spacing: .04em;
+      }
+
+      /* Achievement badges */
+      .ach-summary {
+        display: flex; flex-wrap: wrap; align-items: center;
+        gap: 8px; margin-bottom: 8px;
+      }
+      .ach-summary strong { color: var(--blue-300); font-weight: 700; font-size: .9rem; width: 100%; }
+
+      .badge {
+        display: inline-block; padding: 3px 10px; border-radius: 12px;
+        font-family: 'Rajdhani', sans-serif; font-weight: 700;
+        font-size: .72rem; letter-spacing: .06em; text-transform: uppercase;
+      }
+      .badge.approved {
+        background: rgba(5,150,105,0.14);
+        border: 1px solid rgba(5,150,105,0.28);
+        color: #34D399;
+      }
+      .badge.pending {
+        background: rgba(217,119,6,0.12);
+        border: 1px solid rgba(217,119,6,0.28);
+        color: #FCD34D;
+      }
+      .badge.rejected {
+        background: rgba(239,68,68,0.12);
+        border: 1px solid rgba(239,68,68,0.28);
+        color: #f87171;
+      }
+
+      /* About button */
+      #aboutBtn {
+        margin-top: 16px;
+        padding: 9px 22px; border-radius: 8px;
+        background: linear-gradient(135deg, #1A5FD4, #1146A0);
+        border: none; color: #fff;
+        font-family: 'Rajdhani', sans-serif; font-weight: 700;
+        font-size: .88rem; letter-spacing: .10em; text-transform: uppercase;
+        cursor: pointer;
+        box-shadow: 0 0 12px rgba(26,95,212,0.4);
+        transition: box-shadow .25s, transform .2s;
+      }
+      #aboutBtn:hover { box-shadow: 0 0 20px rgba(59,130,246,0.55); transform: translateY(-1px); }
+
+      /* Avatar */
+      .avatar.large {
+        width: 130px; height: 130px; border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid var(--blue-400);
+        box-shadow: 0 0 20px rgba(59,130,246,0.35);
+      }
+      .avatar.large:hover { box-shadow: 0 0 32px rgba(59,130,246,0.55); }
+
+      /* About modal */
+      #aboutModal .modal-inner { max-width: 480px; }
+      #aboutModal h3 {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.2rem; font-weight: 700;
+        letter-spacing: .08em; color: var(--white-pure);
+        margin-bottom: 14px; padding-right: 32px;
+      }
+      #aboutText { font-size: .92rem; font-weight: 500; line-height: 1.6; max-width: 60ch; }
+    </style>
   </head>
+
   <body data-page="viewPlayers">
-    <!-- Giant glass container -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Giant container -->
     <div class="players-giant glass-container">
+
+      <!-- Top bar -->
       <div class="players-topbar">
         <button id="filterBtn" class="btn-tiny filter-btn" title="Filters">🔎 Filter</button>
         <h2 class="title">Players</h2>
@@ -39,19 +383,18 @@
         </div>
       </div>
 
-      <!-- Grid of player cards -->
+      <!-- Players grid -->
       <div id="playersGrid" class="players-grid"></div>
 
       <!-- Empty state -->
       <p id="emptyMsg" class="muted hidden">No players found for your sport.</p>
     </div>
 
-    <!-- Full profile modal -->
+    <!-- Profile modal -->
     <div id="profileModal" class="modal hidden" aria-hidden="true">
       <div class="modal-inner two-col large">
         <button class="modal-close" id="profileModalClose" aria-label="Close">&times;</button>
 
-        <!-- Left: details -->
         <div class="modal-col details">
           <h3 id="m_name">Player</h3>
           <div class="detail-list">
@@ -75,14 +418,13 @@
           </div>
         </div>
 
-        <!-- Right: profile image -->
         <div class="modal-col picture">
           <img id="m_avatar" class="avatar large" src="" alt="Player photo" />
         </div>
       </div>
     </div>
 
-    <!-- About modal (stub) -->
+    <!-- About modal -->
     <div id="aboutModal" class="modal hidden" aria-hidden="true">
       <div class="modal-inner">
         <button class="modal-close" id="aboutModalClose" aria-label="Close">&times;</button>
@@ -92,5 +434,18 @@
     </div>
 
     <script type="module" src="js/coachPlayers.js"></script>
+
+    <!-- Particles -->
+    <script>
+      const pc = document.getElementById('particles');
+      const cols = ['#3B82F6','#6EA8FE','#38BDF8','#ffffff'];
+      for (let i = 0; i < 18; i++) {
+        const p = document.createElement('div');
+        p.className = 'p';
+        const s = Math.random() * 3 + 1.5;
+        p.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${9+Math.random()*12}s;animation-delay:${Math.random()*10}s;`;
+        pc.appendChild(p);
+      }
+    </script>
   </body>
 </html>

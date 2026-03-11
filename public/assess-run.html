@@ -1,252 +1,444 @@
 <!DOCTYPE html>
-<html class="dark" lang="en">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Endurance Run - SportIQ</title>
 
-    <!-- Tailwind (project-wide tokens) -->
+    <!-- Existing scripts — untouched -->
     <script src="js/tailwind-config.js"></script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
-    <!-- Fonts (Material Symbols for icons) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
-      rel="stylesheet"
-    />
-
-    <!-- Global CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/global.css" />
+
+    <style>
+      *, *::before, *::after { box-sizing: border-box; }
+
+      :root {
+        --blue-950: #020B18;
+        --blue-900: #061527;
+        --blue-800: #0A2040;
+        --blue-700: #0D3060;
+        --blue-600: #1146A0;
+        --blue-500: #1A5FD4;
+        --blue-400: #3B82F6;
+        --blue-300: #6EA8FE;
+        --blue-200: #A8CCFF;
+        --white-pure: #FFFFFF;
+        --white-ghost: #A8BBDA;
+        --accent-sky: #38BDF8;
+        --card-bg: rgba(6,21,39,0.75);
+        --border: rgba(59,130,246,0.20);
+      }
+
+      html, body {
+        min-height: 100vh;
+        background: var(--blue-950);
+        color: var(--white-pure);
+        font-family: 'Rajdhani', sans-serif;
+        overflow-x: hidden;
+      }
+
+      /* ── BG ── */
+      body::before {
+        content: '';
+        position: fixed; inset: 0; z-index: 0;
+        background:
+          radial-gradient(ellipse at 20% 25%, rgba(26,95,212,0.18) 0%, transparent 55%),
+          radial-gradient(ellipse at 80% 75%, rgba(56,189,248,0.08) 0%, transparent 50%),
+          linear-gradient(135deg, #020B18 0%, #040F20 100%);
+        pointer-events: none;
+      }
+      body::after {
+        content: '';
+        position: fixed; inset: 0; z-index: 0;
+        background-image:
+          linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+        background-size: 40px 40px;
+        pointer-events: none;
+      }
+
+      /* ── PARTICLES ── */
+      .particles { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
+      .p { position:absolute; border-radius:50%; animation:floatUp linear infinite; opacity:0; }
+      @keyframes floatUp {
+        0%   { transform:translateY(100vh) scale(0); opacity:0; }
+        10%  { opacity:0.4; }
+        90%  { opacity:0.15; }
+        100% { transform:translateY(-10vh) scale(1.2); opacity:0; }
+      }
+
+      /* ── HEADER ── */
+      header {
+        position: sticky; top: 0; z-index: 20;
+        background: rgba(2,11,24,0.90);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(59,130,246,0.14);
+        padding: 13px 16px;
+        animation: fadeDown .5s ease both;
+      }
+      @keyframes fadeDown {
+        from { opacity:0; transform:translateY(-14px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+      .header-inner {
+        max-width: 520px; margin: 0 auto;
+        display: flex; align-items: center; justify-content: space-between;
+      }
+      .header-btn {
+        width: 38px; height: 38px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--white-ghost); background: rgba(59,130,246,0.08);
+        border: 1px solid rgba(59,130,246,0.15);
+        cursor: pointer; transition: all .3s;
+        text-decoration: none; outline: none;
+      }
+      .header-btn:hover {
+        color: var(--white-pure);
+        background: rgba(59,130,246,0.16);
+        border-color: var(--blue-400);
+      }
+      .header-btn .material-symbols-outlined { font-size: 19px; }
+      header h1 {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.05rem; letter-spacing: .14em;
+        color: var(--white-pure);
+      }
+
+      /* ── MAIN ── */
+      main {
+        position: relative; z-index: 1;
+        max-width: 520px; margin: 0 auto;
+        padding: 20px 16px 100px;
+        display: flex; flex-direction: column; gap: 14px;
+        animation: fadeUp .5s ease .1s both;
+      }
+      @keyframes fadeUp {
+        from { opacity:0; transform:translateY(18px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+
+      /* ── BASE CARD ── */
+      .iq-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        backdrop-filter: blur(20px);
+        padding: 18px 20px;
+        position: relative; overflow: hidden;
+      }
+      .iq-card::before {
+        content: ''; position: absolute;
+        top: 0; left: 0; right: 0; height: 2px;
+        background: linear-gradient(90deg, var(--blue-500), var(--accent-sky));
+      }
+
+      /* ── INSTRUCTIONS ── */
+      .instructions h2 {
+        font-family: 'Oswald', sans-serif;
+        font-size: .98rem; letter-spacing: .1em;
+        color: var(--white-pure); margin-bottom: 10px;
+      }
+      .instructions ul {
+        list-style: none; padding: 0;
+        display: flex; flex-direction: column; gap: 7px;
+      }
+      .instructions li {
+        display: flex; align-items: flex-start; gap: 8px;
+        font-size: .88rem; font-weight: 500;
+        color: var(--white-ghost); line-height: 1.4;
+      }
+      .instructions li::before {
+        content: '→';
+        color: var(--blue-400); font-weight: 700;
+        flex-shrink: 0; margin-top: 1px;
+      }
+
+      /* ── STAT GRID ── */
+      .stat-grid {
+        display: grid; grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .stat-box {
+        background: rgba(59,130,246,0.06);
+        border: 1px solid rgba(59,130,246,0.16);
+        border-radius: 12px; padding: 12px 14px;
+        transition: border-color .3s;
+      }
+      .stat-box:hover { border-color: rgba(59,130,246,0.3); }
+      .stat-label {
+        font-size: .7rem; font-weight: 700;
+        letter-spacing: .14em; text-transform: uppercase;
+        color: var(--white-ghost); margin-bottom: 4px;
+      }
+      .stat-value {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.3rem; font-weight: 700;
+        color: var(--white-pure); letter-spacing: .04em;
+        line-height: 1;
+      }
+      .stat-value.lg { font-size: 1.6rem; color: var(--blue-300); }
+
+      /* ── SECTION TITLE ── */
+      .section-title {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1rem; letter-spacing: .1em;
+        color: var(--white-pure); margin-bottom: 14px;
+      }
+
+      /* ── TARGET TOGGLE ── */
+      .target-label {
+        font-size: .72rem; font-weight: 700;
+        letter-spacing: .14em; text-transform: uppercase;
+        color: var(--blue-300); margin-bottom: 8px;
+      }
+      #targetToggle {
+        display: flex; gap: 8px;
+      }
+      #targetToggle button {
+        padding: 9px 22px; border-radius: 10px;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .9rem; font-weight: 700;
+        letter-spacing: .1em; cursor: pointer;
+        transition: all .25s; border: none;
+      }
+      #target800Btn[aria-pressed="true"],
+      #target1600Btn[aria-pressed="true"] {
+        background: linear-gradient(135deg, var(--blue-500), var(--blue-600));
+        color: #fff;
+        box-shadow: 0 0 16px rgba(26,95,212,0.45);
+      }
+      #target800Btn[aria-pressed="false"],
+      #target1600Btn[aria-pressed="false"] {
+        background: rgba(59,130,246,0.08);
+        border: 1px solid rgba(59,130,246,0.22);
+        color: var(--white-ghost);
+      }
+      #target800Btn[aria-pressed="false"]:hover,
+      #target1600Btn[aria-pressed="false"]:hover {
+        background: rgba(59,130,246,0.15);
+        color: var(--white-pure);
+        border-color: var(--blue-400);
+      }
+
+      /* ── ACTION BUTTONS ── */
+      .btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+
+      .btn-primary {
+        padding: 11px 24px; border-radius: 10px;
+        background: linear-gradient(135deg, var(--blue-500), var(--blue-600));
+        color: #fff; border: none; cursor: pointer;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .92rem; font-weight: 700; letter-spacing: .12em;
+        text-transform: uppercase;
+        box-shadow: 0 0 16px rgba(26,95,212,0.4);
+        transition: transform .2s, box-shadow .3s;
+      }
+      .btn-primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 0 24px rgba(59,130,246,0.55); }
+      .btn-primary:disabled { opacity: .4; cursor: not-allowed; box-shadow: none; }
+      .btn-primary:active:not(:disabled) { transform: scale(.97); }
+
+      .btn-secondary {
+        padding: 10px 20px; border-radius: 10px;
+        background: rgba(59,130,246,0.08);
+        border: 1px solid rgba(59,130,246,0.22);
+        color: var(--white-ghost); cursor: pointer;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .88rem; font-weight: 700; letter-spacing: .1em;
+        text-transform: uppercase;
+        transition: background .25s, border-color .25s, color .25s;
+      }
+      .btn-secondary:hover { background: rgba(59,130,246,0.15); border-color: var(--blue-400); color: var(--white-pure); }
+
+      .btn-stop {
+        padding: 10px 20px; border-radius: 10px;
+        background: rgba(239,68,68,0.12);
+        border: 1px solid rgba(239,68,68,0.3);
+        color: #f87171; cursor: pointer;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .88rem; font-weight: 700; letter-spacing: .1em;
+        text-transform: uppercase;
+        transition: background .25s;
+      }
+      .btn-stop:hover { background: rgba(239,68,68,0.22); }
+
+      /* ── ERROR / STATUS TEXT ── */
+      #gpsError, #summaryError {
+        font-size: .82rem; font-weight: 600;
+        color: #FCD34D; margin-top: 10px;
+        letter-spacing: .04em; line-height: 1.5;
+      }
+
+      /* ── HIDDEN ── */
+      .hidden { display: none !important; }
+
+      /* live tracking top bar accent — orange tint */
+      #trackingSection::before {
+        background: linear-gradient(90deg, #D97706, var(--accent-sky));
+      }
+      /* summary top bar accent — green tint */
+      #summarySection::before {
+        background: linear-gradient(90deg, #059669, #34D399);
+      }
+    </style>
   </head>
-  <body data-page="assess-run" class="font-display text-white">
-    <!-- Sticky header: Back + Notifications -->
-    <header class="sticky top-0 z-20 glassmorphic px-4 py-3">
-      <div class="max-w-xl mx-auto flex items-center justify-between">
-        <button
-          class="rounded-full p-2 hover:bg-white/10"
-          aria-label="Back"
-          onclick="history.back()"
-        >
+
+  <body data-page="assess-run">
+    <div class="particles" id="particles"></div>
+
+    <!-- HEADER -->
+    <header>
+      <div class="header-inner">
+        <button class="header-btn" aria-label="Back" onclick="history.back()">
           <span class="material-symbols-outlined">arrow_back_ios_new</span>
         </button>
-        <h1 class="text-lg font-bold">Endurance Run</h1>
-        <a
-          href="notifications.html"
-          class="rounded-full p-2 hover:bg-white/10"
-          aria-label="Notifications"
-        >
+        <h1>Endurance Run</h1>
+        <a href="notifications.html" class="header-btn" aria-label="Notifications">
           <span class="material-symbols-outlined">notifications</span>
         </a>
       </div>
     </header>
 
-    <main class="max-w-xl mx-auto px-4 pt-4 pb-28">
-      <!-- Instructions -->
-      <section
-        class="glassmorphic rounded-xl p-4 border border-white/10 mb-4 text-white/90"
-      >
-        <h2 class="text-base font-semibold mb-1">Before you start</h2>
-        <ul class="list-disc pl-5 space-y-1 text-sm">
+    <main>
+
+      <!-- INSTRUCTIONS -->
+      <section class="iq-card instructions">
+        <h2>Before you start</h2>
+        <ul>
           <li>Go outdoors for best GPS accuracy</li>
           <li>Keep the phone steady and with you during the run</li>
           <li>We auto-stop at your selected target distance</li>
         </ul>
       </section>
 
-      <!-- Pre-run setup -->
-      <section
-        id="setupSection"
-        class="glassmorphic rounded-2xl p-5 border border-white/10"
-      >
-        <div class="space-y-4">
-          <!-- Target selector -->
-          <div>
-            <div class="text-sm text-white/70 mb-2">Target Distance</div>
-            <div id="targetToggle" class="flex items-center gap-2">
-              <button
-                id="target800Btn"
-                data-target="800"
-                class="px-4 py-2 rounded-lg bg-primary text-white font-semibold hover:bg-primary/90 transition"
-                type="button"
-                aria-pressed="true"
-              >
-                800 m
-              </button>
-              <button
-                id="target1600Btn"
-                data-target="1600"
-                class="px-4 py-2 rounded-lg bg-white/10 border border-white/10 hover:bg-white/15 transition"
-                type="button"
-                aria-pressed="false"
-              >
-                1.6 km
-              </button>
-            </div>
-          </div>
+      <!-- PRE-RUN SETUP -->
+      <section id="setupSection" class="iq-card">
 
-          <!-- GPS status -->
-          <div class="grid grid-cols-2 gap-3">
-            <div class="glassmorphic rounded-lg p-3 border border-white/10">
-              <div class="text-white/60 text-sm">GPS Permission</div>
-              <div id="permText" class="text-lg font-semibold">
-                Not requested
-              </div>
-            </div>
-            <div class="glassmorphic rounded-lg p-3 border border-white/10">
-              <div class="text-white/60 text-sm">Accuracy</div>
-              <div id="accText" class="text-lg font-semibold">—</div>
-            </div>
+        <!-- Target Distance -->
+        <div style="margin-bottom:18px">
+          <div class="target-label">Target Distance</div>
+          <div id="targetToggle">
+            <button id="target800Btn" data-target="800" type="button" aria-pressed="true">800 m</button>
+            <button id="target1600Btn" data-target="1600" type="button" aria-pressed="false">1.6 km</button>
           </div>
+        </div>
 
-          <!-- Actions -->
-          <div class="flex flex-wrap gap-3">
-            <button
-              id="requestGpsBtn"
-              class="px-4 py-2 rounded-lg bg-white/10 border border-white/10 hover:bg-white/15 transition text-sm"
-              type="button"
-            >
-              Enable GPS
-            </button>
-            <button
-              id="startRunBtn"
-              class="px-5 py-2.5 rounded-lg bg-primary text-white font-semibold hover:bg-primary/90 transition"
-              type="button"
-              disabled
-            >
-              Start Run
-            </button>
+        <!-- GPS Status -->
+        <div class="stat-grid" style="margin-bottom:16px">
+          <div class="stat-box">
+            <div class="stat-label">GPS Permission</div>
+            <div id="permText" class="stat-value" style="font-size:1rem">Not requested</div>
           </div>
+          <div class="stat-box">
+            <div class="stat-label">Accuracy</div>
+            <div id="accText" class="stat-value" style="font-size:1rem">—</div>
+          </div>
+        </div>
 
-          <p
-            id="gpsError"
-            class="text-sm text-amber-300 mt-2 hidden"
-            aria-live="assertive"
-          ></p>
+        <!-- Actions -->
+        <div class="btn-row" style="margin-top:0">
+          <button id="requestGpsBtn" class="btn-secondary" type="button">Enable GPS</button>
+          <button id="startRunBtn" class="btn-primary" type="button" disabled>Start Run</button>
+        </div>
+
+        <p id="gpsError" class="hidden" aria-live="assertive"></p>
+      </section>
+
+      <!-- LIVE TRACKING -->
+      <section id="trackingSection" class="iq-card hidden">
+        <div class="stat-grid">
+          <div class="stat-box">
+            <div class="stat-label">Elapsed Time</div>
+            <div id="timeText" class="stat-value lg">00:00</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Distance</div>
+            <div id="distText" class="stat-value lg">0.00 km</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Pace</div>
+            <div id="paceText" class="stat-value">—</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Samples</div>
+            <div id="samplesText" class="stat-value">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">GPS Quality</div>
+            <div id="qualityText" class="stat-value">—</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Target</div>
+            <div id="targetText" class="stat-value">800 m</div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button id="pauseRunBtn"  class="btn-secondary hidden" type="button">Pause</button>
+          <button id="resumeRunBtn" class="btn-secondary hidden" type="button">Resume</button>
+          <button id="stopRunBtn"   class="btn-stop hidden"      type="button">Stop</button>
         </div>
       </section>
 
-      <!-- Live tracking -->
-      <section
-        id="trackingSection"
-        class="glassmorphic rounded-2xl p-5 border border-white/10 mt-4 hidden"
-      >
-        <div class="grid grid-cols-2 gap-3">
-          <div class="glassmorphic rounded-lg p-3 border border-white/10">
-            <div class="text-white/60 text-sm">Elapsed Time</div>
-            <div id="timeText" class="text-2xl font-bold">00:00</div>
+      <!-- SUMMARY -->
+      <section id="summarySection" class="iq-card hidden">
+        <div class="section-title">Summary</div>
+        <div class="stat-grid">
+          <div class="stat-box">
+            <div class="stat-label">Target</div>
+            <div id="sumTarget" class="stat-value">800 m</div>
           </div>
-          <div class="glassmorphic rounded-lg p-3 border border-white/10">
-            <div class="text-white/60 text-sm">Distance</div>
-            <div id="distText" class="text-2xl font-bold">0.00 km</div>
+          <div class="stat-box">
+            <div class="stat-label">Distance</div>
+            <div id="sumDistance" class="stat-value">0.00 km</div>
           </div>
-          <div class="glassmorphic rounded-lg p-3 border border-white/10">
-            <div class="text-white/60 text-sm">Pace</div>
-            <div id="paceText" class="text-lg font-semibold">—</div>
+          <div class="stat-box">
+            <div class="stat-label">Time</div>
+            <div id="sumTime" class="stat-value">00:00</div>
           </div>
-          <div class="glassmorphic rounded-lg p-3 border border-white/10">
-            <div class="text-white/60 text-sm">Samples</div>
-            <div id="samplesText" class="text-lg font-semibold">0</div>
+          <div class="stat-box">
+            <div class="stat-label">Pace</div>
+            <div id="sumPace" class="stat-value">—</div>
           </div>
-          <div class="glassmorphic rounded-lg p-3 border border-white/10">
-            <div class="text-white/60 text-sm">GPS Quality</div>
-            <div id="qualityText" class="text-lg font-semibold">—</div>
+          <div class="stat-box">
+            <div class="stat-label">Samples</div>
+            <div id="sumSamples" class="stat-value">0</div>
           </div>
-          <div class="glassmorphic rounded-lg p-3 border border-white/10">
-            <div class="text-white/60 text-sm">Target</div>
-            <div id="targetText" class="text-lg font-semibold">800 m</div>
+          <div class="stat-box">
+            <div class="stat-label">Status</div>
+            <div id="sumStatus" class="stat-value">—</div>
           </div>
         </div>
 
-        <!-- Controls -->
-        <div class="mt-4 flex flex-wrap gap-3">
-          <button
-            id="pauseRunBtn"
-            class="px-4 py-2 rounded-lg bg-white/10 border border-white/10 hover:bg-white/15 transition text-sm hidden"
-            type="button"
-          >
-            Pause
-          </button>
-          <button
-            id="resumeRunBtn"
-            class="px-4 py-2 rounded-lg bg-white/10 border border-white/10 hover:bg-white/15 transition text-sm hidden"
-            type="button"
-          >
-            Resume
-          </button>
-          <button
-            id="stopRunBtn"
-            class="px-4 py-2 rounded-lg bg-amber-600 text-black font-semibold hover:bg-amber-500 transition text-sm hidden"
-            type="button"
-          >
-            Stop
-          </button>
+        <div class="btn-row">
+          <button id="saveRunBtn"   class="btn-primary"   type="button">Save</button>
+          <button id="retakeRunBtn" class="btn-secondary" type="button">Retake</button>
         </div>
+
+        <p id="summaryError" class="hidden" aria-live="assertive"></p>
       </section>
 
-      <!-- Summary -->
-      <section
-        id="summarySection"
-        class="glassmorphic rounded-2xl p-5 border border-white/10 mt-4 hidden"
-      >
-        <h3 class="text-xl font-semibold">Summary</h3>
-        <div class="mt-3 grid grid-cols-2 gap-3 text-sm">
-          <div class="glassmorphic rounded-lg p-3 border border-white/10">
-            <div class="text-white/60">Target</div>
-            <div id="sumTarget" class="text-lg font-semibold">800 m</div>
-          </div>
-          <div class="glassmorphic rounded-lg p-3 border border-white/10">
-            <div class="text-white/60">Distance</div>
-            <div id="sumDistance" class="text-lg font-semibold">0.00 km</div>
-          </div>
-          <div class="glassmorphic rounded-lg p-3 border border-white/10">
-            <div class="text-white/60">Time</div>
-            <div id="sumTime" class="text-lg font-semibold">00:00</div>
-          </div>
-          <div class="glassmorphic rounded-lg p-3 border border-white/10">
-            <div class="text-white/60">Pace</div>
-            <div id="sumPace" class="text-lg font-semibold">—</div>
-          </div>
-          <div class="glassmorphic rounded-lg p-3 border border-white/10">
-            <div class="text-white/60">Samples</div>
-            <div id="sumSamples" class="text-lg font-semibold">0</div>
-          </div>
-          <div class="glassmorphic rounded-lg p-3 border border-white/10">
-            <div class="text-white/60">Status</div>
-            <div id="sumStatus" class="text-lg font-semibold">—</div>
-          </div>
-        </div>
-
-        <div class="mt-4 flex flex-wrap gap-3">
-          <button
-            id="saveRunBtn"
-            class="px-5 py-2.5 rounded-lg bg-primary text-white font-semibold hover:bg-primary/90 transition"
-            type="button"
-          >
-            Save
-          </button>
-          <button
-            id="retakeRunBtn"
-            class="px-4 py-2 rounded-lg bg-white/10 border border-white/10 hover:bg-white/15 transition text-sm"
-            type="button"
-          >
-            Retake
-          </button>
-        </div>
-
-        <p
-          id="summaryError"
-          class="text-sm text-rose-300 mt-3 hidden"
-          aria-live="assertive"
-        ></p>
-      </section>
     </main>
 
-    <!-- Controller -->
+    <!-- SCRIPTS — all untouched -->
     <script type="module" src="js/assessments/run.js"></script>
-
-    <!-- Shared bottom nav (Player) -->
     <script type="module" src="js/nav.js"></script>
+
+    <script>
+      // Particles
+      const pc = document.getElementById('particles');
+      const cols = ['#3B82F6','#6EA8FE','#38BDF8','#ffffff'];
+      for (let i = 0; i < 18; i++) {
+        const p = document.createElement('div');
+        p.className = 'p';
+        const s = Math.random() * 3 + 1.5;
+        p.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${9+Math.random()*12}s;animation-delay:${Math.random()*10}s;`;
+        pc.appendChild(p);
+      }
+    </script>
   </body>
 </html>

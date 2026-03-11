@@ -1,328 +1,541 @@
 <!DOCTYPE html>
-<html class="dark" lang="en">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Achievement Verification - SportIQ</title>
 
-    <!-- Tailwind (project-wide tokens) -->
+    <!-- Existing scripts — untouched -->
     <script src="js/tailwind-config.js"></script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
-      rel="stylesheet"
-    />
-
-    <!-- Global CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <link rel="stylesheet" href="css/global.css" />
 
-    <!-- Inline styles for glow effect -->
     <style>
-      .glow {
-        box-shadow: 0 0 5px rgba(56, 105, 250, 0.5),
-          0 0 10px rgba(56, 105, 250, 0.3), 0 0 15px rgba(56, 105, 250, 0.2);
+      *, *::before, *::after { box-sizing: border-box; }
+
+      :root {
+        --blue-950: #020B18;
+        --blue-900: #061527;
+        --blue-600: #1146A0;
+        --blue-500: #1A5FD4;
+        --blue-400: #3B82F6;
+        --blue-300: #6EA8FE;
+        --white-pure: #FFFFFF;
+        --white-ghost: #A8BBDA;
+        --accent-sky: #38BDF8;
+        --card-bg: rgba(6,21,39,0.75);
+        --border: rgba(59,130,246,0.20);
       }
 
-      /* Desktop modal width */
-      @media (min-width: 1024px) {
-        .modal-content-lg {
-          max-width: 48rem;
-        }
+      html, body {
+        min-height: 100vh;
+        background: var(--blue-950);
+        color: var(--white-pure);
+        font-family: 'Rajdhani', sans-serif;
+        overflow-x: hidden;
       }
+
+      /* ── BG ── */
+      body::before {
+        content: '';
+        position: fixed; inset: 0; z-index: 0;
+        background:
+          radial-gradient(ellipse at 20% 20%, rgba(26,95,212,0.18) 0%, transparent 55%),
+          radial-gradient(ellipse at 80% 80%, rgba(56,189,248,0.07) 0%, transparent 50%),
+          linear-gradient(135deg, #020B18 0%, #040F20 100%);
+        pointer-events: none;
+      }
+      body::after {
+        content: '';
+        position: fixed; inset: 0; z-index: 0;
+        background-image:
+          linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+        background-size: 40px 40px;
+        pointer-events: none;
+      }
+
+      /* ── PARTICLES ── */
+      .particles { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
+      .p { position:absolute; border-radius:50%; animation:floatUp linear infinite; opacity:0; }
+      @keyframes floatUp {
+        0%   { transform:translateY(100vh) scale(0); opacity:0; }
+        10%  { opacity:0.4; }
+        90%  { opacity:0.15; }
+        100% { transform:translateY(-10vh) scale(1.2); opacity:0; }
+      }
+
+      /* ── PAGE WRAP ── */
+      .page-wrap {
+        position: relative; z-index: 1;
+        display: flex; flex-direction: column;
+        min-height: 100vh;
+        animation: fadeUp .5s ease both;
+      }
+      @keyframes fadeUp {
+        from { opacity:0; transform:translateY(18px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+
+      /* ── MAIN ── */
+      main {
+        flex: 1;
+        max-width: 900px; margin: 0 auto; width: 100%;
+        padding: 0 16px 110px;
+        display: flex; flex-direction: column; gap: 20px;
+      }
+
+      /* ── HEADER ── */
+      header {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 12px; padding: 18px 0 4px;
+        animation: fadeDown .5s ease both;
+      }
+      @keyframes fadeDown {
+        from { opacity:0; transform:translateY(-14px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+      .header-btn {
+        width: 40px; height: 40px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--white-ghost); background: rgba(59,130,246,0.08);
+        border: 1px solid rgba(59,130,246,0.15);
+        cursor: pointer; transition: all .3s;
+        text-decoration: none; outline: none; flex-shrink: 0;
+      }
+      .header-btn:hover {
+        color: var(--white-pure);
+        background: rgba(59,130,246,0.16);
+        border-color: var(--blue-400);
+      }
+      .header-btn .material-symbols-outlined { font-size: 20px; }
+      header h1 {
+        font-family: 'Oswald', sans-serif;
+        font-size: clamp(1rem, 3vw, 1.3rem);
+        letter-spacing: .14em; color: var(--white-pure);
+        flex: 1; text-align: center;
+      }
+      .notif-wrap { position: relative; }
+      .notif-dot {
+        position: absolute; top: 1px; right: 1px;
+        width: 8px; height: 8px; background: #ef4444;
+        border-radius: 50%; border: 1.5px solid var(--blue-950);
+      }
+
+      /* ── SECTION HEADING ── */
+      #pendingHeader {
+        font-family: 'Oswald', sans-serif;
+        font-size: .95rem; letter-spacing: .14em; text-transform: uppercase;
+        color: var(--white-ghost);
+      }
+      #pendingHeader span { color: var(--blue-300); }
+
+      /* ── LOADING SKELETON ── */
+      #loadingState { display: flex; flex-direction: column; gap: 12px; }
+      .skeleton-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 16px; padding: 16px;
+        display: flex; align-items: center; gap: 14px;
+        animation: shimmer 1.4s ease infinite;
+      }
+      @keyframes shimmer { 0%,100%{opacity:.5} 50%{opacity:.9} }
+      .skel-avatar {
+        width: 52px; height: 52px; border-radius: 50%;
+        background: rgba(59,130,246,0.1); flex-shrink: 0;
+      }
+      .skel-lines { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+      .skel-line { height: 10px; border-radius: 6px; background: rgba(59,130,246,0.1); }
+
+      /* ── EMPTY STATE ── */
+      #emptyState { text-align: center; padding: 60px 16px; }
+      #emptyState p {
+        font-size: .9rem; font-weight: 600;
+        color: var(--white-ghost); letter-spacing: .06em;
+      }
+
+      /* ── CARDS CONTAINER (injected by coachVerify.js) ── */
+      #cardsContainer { display: flex; flex-direction: column; gap: 12px; }
+      #cardsContainer > * {
+        background: var(--card-bg) !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 16px !important;
+        transition: border-color .3s, box-shadow .3s !important;
+      }
+      #cardsContainer > *:hover {
+        border-color: rgba(59,130,246,0.38) !important;
+        box-shadow: 0 6px 24px rgba(0,0,0,0.3) !important;
+      }
+
+      /* glow helper */
+      .glow {
+        box-shadow: 0 0 5px rgba(59,130,246,0.45),
+                    0 0 12px rgba(59,130,246,0.25),
+                    0 0 20px rgba(59,130,246,0.15);
+      }
+
+      /* ── MODAL ── */
+      #achievementModal {
+        position: fixed; inset: 0; z-index: 50;
+        display: flex; align-items: center; justify-content: center;
+        padding: 16px;
+      }
+      #achievementModal.hidden { display: none !important; }
+
+      #modalOverlay {
+        position: absolute; inset: 0;
+        background: rgba(2,11,24,0.82);
+        backdrop-filter: blur(8px);
+      }
+
+      .modal-card {
+        position: relative;
+        background: rgba(6,21,39,0.96);
+        border: 1px solid rgba(59,130,246,0.25);
+        border-radius: 22px;
+        backdrop-filter: blur(24px);
+        padding: 24px;
+        width: 100%; max-width: 560px;
+        max-height: 90vh; overflow-y: auto;
+        display: flex; flex-direction: column; gap: 18px;
+        box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+      }
+      .modal-card::before {
+        content: ''; position: absolute;
+        top: 0; left: 0; right: 0; height: 2px;
+        border-radius: 22px 22px 0 0;
+        background: linear-gradient(90deg, var(--blue-500), var(--accent-sky));
+      }
+      @media(min-width:1024px) { .modal-card { max-width: 720px; } }
+
+      /* close btn */
+      #modalClose {
+        position: absolute; top: 14px; right: 14px;
+        width: 34px; height: 34px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--white-ghost); background: rgba(59,130,246,0.08);
+        border: 1px solid rgba(59,130,246,0.15);
+        cursor: pointer; transition: all .3s; outline: none;
+      }
+      #modalClose:hover { color: var(--white-pure); background: rgba(59,130,246,0.18); border-color: var(--blue-400); }
+      #modalClose .material-symbols-outlined { font-size: 18px; }
+
+      /* player row */
+      .modal-player {
+        display: flex; align-items: center; gap: 14px;
+        padding-right: 44px;
+      }
+      #modalAvatar {
+        width: 56px; height: 56px; border-radius: 50%; flex-shrink: 0;
+        border: 2px solid rgba(59,130,246,0.4); object-fit: cover;
+      }
+      #modalTitle {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.1rem; letter-spacing: .06em;
+        color: var(--white-pure); margin-bottom: 2px;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      }
+      #modalSport {
+        font-size: .8rem; font-weight: 600;
+        color: var(--white-ghost); letter-spacing: .06em;
+      }
+
+      /* detail labels/values */
+      .detail-label {
+        font-size: .68rem; font-weight: 700;
+        letter-spacing: .16em; text-transform: uppercase;
+        color: var(--white-ghost); margin-bottom: 3px;
+      }
+      .detail-value {
+        font-size: .95rem; font-weight: 600;
+        color: var(--white-pure); word-break: break-word;
+      }
+      .detail-value-sm {
+        font-size: .85rem; font-weight: 500;
+        color: var(--white-ghost); word-break: break-word;
+      }
+      .detail-grid {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+      }
+
+      /* proof container */
+      #modalProofContainer { display: flex; flex-direction: column; gap: 8px; }
+      #modalProofContent {
+        border-radius: 12px; overflow: hidden;
+        background: rgba(0,0,0,0.3);
+        border: 1px solid rgba(59,130,246,0.15);
+      }
+
+      /* divider */
+      .modal-divider {
+        border: none;
+        border-top: 1px solid rgba(59,130,246,0.12);
+        margin: 0;
+      }
+
+      /* reject textarea */
+      #rejectReasonContainer { display: flex; flex-direction: column; gap: 8px; }
+      .reject-label {
+        font-size: .78rem; font-weight: 700;
+        letter-spacing: .1em; text-transform: uppercase;
+        color: var(--white-ghost);
+      }
+      .reject-label span { color: #f87171; }
+      #rejectReason {
+        width: 100%; padding: 11px 13px;
+        background: rgba(59,130,246,0.07);
+        border: 1px solid rgba(59,130,246,0.22);
+        border-radius: 10px;
+        color: var(--white-pure);
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .92rem; font-weight: 500;
+        resize: none; outline: none;
+        transition: border-color .3s, box-shadow .3s;
+      }
+      #rejectReason:focus {
+        border-color: var(--blue-400);
+        box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+      }
+      #rejectReason::placeholder { color: var(--white-ghost); }
+      #rejectReasonError {
+        font-size: .78rem; font-weight: 600;
+        color: #f87171; letter-spacing: .04em;
+      }
+
+      /* action buttons */
+      .action-row { display: flex; flex-direction: column; gap: 10px; }
+      @media(min-width:480px) { .action-row { flex-direction: row; } }
+
+      #approveBtn {
+        flex: 1; padding: 12px 16px; border-radius: 12px;
+        background: rgba(5,150,105,0.18);
+        border: 1px solid rgba(5,150,105,0.35);
+        color: #34D399; cursor: pointer;
+        display: flex; align-items: center; justify-content: center; gap: 7px;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .92rem; font-weight: 700; letter-spacing: .1em;
+        text-transform: uppercase; min-height: 44px; transition: all .25s;
+      }
+      #approveBtn:hover { background: rgba(5,150,105,0.30); border-color: #34D399; color: #fff; }
+      #approveBtn .material-symbols-outlined { font-size: 18px; }
+
+      #rejectBtn {
+        flex: 1; padding: 12px 16px; border-radius: 12px;
+        background: rgba(239,68,68,0.12);
+        border: 1px solid rgba(239,68,68,0.3);
+        color: #f87171; cursor: pointer;
+        display: flex; align-items: center; justify-content: center; gap: 7px;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .92rem; font-weight: 700; letter-spacing: .1em;
+        text-transform: uppercase; min-height: 44px; transition: all .25s;
+      }
+      #rejectBtn:hover { background: rgba(239,68,68,0.24); border-color: #f87171; color: #fff; }
+      #rejectBtn .material-symbols-outlined { font-size: 18px; }
+
+      #cancelRejectBtn {
+        flex: 1; padding: 12px 16px; border-radius: 12px;
+        background: rgba(59,130,246,0.08);
+        border: 1px solid rgba(59,130,246,0.22);
+        color: var(--white-ghost); cursor: pointer;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .92rem; font-weight: 700; letter-spacing: .1em;
+        text-transform: uppercase; min-height: 44px; transition: all .25s;
+      }
+      #cancelRejectBtn:hover { background: rgba(59,130,246,0.16); color: var(--white-pure); }
+
+      #submitRejectBtn {
+        flex: 1; padding: 12px 16px; border-radius: 12px;
+        background: rgba(239,68,68,0.12);
+        border: 1px solid rgba(239,68,68,0.3);
+        color: #f87171; cursor: pointer;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .92rem; font-weight: 700; letter-spacing: .1em;
+        text-transform: uppercase; min-height: 44px; transition: all .25s;
+      }
+      #submitRejectBtn:hover { background: rgba(239,68,68,0.26); border-color: #f87171; color: #fff; }
+
+      #submitRejectContainer { display: flex; gap: 10px; flex-wrap: wrap; }
+      @media(min-width:480px) { #submitRejectContainer { flex-wrap: nowrap; } }
+
+      /* modal error */
+      #modalError {
+        font-size: .82rem; font-weight: 600;
+        color: #f87171; letter-spacing: .04em; word-break: break-word;
+      }
+
+      /* ── HIDDEN ── */
+      .hidden { display: none !important; }
     </style>
   </head>
-  <body
-    data-page="coach-achievements"
-    class="font-display text-white min-h-screen"
-  >
-    <div class="relative flex min-h-screen w-full flex-col">
-      <!-- Main Content -->
-      <main
-        class="flex-grow p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 max-w-7xl mx-auto w-full pb-28 sm:pb-32"
-      >
-        <!-- Header -->
-        <header class="flex items-center justify-between gap-4">
-          <button
-            id="backBtn"
-            class="flex items-center justify-center size-10 sm:size-11 text-gray-300 hover:text-white hover:bg-white/10 rounded-full transition-all active:scale-95"
-            aria-label="Back to previous page"
-            title="Back"
-          >
+
+  <body data-page="coach-achievements">
+    <div class="particles" id="particles"></div>
+
+    <div class="page-wrap">
+      <main>
+
+        <!-- HEADER -->
+        <header>
+          <button id="backBtn" class="header-btn" aria-label="Back to previous page" title="Back">
             <span class="material-symbols-outlined">arrow_back_ios_new</span>
           </button>
-          <h1 class="text-lg sm:text-xl lg:text-2xl font-bold text-white">
-            Achievements
-          </h1>
-          <a
-            href="notifications.html"
-            class="relative flex items-center justify-center size-10 sm:size-11 text-gray-300 hover:text-white hover:bg-white/10 rounded-full transition-all"
-            aria-label="Notifications"
-            data-notify-bell
-          >
+          <h1>Achievements</h1>
+          <a href="notifications.html" class="header-btn notif-wrap" aria-label="Notifications" data-notify-bell>
             <span class="material-symbols-outlined">notifications</span>
+            <span class="notif-dot"></span>
           </a>
         </header>
 
-        <!-- Pending Section -->
-        <div class="space-y-3 sm:space-y-4">
-          <h2
-            id="pendingHeader"
-            class="text-base sm:text-lg font-semibold text-gray-300"
-            aria-live="polite"
-          >
+        <!-- PENDING SECTION -->
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <h2 id="pendingHeader" aria-live="polite">
             Pending (<span id="pendingCount">0</span>)
           </h2>
 
-          <!-- Loading State -->
-          <div id="loadingState" class="space-y-3 sm:space-y-4">
-            <div
-              class="glassmorphic rounded-xl p-3 sm:p-4 animate-pulse flex items-center gap-3 sm:gap-4"
-            >
-              <div
-                class="size-12 sm:size-14 rounded-full bg-white/10 flex-shrink-0"
-              ></div>
-              <div class="flex-grow space-y-2 min-w-0">
-                <div class="h-4 bg-white/10 rounded w-1/3"></div>
-                <div class="h-3 bg-white/10 rounded w-1/2"></div>
-                <div class="h-3 bg-white/10 rounded w-1/4"></div>
+          <!-- LOADING STATE -->
+          <div id="loadingState">
+            <div class="skeleton-card">
+              <div class="skel-avatar"></div>
+              <div class="skel-lines">
+                <div class="skel-line" style="width:35%"></div>
+                <div class="skel-line" style="width:55%"></div>
+                <div class="skel-line" style="width:25%"></div>
               </div>
             </div>
           </div>
 
-          <!-- Empty State -->
-          <div id="emptyState" class="hidden text-center py-12 sm:py-16">
-            <div class="max-w-sm mx-auto">
-              <p class="text-gray-400 text-sm sm:text-base">
-                No pending achievements.
-              </p>
-            </div>
+          <!-- EMPTY STATE -->
+          <div id="emptyState" class="hidden">
+            <p>No pending achievements.</p>
           </div>
 
-          <!-- Cards Container -->
-          <div id="cardsContainer" class="space-y-3 sm:space-y-4 hidden"></div>
+          <!-- CARDS CONTAINER -->
+          <div id="cardsContainer" class="hidden"></div>
 
-          <!-- Legacy pendingList for JS compatibility -->
+          <!-- Legacy pendingList -->
           <div id="pendingList" class="hidden"></div>
         </div>
+
       </main>
-
-      <!-- Modal (Hidden by default) -->
-      <div
-        id="achievementModal"
-        class="hidden fixed inset-0 z-50 flex items-center justify-center p-4"
-        aria-modal="true"
-        role="dialog"
-        aria-labelledby="modalTitle"
-      >
-        <!-- Overlay -->
-        <div
-          id="modalOverlay"
-          class="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        ></div>
-
-        <!-- Modal Content -->
-        <div
-          class="relative glassmorphic rounded-2xl p-4 sm:p-6 max-w-lg lg:max-w-3xl w-full max-h-[90vh] overflow-y-auto space-y-3 sm:space-y-4"
-        >
-          <!-- Close Button -->
-          <button
-            id="modalClose"
-            class="absolute top-3 right-3 sm:top-4 sm:right-4 flex items-center justify-center size-8 sm:size-10 text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition-all"
-            aria-label="Close modal"
-            title="Close"
-          >
-            <span class="material-symbols-outlined">close</span>
-          </button>
-
-          <!-- Player Info -->
-          <div class="flex items-center gap-3 sm:gap-4 pr-10 sm:pr-12">
-            <img
-              id="modalAvatar"
-              alt="Player avatar"
-              class="size-14 sm:size-16 rounded-full border-2 border-primary/50 flex-shrink-0"
-              src=""
-            />
-            <div class="min-w-0 flex-1">
-              <h2
-                id="modalTitle"
-                class="text-lg sm:text-xl font-bold text-white truncate"
-              ></h2>
-              <p
-                id="modalSport"
-                class="text-xs sm:text-sm text-gray-300 truncate"
-              ></p>
-            </div>
-          </div>
-
-          <!-- Achievement Details -->
-          <div class="space-y-3">
-            <div>
-              <p class="text-xs text-gray-400 uppercase tracking-wide">Title</p>
-              <p
-                id="modalAchTitle"
-                class="text-base sm:text-lg font-semibold text-white break-words"
-              ></p>
-            </div>
-
-            <div class="grid grid-cols-2 gap-3">
-              <div>
-                <p class="text-xs text-gray-400 uppercase tracking-wide">
-                  Date
-                </p>
-                <p id="modalDate" class="text-sm text-gray-300"></p>
-              </div>
-              <div>
-                <p class="text-xs text-gray-400 uppercase tracking-wide">
-                  Venue
-                </p>
-                <p
-                  id="modalVenue"
-                  class="text-sm text-gray-300 break-words"
-                ></p>
-              </div>
-            </div>
-
-            <div>
-              <p class="text-xs text-gray-400 uppercase tracking-wide">
-                Description
-              </p>
-              <p
-                id="modalDescription"
-                class="text-sm text-gray-300 break-words"
-              ></p>
-            </div>
-
-            <!-- Proof (if exists) -->
-            <div id="modalProofContainer" class="hidden">
-              <p class="text-xs text-gray-400 uppercase tracking-wide mb-2">
-                Proof
-              </p>
-              <div
-                id="modalProofContent"
-                class="rounded-lg overflow-hidden bg-black/20"
-              >
-                <!-- Dynamic content: image or "View PDF" button -->
-              </div>
-            </div>
-          </div>
-
-          <!-- Actions -->
-          <div class="space-y-3 pt-4 border-t border-white/10">
-            <!-- Reject Reason (hidden initially) -->
-            <div id="rejectReasonContainer" class="hidden space-y-2">
-              <label
-                for="rejectReason"
-                class="block text-sm font-medium text-gray-300"
-              >
-                Rejection Reason <span class="text-red-400">*</span>
-              </label>
-              <textarea
-                id="rejectReason"
-                rows="3"
-                class="w-full px-3 py-2 text-sm sm:text-base rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/50 focus:outline-none resize-none"
-                placeholder="Explain why this achievement is being rejected..."
-                style="
-                  background-color: #1f2937;
-                  border: 1px solid #4b5563;
-                  color: #e5e7eb;
-                "
-              ></textarea>
-              <p
-                id="rejectReasonError"
-                class="text-sm text-red-400 hidden"
-                aria-live="assertive"
-              >
-                Rejection reason is required.
-              </p>
-            </div>
-
-            <!-- Action Buttons -->
-            <div id="actionButtons" class="flex flex-col sm:flex-row gap-3">
-              <button
-                id="approveBtn"
-                class="flex-1 px-4 sm:px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm sm:text-base font-semibold transition-all active:scale-95 focus:ring-2 focus:ring-emerald-400 focus:outline-none min-h-[44px]"
-              >
-                <span class="flex items-center justify-center gap-2">
-                  <span class="material-symbols-outlined text-lg"
-                    >check_circle</span
-                  >
-                  Approve
-                </span>
-              </button>
-              <button
-                id="rejectBtn"
-                class="flex-1 px-4 sm:px-5 py-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-sm sm:text-base font-semibold transition-all active:scale-95 focus:ring-2 focus:ring-rose-400 focus:outline-none min-h-[44px]"
-              >
-                <span class="flex items-center justify-center gap-2">
-                  <span class="material-symbols-outlined text-lg">cancel</span>
-                  Reject
-                </span>
-              </button>
-            </div>
-
-            <!-- Submit Reject Button (shown after clicking Reject) -->
-            <div
-              id="submitRejectContainer"
-              class="hidden flex flex-col sm:flex-row gap-3"
-            >
-              <button
-                id="cancelRejectBtn"
-                class="flex-1 px-4 sm:px-5 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm sm:text-base font-semibold transition-all active:scale-95 border border-white/20 min-h-[44px]"
-              >
-                Cancel
-              </button>
-              <button
-                id="submitRejectBtn"
-                class="flex-1 px-4 sm:px-5 py-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-sm sm:text-base font-semibold transition-all active:scale-95 focus:ring-2 focus:ring-rose-400 focus:outline-none min-h-[44px]"
-              >
-                Submit Rejection
-              </button>
-            </div>
-          </div>
-
-          <!-- Error Message -->
-          <p
-            id="modalError"
-            class="text-sm text-rose-400 hidden break-words"
-            aria-live="assertive"
-          ></p>
-        </div>
-      </div>
-
-      <!-- Legacy modals (hidden, kept for JS backward compatibility) -->
-      <div id="proofModal" class="hidden" aria-hidden="true"></div>
-      <div id="rejectModal" class="hidden" aria-hidden="true"></div>
-      <div id="statusMsg" class="hidden"></div>
     </div>
 
-    <!-- Bell dot helper -->
+    <!-- ── MODAL ── -->
+    <div id="achievementModal" class="hidden" aria-modal="true" role="dialog" aria-labelledby="modalTitle">
+      <div id="modalOverlay"></div>
+      <div class="modal-card">
+
+        <!-- CLOSE -->
+        <button id="modalClose" aria-label="Close modal" title="Close">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+
+        <!-- PLAYER INFO -->
+        <div class="modal-player">
+          <img id="modalAvatar" alt="Player avatar" src="" />
+          <div style="min-width:0;flex:1">
+            <div id="modalTitle"></div>
+            <div id="modalSport"></div>
+          </div>
+        </div>
+
+        <!-- ACHIEVEMENT DETAILS -->
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div>
+            <div class="detail-label">Title</div>
+            <div id="modalAchTitle" class="detail-value"></div>
+          </div>
+          <div class="detail-grid">
+            <div>
+              <div class="detail-label">Date</div>
+              <div id="modalDate" class="detail-value-sm"></div>
+            </div>
+            <div>
+              <div class="detail-label">Venue</div>
+              <div id="modalVenue" class="detail-value-sm"></div>
+            </div>
+          </div>
+          <div>
+            <div class="detail-label">Description</div>
+            <div id="modalDescription" class="detail-value-sm"></div>
+          </div>
+          <div id="modalProofContainer" class="hidden">
+            <div class="detail-label">Proof</div>
+            <div id="modalProofContent"></div>
+          </div>
+        </div>
+
+        <hr class="modal-divider" />
+
+        <!-- ACTIONS -->
+        <div style="display:flex;flex-direction:column;gap:12px">
+
+          <!-- REJECT REASON -->
+          <div id="rejectReasonContainer" class="hidden">
+            <label for="rejectReason" class="reject-label">
+              Rejection Reason <span>*</span>
+            </label>
+            <textarea id="rejectReason" rows="3" placeholder="Explain why this achievement is being rejected..."></textarea>
+            <p id="rejectReasonError" class="hidden" aria-live="assertive">Rejection reason is required.</p>
+          </div>
+
+          <!-- ACTION BUTTONS -->
+          <div id="actionButtons" class="action-row">
+            <button id="approveBtn">
+              <span class="material-symbols-outlined">check_circle</span>
+              Approve
+            </button>
+            <button id="rejectBtn">
+              <span class="material-symbols-outlined">cancel</span>
+              Reject
+            </button>
+          </div>
+
+          <!-- SUBMIT REJECT -->
+          <div id="submitRejectContainer" class="hidden">
+            <button id="cancelRejectBtn">Cancel</button>
+            <button id="submitRejectBtn">Submit Rejection</button>
+          </div>
+        </div>
+
+        <!-- MODAL ERROR -->
+        <p id="modalError" class="hidden" aria-live="assertive"></p>
+
+      </div>
+    </div>
+
+    <!-- Legacy modals — kept for JS compatibility -->
+    <div id="proofModal"  class="hidden" aria-hidden="true"></div>
+    <div id="rejectModal" class="hidden" aria-hidden="true"></div>
+    <div id="statusMsg"   class="hidden"></div>
+
+    <!-- SCRIPTS — all untouched -->
     <script type="module" src="js/notify-dot.js"></script>
-
-    <!-- Controller -->
     <script type="module" src="js/coachVerify.js"></script>
-
-    <!-- Bottom nav -->
     <script type="module" src="js/nav.js"></script>
 
-    <!-- Smart back button handler -->
     <script>
-      document
-        .getElementById("backBtn")
-        ?.addEventListener("click", function () {
-          if (window.history.length > 1 && document.referrer) {
-            window.history.back();
-          } else {
-            window.location.href = "coachVerifyLand.html";
-          }
-        });
+      document.getElementById("backBtn")?.addEventListener("click", function () {
+        if (window.history.length > 1 && document.referrer) {
+          window.history.back();
+        } else {
+          window.location.href = "coachVerifyLand.html";
+        }
+      });
+
+      // Particles
+      const pc = document.getElementById('particles');
+      const cols = ['#3B82F6','#6EA8FE','#38BDF8','#ffffff'];
+      for (let i = 0; i < 18; i++) {
+        const p = document.createElement('div');
+        p.className = 'p';
+        const s = Math.random() * 3 + 1.5;
+        p.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${9+Math.random()*12}s;animation-delay:${Math.random()*10}s;`;
+        pc.appendChild(p);
+      }
     </script>
   </body>
 </html>

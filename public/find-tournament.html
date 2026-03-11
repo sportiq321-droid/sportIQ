@@ -1,314 +1,577 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Find Tournaments - SportIQ</title>
 
-    <!-- Tailwind tokens + CDN (utilities only; page styles in tournament.css) -->
     <script src="js/tailwind-config.js"></script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
     <link rel="stylesheet" href="css/global.css" />
     <link rel="stylesheet" href="css/tournament.css" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      :root {
+        --blue-950: #020B18;
+        --blue-900: #061527;
+        --blue-800: #0A2040;
+        --blue-600: #1146A0;
+        --blue-500: #1A5FD4;
+        --blue-400: #3B82F6;
+        --blue-300: #6EA8FE;
+        --white-pure: #FFFFFF;
+        --white-ghost: #A8BBDA;
+        --accent-sky: #38BDF8;
+        --card-bg: rgba(6,21,39,0.78);
+        --border: rgba(59,130,246,0.20);
+      }
+
+      html, body {
+        min-height: 100vh;
+        background: var(--blue-950);
+        color: var(--white-pure);
+        font-family: 'Rajdhani', sans-serif;
+        overflow-x: hidden;
+      }
+
+      /* ── BG ── */
+      body::before {
+        content: '';
+        position: fixed; inset: 0; z-index: 0;
+        background:
+          radial-gradient(ellipse at 20% 20%, rgba(26,95,212,0.18) 0%, transparent 55%),
+          radial-gradient(ellipse at 80% 80%, rgba(56,189,248,0.07) 0%, transparent 50%),
+          linear-gradient(135deg, #020B18 0%, #040F20 100%);
+        pointer-events: none;
+      }
+      body::after {
+        content: '';
+        position: fixed; inset: 0; z-index: 0;
+        background-image:
+          linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+        background-size: 40px 40px;
+        pointer-events: none;
+      }
+
+      /* ── PARTICLES ── */
+      .particles { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
+      .p { position:absolute; border-radius:50%; animation:floatUp linear infinite; opacity:0; }
+      @keyframes floatUp {
+        0%   { transform:translateY(100vh) scale(0); opacity:0; }
+        10%  { opacity:0.4; }
+        90%  { opacity:0.15; }
+        100% { transform:translateY(-10vh) scale(1.2); opacity:0; }
+      }
+
+      /* ── PAGE WRAP ── */
+      .page-wrap {
+        position: relative; z-index: 1;
+        display: flex; flex-direction: column;
+        min-height: 100vh;
+        max-width: 580px; margin: 0 auto; width: 100%;
+      }
+
+      /* ── HEADER ── */
+      header {
+        position: sticky; top: 0; z-index: 20;
+        padding: 14px 18px 0;
+        background: rgba(2,11,24,0.90);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(59,130,246,0.12);
+        animation: fadeDown .5s ease both;
+      }
+      @keyframes fadeDown {
+        from { opacity:0; transform:translateY(-14px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+
+      .header-row {
+        display: flex; align-items: center; justify-content: space-between;
+        margin-bottom: 14px;
+      }
+      .header-title {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.1rem; letter-spacing: .16em;
+        color: var(--white-pure);
+      }
+
+      /* avatar */
+      .header-avatar {
+        width: 38px; height: 38px; border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid var(--blue-400);
+        box-shadow: 0 0 10px rgba(59,130,246,0.3);
+        transition: box-shadow .3s;
+        display: block;
+      }
+      .header-avatar:hover { box-shadow: 0 0 20px rgba(59,130,246,0.55); }
+
+      /* notif bell */
+      .header-bell {
+        width: 38px; height: 38px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--white-ghost);
+        background: rgba(59,130,246,0.07);
+        border: 1px solid rgba(59,130,246,0.14);
+        text-decoration: none; transition: all .3s;
+        position: relative;
+      }
+      .header-bell:hover { color: var(--white-pure); background: rgba(59,130,246,0.15); border-color: var(--blue-400); }
+      .header-bell .material-symbols-outlined { font-size: 20px; }
+      .notif-dot {
+        position: absolute; top: 1px; right: 1px;
+        width: 8px; height: 8px; background: #ef4444;
+        border-radius: 50%; border: 1.5px solid var(--blue-950);
+      }
+
+      /* ── LINE TOGGLE ── */
+      .line-toggle {
+        display: flex; position: relative;
+        border-bottom: 1px solid rgba(59,130,246,0.12);
+        margin: 0 -18px;
+        padding: 0 18px;
+      }
+      .line-toggle > div { flex: 1; }
+      .line-toggle-option {
+        display: flex; align-items: center; justify-content: center; gap: 6px;
+        padding: 10px 0;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .82rem; font-weight: 700; letter-spacing: .12em;
+        text-transform: uppercase; color: var(--white-ghost);
+        cursor: pointer; transition: color .25s;
+        text-decoration: none; white-space: nowrap;
+      }
+      .line-toggle-option.active { color: var(--white-pure); }
+      .line-toggle-slider {
+        position: absolute; bottom: 0; left: 18px;
+        width: calc(50% - 18px); height: 2px;
+        background: linear-gradient(90deg, var(--blue-500), var(--accent-sky));
+        border-radius: 2px;
+        transition: left .3s cubic-bezier(.4,0,.2,1);
+        box-shadow: 0 0 8px rgba(59,130,246,0.5);
+      }
+
+      /* badge */
+      .badge-soft {
+        display: inline-flex; align-items: center; justify-content: center;
+        min-width: 18px; height: 18px; padding: 0 5px;
+        border-radius: 10px;
+        background: rgba(59,130,246,0.15);
+        border: 1px solid rgba(59,130,246,0.28);
+        font-size: .65rem; font-weight: 700; letter-spacing: .04em;
+        color: var(--blue-300);
+      }
+
+      /* ── MAIN CONTENT ── */
+      main {
+        flex: 1; padding: 20px 18px 100px;
+        animation: fadeUp .5s ease .1s both;
+      }
+      @keyframes fadeUp {
+        from { opacity:0; transform:translateY(18px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+
+      /* ── SEARCH BLOCK ── */
+      #searchBlock { display: flex; flex-direction: column; gap: 12px; }
+
+      /* input glass */
+      .input-glass {
+        position: relative;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        backdrop-filter: blur(16px);
+        transition: border-color .3s;
+      }
+      .input-glass:focus-within {
+        border-color: var(--blue-400);
+        box-shadow: 0 0 0 3px rgba(59,130,246,0.10);
+      }
+      .abs-icon {
+        position: absolute; left: 14px;
+        top: 50%; transform: translateY(-50%);
+        font-size: 20px;
+        color: var(--blue-300);
+        pointer-events: none;
+      }
+      /* nudge icon up if error text is below */
+      .input-glass.has-err .abs-icon { top: calc(50% - 8px); }
+
+      .form-input {
+        width: 100%; height: 52px;
+        padding: 0 16px 0 46px;
+        background: transparent;
+        border: none; outline: none;
+        color: var(--white-pure);
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .95rem; font-weight: 500;
+        caret-color: var(--blue-400);
+      }
+      .form-input::placeholder { color: var(--white-ghost); }
+      .form-input option { background: #061527; color: #fff; }
+      /* remove default datalist arrow on Webkit */
+      input[type="text"]::-webkit-calendar-picker-indicator { opacity: 0; }
+
+      .field-error {
+        font-size: .73rem; font-weight: 600;
+        color: #f87171; letter-spacing: .04em;
+        padding: 2px 16px 8px;
+        min-height: 0;
+      }
+
+      /* CTA row */
+      .btn-row { margin-top: 4px; }
+      .btn-neon-blue {
+        width: 100%; padding: 14px;
+        background: linear-gradient(135deg, var(--blue-500), var(--blue-600));
+        border: none; border-radius: 12px; cursor: pointer;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .95rem; font-weight: 700; letter-spacing: .18em;
+        text-transform: uppercase; color: #fff;
+        box-shadow: 0 0 20px rgba(26,95,212,0.45);
+        transition: transform .2s, box-shadow .3s;
+      }
+      .btn-neon-blue:hover { transform: translateY(-2px); box-shadow: 0 0 32px rgba(59,130,246,0.6); }
+      .btn-neon-blue:active { transform: scale(.97); }
+
+      /* ── RESULTS STEP ── */
+      .t-step { display: none; }
+      .t-step.active { display: block; }
+
+      .fallback-hint {
+        font-size: .82rem; color: var(--white-ghost);
+        text-align: center; margin-bottom: 12px;
+        letter-spacing: .04em;
+      }
+
+      /* tournament card */
+      .t-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        backdrop-filter: blur(18px);
+        margin-bottom: 14px;
+        overflow: hidden;
+        position: relative;
+        transition: border-color .3s, transform .2s, box-shadow .3s;
+        cursor: pointer;
+      }
+      .t-card::before {
+        content: ''; position: absolute;
+        top: 0; left: 0; right: 0; height: 2px;
+        background: linear-gradient(90deg, var(--blue-500), var(--accent-sky));
+        opacity: 0; transition: opacity .3s;
+      }
+      .t-card:hover {
+        border-color: rgba(59,130,246,0.38);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 28px rgba(0,0,0,0.35);
+      }
+      .t-card:hover::before { opacity: 1; }
+
+      /* ── DETAILS STEP ── */
+      .step3-header {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 0 0 16px;
+      }
+      .back-btn {
+        width: 38px; height: 38px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--white-ghost);
+        background: rgba(59,130,246,0.07);
+        border: 1px solid rgba(59,130,246,0.15);
+        cursor: pointer; transition: all .3s;
+        outline: none; padding: 0;
+      }
+      .back-btn:hover { color: var(--white-pure); background: rgba(59,130,246,0.15); border-color: var(--blue-400); }
+      .step3-title {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.05rem; letter-spacing: .14em;
+        color: var(--white-pure);
+      }
+
+      /* banner */
+      .detail-banner {
+        position: relative; height: 180px; width: 100%;
+        border-radius: 16px; overflow: hidden;
+        margin-bottom: 16px;
+      }
+      #dBanner {
+        position: absolute; inset: 0;
+        background-size: cover; background-position: center;
+      }
+      .detail-banner::after {
+        content: '';
+        position: absolute; inset: 0;
+        background: linear-gradient(to top, rgba(2,11,24,0.95) 0%, rgba(2,11,24,0.45) 60%, transparent 100%);
+      }
+
+      /* detail card */
+      .detail-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        backdrop-filter: blur(20px);
+        padding: 22px;
+        position: relative;
+      }
+      .detail-card::before {
+        content: ''; position: absolute;
+        top: 0; left: 0; right: 0; height: 2px;
+        background: linear-gradient(90deg, var(--blue-500), var(--accent-sky));
+        border-radius: 16px 16px 0 0;
+      }
+
+      #dName {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.5rem; letter-spacing: .08em;
+        color: var(--white-pure); margin-bottom: 6px;
+      }
+      #dDesc { font-size: .88rem; color: var(--white-ghost); line-height: 1.55; }
+
+      /* facts list */
+      .facts-list {
+        margin-top: 18px;
+        padding-left: 14px;
+        border-left: 2px solid var(--blue-500);
+        display: flex; flex-direction: column; gap: 12px;
+      }
+      .fact-row {
+        display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;
+      }
+      .fact-label {
+        font-size: .78rem; font-weight: 700; letter-spacing: .1em;
+        text-transform: uppercase; color: var(--white-ghost); white-space: nowrap;
+      }
+      .fact-val {
+        font-size: .85rem; font-weight: 600; color: var(--white-pure);
+        text-align: right; max-width: 65%;
+      }
+
+      /* collapsibles */
+      details { margin-top: 14px; }
+      summary {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 10px 14px;
+        background: rgba(59,130,246,0.06);
+        border: 1px solid rgba(59,130,246,0.14);
+        border-radius: 10px; cursor: pointer;
+        font-family: 'Oswald', sans-serif;
+        font-size: 1rem; letter-spacing: .08em;
+        color: var(--white-pure); list-style: none;
+        transition: background .3s;
+      }
+      summary::-webkit-details-marker { display: none; }
+      summary:hover { background: rgba(59,130,246,0.12); }
+      .sum-chevron {
+        color: var(--white-ghost); font-size: 1.1rem;
+        transition: transform .3s; display: inline-block;
+      }
+      details[open] .sum-chevron { transform: rotate(180deg); }
+
+      .collapsible-body {
+        margin-top: 10px;
+        padding-left: 14px;
+        border-left: 2px solid var(--blue-500);
+      }
+      .collapsible-body ul { list-style: disc; padding-left: 16px; }
+      .collapsible-body li {
+        font-size: .88rem; color: var(--white-pure);
+        margin-bottom: 6px; line-height: 1.5;
+      }
+      .muted-sm { font-size: .82rem; color: var(--white-ghost); }
+
+      /* register btn */
+      #registerBtn {
+        width: 100%; height: 52px; margin-top: 20px;
+        background: linear-gradient(135deg, var(--blue-500), var(--blue-600));
+        border: none; border-radius: 12px; cursor: pointer;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: 1rem; font-weight: 700; letter-spacing: .18em;
+        text-transform: uppercase; color: #fff;
+        box-shadow: 0 0 20px rgba(26,95,212,0.45);
+        transition: transform .2s, box-shadow .3s;
+        display: flex; align-items: center; justify-content: center;
+      }
+      #registerBtn:hover { transform: translateY(-2px); box-shadow: 0 0 32px rgba(59,130,246,0.6); }
+      #registerBtn:active { transform: scale(.97); }
+
+      #dRegistrationNote {
+        margin-top: 8px; text-align: center;
+        font-size: .75rem; color: var(--white-ghost); letter-spacing: .04em;
+      }
+
+      /* hidden util */
+      .hidden { display: none !important; }
+    </style>
   </head>
 
-  <body
-    class="bg-background-light dark:bg-background-dark font-display text-white min-h-screen"
-    data-page="find-tournaments"
-  >
-    <main class="relative flex flex-col min-h-screen max-w-xl mx-auto w-full">
-      <!-- Header -->
-      <header
-        class="sticky top-0 z-20 p-4 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm"
-      >
-        <div class="flex flex-col gap-4">
-          <div class="flex items-center justify-between">
-            <!-- Avatar (profile link) -->
-            <a href="profile.html" class="block" aria-label="Profile">
-              <img
-                id="headerAvatar"
-                src="img/defaultavatar.jpg"
-                alt="Profile avatar"
-                class="w-10 h-10 rounded-full object-cover border-2 border-primary"
-              />
-            </a>
+  <body data-page="find-tournaments">
+    <div class="particles" id="particles"></div>
 
-            <h1 class="text-lg font-bold">Tournaments</h1>
+    <div class="page-wrap">
 
-            <!-- Bell with dot support -->
-            <a
-              href="notifications.html"
-              class="text-gray-300"
-              aria-label="Notifications"
-              data-notify-bell
-            >
-              <span class="material-symbols-outlined">notifications</span>
+      <!-- ── HEADER ── -->
+      <header>
+        <div class="header-row">
+          <a href="profile.html" aria-label="Profile">
+            <img id="headerAvatar" src="img/defaultavatar.jpg" alt="Profile avatar" class="header-avatar" />
+          </a>
+
+          <span class="header-title">Tournaments</span>
+
+          <a href="notifications.html" class="header-bell" aria-label="Notifications" data-notify-bell>
+            <span class="material-symbols-outlined">notifications</span>
+            <span class="notif-dot"></span>
+          </a>
+        </div>
+
+        <!-- Toggle -->
+        <div class="line-toggle">
+          <div class="flex-1">
+            <span class="line-toggle-option active">
+              Find Tournaments
+              <span id="findResultsBadge" class="badge-soft hidden" aria-live="polite">0</span>
+            </span>
+          </div>
+          <div class="flex-1">
+            <a href="mytournaments.html" class="line-toggle-option" style="justify-content:center">
+              <span>My Tournaments</span>
+              <span id="myTournamentsCount" class="badge-soft" aria-label="Ongoing tournaments count">0</span>
             </a>
           </div>
-
-          <!-- Toggle -->
-          <div class="line-toggle">
-            <div class="flex-1">
-              <span class="line-toggle-option active">
-                Find Tournaments
-                <span
-                  id="findResultsBadge"
-                  class="badge-soft hidden"
-                  aria-live="polite"
-                  >0</span
-                >
-              </span>
-            </div>
-            <div class="flex-1">
-              <a href="mytournaments.html" class="line-toggle-option relative">
-                <span>My Tournaments</span>
-                <span
-                  id="myTournamentsCount"
-                  class="badge-soft"
-                  aria-label="Ongoing tournaments count"
-                  >0</span
-                >
-              </a>
-            </div>
-            <div class="line-toggle-slider"></div>
-          </div>
+          <div class="line-toggle-slider"></div>
         </div>
       </header>
 
-      <!-- Content -->
-      <section class="flex-grow p-4">
-        <!-- Search block (hidden after Show) -->
-        <div class="space-y-4" id="searchBlock">
-          <!-- Search -->
-          <div class="relative glassmorphic rounded-xl">
-            <span class="material-symbols-outlined abs-icon" aria-hidden="true"
-              >search</span
-            >
-            <input
-              id="query"
-              type="search"
-              placeholder="Search by name or location"
-              class="form-input w-full h-14 pl-12 pr-4 rounded-xl bg-transparent text-white placeholder:text-white/40 border-none outline-none"
-            />
+      <!-- ── CONTENT ── -->
+      <main>
+
+        <!-- STEP 1 — Search -->
+        <div id="searchBlock">
+
+          <div class="input-glass">
+            <span class="material-symbols-outlined abs-icon">search</span>
+            <input id="query" type="search" placeholder="Search by name or location" class="form-input" />
           </div>
 
-          <!-- State -->
-          <div class="relative glassmorphic rounded-xl">
-            <span class="material-symbols-outlined abs-icon" aria-hidden="true"
-              >public</span
-            >
-            <input
-              id="stateInput"
-              type="text"
-              list="stateList"
-              autocomplete="off"
-              placeholder="Select State"
-              class="form-input w-full h-14 pl-12 pr-4 rounded-xl bg-transparent text-white placeholder:text-white/40 border-none outline-none"
-            />
+          <div class="input-glass has-err">
+            <span class="material-symbols-outlined abs-icon">public</span>
+            <input id="stateInput" type="text" list="stateList" autocomplete="off" placeholder="Select State" class="form-input" />
             <datalist id="stateList"></datalist>
-            <p id="stateErr" class="field-error px-3 pb-2"></p>
+            <p id="stateErr" class="field-error"></p>
           </div>
 
-          <!-- District -->
-          <div class="relative glassmorphic rounded-xl">
-            <span class="material-symbols-outlined abs-icon" aria-hidden="true"
-              >location_on</span
-            >
-            <input
-              id="districtInput"
-              type="text"
-              list="districtList"
-              autocomplete="off"
-              placeholder="Select District"
-              class="form-input w-full h-14 pl-12 pr-4 rounded-xl bg-transparent text-white placeholder:text-white/40 border-none outline-none"
-            />
+          <div class="input-glass has-err">
+            <span class="material-symbols-outlined abs-icon">location_on</span>
+            <input id="districtInput" type="text" list="districtList" autocomplete="off" placeholder="Select District" class="form-input" />
             <datalist id="districtList"></datalist>
-            <p id="districtErr" class="field-error px-3 pb-2"></p>
+            <p id="districtErr" class="field-error"></p>
           </div>
 
-          <!-- CTA -->
           <div class="btn-row hidden" id="showRow">
-            <button class="btn btn-neon-blue btn-pill w-full" id="showBtn">
-              Show Tournaments
-            </button>
+            <button class="btn-neon-blue" id="showBtn">Show Tournaments</button>
           </div>
         </div>
 
-        <!-- Results list lives here (Step 2) -->
+        <!-- STEP 2 — Results -->
         <div class="t-step t-step-2">
-          <p id="fallbackHint" class="muted fallback-hint hidden"></p>
-          <div id="tournamentList" class="space-y-4"></div>
+          <p id="fallbackHint" class="fallback-hint hidden"></p>
+          <div id="tournamentList" style="margin-top:4px"></div>
         </div>
 
-        <!-- Details (Step 3 updated UI) -->
+        <!-- STEP 3 — Details -->
         <div class="t-step t-step-3">
-          <!-- Step 3 header -->
-          <div class="flex items-center justify-between px-4 pt-4">
-            <button
-              id="backToList"
-              type="button"
-              aria-label="Back"
-              class="text-white hover:text-white/80 transition"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="28"
-                height="28"
-                fill="currentColor"
-                viewBox="0 0 256 256"
-                aria-hidden="true"
-              >
-                <path
-                  d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"
-                />
+
+          <div class="step3-header">
+            <button id="backToList" type="button" aria-label="Back" class="back-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256" aria-hidden="true">
+                <path d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"/>
               </svg>
             </button>
-            <h1 class="text-lg font-bold text-white">Tournament Details</h1>
-            <a
-              href="notifications.html"
-              aria-label="Notifications"
-              class="text-white/80 hover:text-white transition"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="26"
-                height="26"
-                fill="currentColor"
-                viewBox="0 0 256 256"
-                aria-hidden="true"
-              >
-                <path
-                  d="M221.8,175.94C216.25,166.38,208,139.33,208,104a80,80,0,1,0-160,0c0,35.34-8.26,62.38-13.81,71.94A16,16,0,0,0,48,200H88.81a40,40,0,0,0,78.38,0H208a16,16,0,0,0,13.8-24.06Z"
-                />
+            <span class="step3-title">Tournament Details</span>
+            <a href="notifications.html" aria-label="Notifications" class="header-bell">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256" aria-hidden="true">
+                <path d="M221.8,175.94C216.25,166.38,208,139.33,208,104a80,80,0,1,0-160,0c0,35.34-8.26,62.38-13.81,71.94A16,16,0,0,0,48,200H88.81a40,40,0,0,0,78.38,0H208a16,16,0,0,0,13.8-24.06Z"/>
               </svg>
             </a>
           </div>
 
           <!-- Banner -->
-          <div class="relative h-48 w-full mt-2">
-            <div
-              id="dBanner"
-              class="absolute inset-0 bg-center bg-cover rounded-b-xl"
-            ></div>
-            <div
-              class="absolute inset-0 bg-gradient-to-t from-background-dark via-background-dark/70 to-transparent rounded-b-xl"
-            ></div>
+          <div class="detail-banner">
+            <div id="dBanner"></div>
           </div>
 
-          <!-- Details card -->
-          <div class="px-4 -mt-10">
-            <div class="glassmorphic rounded-xl p-6 shadow-2xl">
-              <h2 id="dName" class="text-2xl font-bold text-white"></h2>
-              <p id="dDesc" class="mt-2 text-gray-300"></p>
+          <!-- Detail card -->
+          <div class="detail-card">
+            <h2 id="dName"></h2>
+            <p id="dDesc"></p>
 
-              <!-- Key facts -->
-              <div class="mt-6 space-y-4 border-l-2 border-primary pl-4">
-                <div class="flex justify-between gap-4">
-                  <span class="text-sm text-gray-400">Location</span>
-                  <span
-                    id="dVenue"
-                    class="text-sm font-medium text-white truncate max-w-[65%] text-right"
-                  ></span>
-                </div>
-                <div class="flex justify-between gap-4">
-                  <span class="text-sm text-gray-400">Date</span>
-                  <span
-                    id="dDate"
-                    class="text-sm font-medium text-white truncate max-w-[65%] text-right"
-                  ></span>
-                </div>
-                <div class="flex justify-between gap-4">
-                  <span class="text-sm text-gray-400">Sport</span>
-                  <span
-                    id="dSport"
-                    class="text-sm font-medium text-white truncate max-w-[65%] text-right"
-                  ></span>
-                </div>
+            <div class="facts-list">
+              <div class="fact-row">
+                <span class="fact-label">Location</span>
+                <span id="dVenue" class="fact-val"></span>
               </div>
-
-              <!-- Collapsible: Required Documents -->
-              <details class="group mt-6">
-                <summary
-                  class="flex cursor-pointer items-center justify-between rounded-lg px-3 py-2 text-white"
-                >
-                  <span class="text-lg font-semibold">Required Documents</span>
-                  <span
-                    class="ml-2 text-white/70 transition group-open:rotate-180"
-                    >⌄</span
-                  >
-                </summary>
-                <div class="mt-2 border-l-2 border-primary pl-4">
-                  <ul
-                    id="dDocsList"
-                    class="list-disc space-y-2 pl-4 text-white"
-                  ></ul>
-                  <p id="dDocsNone" class="text-gray-400 text-sm">None</p>
-                </div>
-              </details>
-
-              <!-- Collapsible: Fees & Deadlines -->
-              <details class="group mt-4">
-                <summary
-                  class="flex cursor-pointer items-center justify-between rounded-lg px-3 py-2 text-white"
-                >
-                  <span class="text-lg font-semibold"
-                    >Fees &amp; Deadlines</span
-                  >
-                  <span
-                    class="ml-2 text-white/70 transition group-open:rotate-180"
-                    >⌄</span
-                  >
-                </summary>
-                <div class="mt-2 border-l-2 border-primary pl-4 space-y-3">
-                  <div id="dFeeRow" class="flex justify-between">
-                    <span class="text-sm text-gray-400">Entry Fee</span>
-                    <span id="dFee" class="text-sm font-medium text-white"
-                      >-</span
-                    >
-                  </div>
-                  <div id="dDeadlineRow" class="flex justify-between">
-                    <span class="text-sm text-gray-400"
-                      >Registration Deadline</span
-                    >
-                    <span id="dDeadline" class="text-sm font-medium text-white"
-                      >-</span
-                    >
-                  </div>
-                  <p id="dFeesNone" class="text-gray-400 text-sm hidden">
-                    None
-                  </p>
-                </div>
-              </details>
-
-              <!-- CTA -->
-              <div class="mt-6">
-                <button
-                  id="registerBtn"
-                  class="flex w-full items-center justify-center rounded-lg h-14 bg-primary text-white text-lg font-bold shadow-[0_0_20px_theme(colors.primary)] transition-all hover:shadow-[0_0_30px_theme(colors.primary)]"
-                >
-                  Register
-                </button>
-                <p
-                  id="dRegistrationNote"
-                  class="mt-2 text-center text-xs text-gray-400 hidden"
-                ></p>
+              <div class="fact-row">
+                <span class="fact-label">Date</span>
+                <span id="dDate" class="fact-val"></span>
+              </div>
+              <div class="fact-row">
+                <span class="fact-label">Sport</span>
+                <span id="dSport" class="fact-val"></span>
               </div>
             </div>
+
+            <!-- Required Documents -->
+            <details>
+              <summary>
+                Required Documents
+                <span class="sum-chevron">⌄</span>
+              </summary>
+              <div class="collapsible-body">
+                <ul id="dDocsList"></ul>
+                <p id="dDocsNone" class="muted-sm">None</p>
+              </div>
+            </details>
+
+            <!-- Fees & Deadlines -->
+            <details>
+              <summary>
+                Fees &amp; Deadlines
+                <span class="sum-chevron">⌄</span>
+              </summary>
+              <div class="collapsible-body" style="display:flex;flex-direction:column;gap:10px">
+                <div id="dFeeRow" class="fact-row">
+                  <span class="fact-label">Entry Fee</span>
+                  <span id="dFee" class="fact-val">-</span>
+                </div>
+                <div id="dDeadlineRow" class="fact-row">
+                  <span class="fact-label">Registration Deadline</span>
+                  <span id="dDeadline" class="fact-val">-</span>
+                </div>
+                <p id="dFeesNone" class="muted-sm hidden">None</p>
+              </div>
+            </details>
+
+            <!-- Register -->
+            <button id="registerBtn">Register</button>
+            <p id="dRegistrationNote" class="hidden"></p>
           </div>
         </div>
-      </section>
-    </main>
 
-    <!-- Data + controller -->
+      </main>
+    </div><!-- /.page-wrap -->
+
+    <!-- ALL SCRIPTS — untouched -->
     <script src="js/districts.js"></script>
     <script type="module" src="js/tournaments.js"></script>
 
-    <!-- Header avatar setter -->
     <script type="module">
       import { getCurrentUser } from "./js/modules/users.js";
       const img = document.getElementById("headerAvatar");
@@ -320,11 +583,9 @@
       }
     </script>
 
-    <!-- Ongoing count (read-only) -->
     <script type="module">
       import { getCurrentUser } from "./js/modules/users.js";
       import { loadData } from "./js/core/storage.js";
-
       const el = document.getElementById("myTournamentsCount");
       try {
         const user = getCurrentUser();
@@ -338,19 +599,26 @@
             const admin = (data.tournaments || []).find((t) => t.id === r.id);
             if (admin && admin.endDateTime) {
               if (now <= new Date(admin.endDateTime)) cnt++;
-            } else {
-              cnt++;
-            }
+            } else { cnt++; }
           });
         }
         if (el) el.textContent = String(cnt);
       } catch {}
     </script>
 
-    <!-- Bell dot helper -->
     <script type="module" src="js/notify-dot.js"></script>
-
-    <!-- Bottom nav for Player -->
     <script type="module" src="js/nav.js"></script>
+
+    <script>
+      const pc = document.getElementById('particles');
+      const cols = ['#3B82F6','#6EA8FE','#38BDF8','#ffffff'];
+      for (let i = 0; i < 18; i++) {
+        const p = document.createElement('div');
+        p.className = 'p';
+        const s = Math.random() * 3 + 1.5;
+        p.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${9+Math.random()*12}s;animation-delay:${Math.random()*10}s;`;
+        pc.appendChild(p);
+      }
+    </script>
   </body>
 </html>
