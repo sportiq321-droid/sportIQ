@@ -1,316 +1,570 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Registrations - SportIQ</title>
 
-    <!-- Tailwind tokens + CDN (approved) -->
+    <!-- Existing scripts — untouched -->
     <script src="js/tailwind-config.js"></script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
-    <!-- Global + Admin shared styles -->
     <link rel="stylesheet" href="css/global.css" />
     <link rel="stylesheet" href="css/admin-components.css" />
     <link rel="stylesheet" href="css/adminregistrations.css" />
-
-    <!-- Icons (Material Symbols, used in header) -->
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
-    />
-
-    <!-- Lordicon (kept if used elsewhere) -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.lordicon.com/lordicon.js"></script>
+
+    <style>
+      *, *::before, *::after { box-sizing: border-box; }
+
+      :root {
+        --blue-950: #020B18;
+        --blue-900: #061527;
+        --blue-800: #0A2040;
+        --blue-700: #0D3060;
+        --blue-600: #1146A0;
+        --blue-500: #1A5FD4;
+        --blue-400: #3B82F6;
+        --blue-300: #6EA8FE;
+        --blue-200: #A8CCFF;
+        --white-pure: #FFFFFF;
+        --white-ghost: #A8BBDA;
+        --accent-sky: #38BDF8;
+        --card-bg: rgba(6,21,39,0.75);
+        --border: rgba(59,130,246,0.20);
+      }
+
+      html, body {
+        min-height: 100vh;
+        background: var(--blue-950);
+        color: var(--white-pure);
+        font-family: 'Rajdhani', sans-serif;
+        overflow-x: hidden;
+      }
+
+      /* ── BG ── */
+      body::before {
+        content: '';
+        position: fixed; inset: 0; z-index: 0;
+        background:
+          radial-gradient(ellipse at 20% 30%, rgba(26,95,212,0.18) 0%, transparent 55%),
+          radial-gradient(ellipse at 80% 70%, rgba(56,189,248,0.07) 0%, transparent 50%),
+          linear-gradient(135deg, #020B18 0%, #040F20 100%);
+        pointer-events: none;
+      }
+      body::after {
+        content: '';
+        position: fixed; inset: 0; z-index: 0;
+        background-image:
+          linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+        background-size: 40px 40px;
+        pointer-events: none;
+      }
+
+      /* ── PARTICLES ── */
+      .particles { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
+      .p { position:absolute; border-radius:50%; animation:floatUp linear infinite; opacity:0; }
+      @keyframes floatUp {
+        0%   { transform:translateY(100vh) scale(0); opacity:0; }
+        10%  { opacity:0.4; }
+        90%  { opacity:0.15; }
+        100% { transform:translateY(-10vh) scale(1.2); opacity:0; }
+      }
+
+      /* ── PAGE WRAP ── */
+      .page-wrap {
+        position: relative; z-index: 1;
+        display: flex; flex-direction: column;
+        min-height: 100vh;
+      }
+
+      /* ── HEADER ── */
+      header {
+        position: sticky; top: 0; z-index: 20;
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 14px 20px;
+        background: rgba(2,11,24,0.90);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(59,130,246,0.14);
+        animation: fadeDown .5s ease both;
+      }
+      @keyframes fadeDown {
+        from { opacity:0; transform:translateY(-14px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+      .header-btn {
+        width: 40px; height: 40px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--white-ghost); background: rgba(59,130,246,0.08);
+        border: 1px solid rgba(59,130,246,0.15);
+        cursor: pointer; transition: all .3s;
+        text-decoration: none;
+      }
+      .header-btn:hover {
+        color: var(--white-pure);
+        background: rgba(59,130,246,0.16);
+        border-color: var(--blue-400);
+      }
+      .header-btn .material-symbols-outlined { font-size: 20px; }
+      header h1 {
+        font-family: 'Oswald', sans-serif;
+        font-size: clamp(1rem, 3vw, 1.3rem);
+        letter-spacing: .1em; color: var(--white-pure);
+        text-align: center; flex: 1; padding: 0 12px;
+      }
+      .notif-wrap { position: relative; }
+      .notif-dot {
+        position: absolute; top: 1px; right: 1px;
+        width: 8px; height: 8px; background: #ef4444;
+        border-radius: 50%; border: 1.5px solid var(--blue-950);
+      }
+
+      /* ── MAIN ── */
+      main {
+        flex: 1;
+        padding: 20px 16px 120px;
+        animation: fadeUp .5s ease .1s both;
+      }
+      @keyframes fadeUp {
+        from { opacity:0; transform:translateY(18px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+
+      /* ── COLUMNS LAYOUT ── */
+      .reg-columns {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+        max-width: 1200px; margin: 0 auto;
+      }
+      @media(min-width: 768px) {
+        .reg-columns { grid-template-columns: 320px 1fr; gap: 20px; }
+      }
+
+      /* ── PANE (both panels) ── */
+      .pane {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        backdrop-filter: blur(20px);
+        overflow: hidden;
+        position: relative;
+      }
+      .pane::before {
+        content: ''; position: absolute;
+        top: 0; left: 0; right: 0; height: 2px;
+        background: linear-gradient(90deg, var(--blue-500), var(--accent-sky));
+      }
+
+      /* ── PICKER HEADER ── */
+      .picker-header {
+        padding: 14px 16px;
+        border-bottom: 1px solid rgba(59,130,246,0.12);
+        display: flex; flex-direction: column; gap: 10px;
+      }
+
+      /* ── SEARCH BOX ── */
+      .search-box {
+        display: flex; align-items: center; gap: 8px;
+        background: rgba(59,130,246,0.07);
+        border: 1px solid rgba(59,130,246,0.2);
+        border-radius: 10px; padding: 9px 12px;
+        transition: border-color .3s, box-shadow .3s;
+      }
+      .search-box:focus-within {
+        border-color: var(--blue-400);
+        box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+      }
+      .search-icon { color: var(--white-ghost); flex-shrink: 0; }
+      .search-box input {
+        background: none; border: none; outline: none;
+        color: var(--white-pure); font-family: 'Rajdhani', sans-serif;
+        font-size: .92rem; font-weight: 500; width: 100%;
+      }
+      .search-box input::placeholder { color: var(--white-ghost); }
+
+      /* ── FILTER TOGGLE ── */
+      .filter-toggle {
+        display: flex; align-items: center; gap: 8px;
+        cursor: pointer; font-size: .8rem;
+        color: var(--white-ghost); user-select: none;
+      }
+      .filter-toggle input[type="checkbox"] {
+        width: 15px; height: 15px;
+        accent-color: var(--blue-400); cursor: pointer;
+      }
+
+      /* ── TOURNAMENT PICKER LIST ── */
+      #tournamentPicker {
+        max-height: 420px; overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(59,130,246,0.2) transparent;
+      }
+
+      /* ── EMPTY STATE ── */
+      .empty-state {
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        padding: 40px 20px; text-align: center; gap: 10px;
+      }
+      .empty-state-icon { color: var(--blue-300); opacity: .5; margin-bottom: 4px; }
+      .empty-state h3 {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1rem; letter-spacing: .08em; color: var(--white-pure);
+      }
+      .empty-state p { font-size: .82rem; color: var(--white-ghost); }
+      .hidden { display: none !important; }
+
+      /* ── ADMIN BUTTONS (override) ── */
+      .btn-admin {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 8px 16px; border-radius: 10px;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .85rem; font-weight: 700; letter-spacing: .1em;
+        text-transform: uppercase; cursor: pointer;
+        border: none; transition: transform .2s, box-shadow .3s;
+        text-decoration: none;
+      }
+      .btn-admin:hover { transform: translateY(-1px); }
+
+      .btn-admin-primary {
+        background: linear-gradient(135deg, var(--blue-500), var(--blue-600));
+        color: #fff;
+        box-shadow: 0 0 16px rgba(26,95,212,0.4);
+      }
+      .btn-admin-primary:hover { box-shadow: 0 0 24px rgba(59,130,246,0.55); }
+
+      .btn-publish {
+        background: linear-gradient(135deg, #059669, #047857);
+        color: #fff;
+        box-shadow: 0 0 14px rgba(5,150,105,0.3);
+      }
+      .btn-admin-danger {
+        background: rgba(239,68,68,0.12);
+        color: #f87171;
+        border: 1px solid rgba(239,68,68,0.3);
+      }
+      .btn-admin-danger:hover { background: rgba(239,68,68,0.22); }
+
+      .btn-admin-secondary {
+        background: rgba(59,130,246,0.1);
+        color: var(--blue-300);
+        border: 1px solid rgba(59,130,246,0.25);
+      }
+      .btn-admin-secondary:hover { background: rgba(59,130,246,0.18); }
+
+      /* ── RIGHT PANE ── */
+      .right-pane { display: flex; flex-direction: column; }
+
+      /* ── TOURNAMENT INFO HEADER ── */
+      #tournamentInfoHeader {
+        padding: 14px 18px;
+        border-bottom: 1px solid rgba(59,130,246,0.12);
+        background: rgba(59,130,246,0.05);
+      }
+      #selectedTournamentName {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.05rem; letter-spacing: .08em;
+        color: var(--white-pure); margin-bottom: 6px;
+      }
+      .tournament-meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+      /* ── TOOLBAR ── */
+      .reg-toolbar {
+        padding: 12px 16px;
+        border-bottom: 1px solid rgba(59,130,246,0.1);
+        display: flex; flex-wrap: wrap; gap: 10px;
+        align-items: center; justify-content: space-between;
+      }
+      .counts { display: flex; flex-wrap: wrap; gap: 6px; }
+
+      /* ── BADGES ── */
+      .badge, .badge-pending, .badge-confirmed, .badge-rejected, .sport-badge {
+        padding: 3px 10px; border-radius: 20px;
+        font-size: .72rem; font-weight: 700; letter-spacing: .1em;
+        text-transform: uppercase; white-space: nowrap;
+      }
+      .badge {
+        background: rgba(59,130,246,0.12);
+        color: var(--blue-300);
+        border: 1px solid rgba(59,130,246,0.25);
+      }
+      .badge-pending {
+        background: rgba(245,158,11,0.12);
+        color: #FCD34D;
+        border: 1px solid rgba(245,158,11,0.25);
+      }
+      .badge-confirmed {
+        background: rgba(5,150,105,0.12);
+        color: #34D399;
+        border: 1px solid rgba(5,150,105,0.25);
+      }
+      .badge-rejected {
+        background: rgba(239,68,68,0.1);
+        color: #f87171;
+        border: 1px solid rgba(239,68,68,0.2);
+      }
+      .sport-badge {
+        background: rgba(56,189,248,0.12);
+        color: var(--accent-sky);
+        border: 1px solid rgba(56,189,248,0.25);
+      }
+      .text-muted { font-size: .8rem; color: var(--white-ghost); }
+
+      /* ── FILTER CHIPS ── */
+      .filters { display: flex; gap: 6px; flex-wrap: wrap; }
+      .chip {
+        padding: 5px 14px; border-radius: 20px;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .78rem; font-weight: 700; letter-spacing: .1em;
+        text-transform: uppercase; cursor: pointer;
+        background: rgba(59,130,246,0.07);
+        border: 1px solid rgba(59,130,246,0.18);
+        color: var(--white-ghost);
+        transition: all .25s;
+      }
+      .chip.active, .chip[aria-selected="true"] {
+        background: var(--blue-500);
+        border-color: var(--blue-500);
+        color: #fff;
+        box-shadow: 0 0 12px rgba(26,95,212,0.35);
+      }
+      .chip:hover:not(.active) {
+        border-color: var(--blue-400);
+        color: var(--blue-300);
+      }
+
+      /* ── REG ACTIONS ── */
+      .reg-actions {
+        padding: 12px 16px;
+        border-bottom: 1px solid rgba(59,130,246,0.1);
+        display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+      }
+      .action-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+
+      /* ── REGISTRANTS GRID ── */
+      #registrantsList {
+        padding: 14px 16px;
+        display: flex; flex-direction: column; gap: 10px;
+        max-height: 520px; overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(59,130,246,0.2) transparent;
+      }
+
+      /* ── MODAL ── */
+      .modal {
+        position: fixed; inset: 0; z-index: 300;
+        display: flex; align-items: center; justify-content: center;
+        background: rgba(0,0,0,0.7);
+        backdrop-filter: blur(6px);
+        padding: 20px;
+      }
+      .modal-inner {
+        background: var(--blue-900);
+        border: 1px solid var(--border);
+        border-radius: 18px; padding: 24px;
+        width: 100%; max-width: 420px;
+        position: relative;
+        box-shadow: 0 24px 60px rgba(0,0,0,0.6);
+        animation: fadeUp .35s ease both;
+      }
+      .modal-inner h3 {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.1rem; letter-spacing: .1em;
+        color: var(--white-pure); margin-bottom: 16px;
+      }
+      .modal-close {
+        position: absolute; top: 14px; right: 14px;
+        width: 28px; height: 28px; border-radius: 50%;
+        background: rgba(239,68,68,0.1);
+        border: 1px solid rgba(239,68,68,0.25);
+        color: #f87171; font-size: 16px; cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        transition: background .3s;
+      }
+      .modal-close:hover { background: rgba(239,68,68,0.22); }
+
+      .input-box { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+      .input-box label {
+        font-size: .78rem; font-weight: 700; letter-spacing: .12em;
+        text-transform: uppercase; color: var(--blue-300);
+      }
+      .input-box textarea {
+        background: rgba(59,130,246,0.07);
+        border: 1px solid rgba(59,130,246,0.22);
+        border-radius: 10px; padding: 10px 12px;
+        color: var(--white-pure); font-family: 'Rajdhani', sans-serif;
+        font-size: .92rem; resize: none; outline: none;
+        transition: border-color .3s, box-shadow .3s;
+      }
+      .input-box textarea:focus {
+        border-color: var(--blue-400);
+        box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+      }
+      .input-box textarea::placeholder { color: var(--white-ghost); }
+
+      .btn-row { display: flex; gap: 8px; }
+      .btn-row.right { justify-content: flex-end; }
+      .btn-tiny {
+        padding: 7px 16px; border-radius: 8px; cursor: pointer;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .82rem; font-weight: 700; letter-spacing: .1em;
+        text-transform: uppercase; border: none;
+        background: rgba(59,130,246,0.1);
+        color: var(--blue-300);
+        border: 1px solid rgba(59,130,246,0.2);
+        transition: background .3s;
+      }
+      .btn-tiny:hover { background: rgba(59,130,246,0.18); }
+      .btn-tiny.danger {
+        background: rgba(239,68,68,0.1);
+        color: #f87171;
+        border-color: rgba(239,68,68,0.25);
+      }
+      .btn-tiny.danger:hover { background: rgba(239,68,68,0.22); }
+
+      /* profile peek */
+      .profile-peek { display: flex; align-items: center; gap: 16px; }
+      .profile-peek .avatar {
+        width: 56px; height: 56px; border-radius: 50%;
+        border: 2px solid var(--blue-400);
+        object-fit: cover;
+        box-shadow: 0 0 14px rgba(59,130,246,0.3);
+      }
+      .profile-peek h3 {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.05rem; letter-spacing: .06em;
+        color: var(--white-pure); margin-bottom: 6px;
+      }
+      .profile-peek p {
+        font-size: .82rem; color: var(--white-ghost);
+        margin-bottom: 3px; line-height: 1.5;
+      }
+      .profile-peek p strong { color: var(--blue-300); }
+
+      /* animate-fade-in-up compat */
+      .animate-fade-in-up { animation: fadeUp .5s ease .1s both; }
+    </style>
   </head>
 
-  <body
-    data-page="admin-registrations"
-    class="font-display text-white min-h-screen"
-  >
-    <div class="relative flex min-h-screen w-full flex-col">
-      <!-- ===========================
-           HEADER (Schedules-like)
-      =========================== -->
-      <header
-        class="sticky top-0 z-20 glassmorphic backdrop-blur-md border-b border-white/10"
-      >
-        <div class="flex items-center justify-between px-4 sm:px-6 py-4">
-          <!-- Back Button -->
-          <button
-            id="backBtn"
-            class="flex size-10 sm:size-11 items-center justify-center rounded-full text-white/80 hover:text-white hover:bg-white/10 transition-all active:scale-95"
-            aria-label="Back to Dashboard"
-            title="Back"
-            type="button"
-          >
-            <span class="material-symbols-outlined">arrow_back</span>
-          </button>
+  <body data-page="admin-registrations">
+    <div class="particles" id="particles"></div>
 
-          <!-- Title -->
-          <h1
-            class="text-xl sm:text-2xl lg:text-3xl font-bold text-white tracking-tight"
-          >
-            Tournaments & Registrations
-          </h1>
+    <div class="page-wrap">
 
-          <!-- Notifications -->
-          <a
-            href="notifications.html"
-            class="relative flex items-center justify-center size-10 sm:size-11 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-all duration-200"
-            aria-label="Notifications"
-            data-notify-bell
-          >
-            <span class="material-symbols-outlined">notifications</span>
-          </a>
-        </div>
+      <!-- HEADER -->
+      <header>
+        <button id="backBtn" class="header-btn" aria-label="Back to Dashboard" type="button">
+          <span class="material-symbols-outlined">arrow_back</span>
+        </button>
+        <h1>Tournaments & Registrations</h1>
+        <a href="notifications.html" class="header-btn notif-wrap" aria-label="Notifications" data-notify-bell>
+          <span class="material-symbols-outlined">notifications</span>
+          <span class="notif-dot"></span>
+        </a>
       </header>
 
-      <!-- ===========================
-           CONTENT
-      =========================== -->
-      <main class="flex-grow p-4 sm:p-6 lg:p-8 pb-28 sm:pb-32">
+      <!-- MAIN -->
+      <main>
         <div class="adminreg-giant">
           <div class="reg-columns animate-fade-in-up">
-            <!-- ========== LEFT: Tournament picker ========== -->
+
+            <!-- LEFT: Tournament picker -->
             <section class="pane left-pane">
-              <!-- Picker header: search + toggle -->
               <div class="picker-header">
                 <div class="search-box">
-                  <svg
-                    class="search-icon"
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    aria-hidden="true"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                      clip-rule="evenodd"
-                    />
+                  <svg class="search-icon" width="16" height="16" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
                   </svg>
-                  <input
-                    type="text"
-                    id="tSearch"
-                    placeholder="Search tournaments..."
-                    aria-label="Search tournaments"
-                  />
+                  <input type="text" id="tSearch" placeholder="Search tournaments..." aria-label="Search tournaments"/>
                 </div>
                 <label class="filter-toggle">
-                  <input type="checkbox" id="showAll" />
-                  <span class="muted small text-muted"
-                    >Show drafts & all statuses</span
-                  >
+                  <input type="checkbox" id="showAll"/>
+                  <span>Show drafts & all statuses</span>
                 </label>
               </div>
 
-              <!-- Picker list -->
               <div id="tournamentPicker" class="tournament-picker"></div>
 
-              <!-- Empty state -->
               <div id="noTournaments" class="empty-state hidden">
-                <svg
-                  class="empty-state-icon"
-                  width="64"
-                  height="64"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  aria-hidden="true"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
-                    clip-rule="evenodd"
-                  />
+                <svg class="empty-state-icon" width="64" height="64" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
                 </svg>
                 <h3>No tournaments found</h3>
                 <p>Create your first tournament to get started</p>
-                <a
-                  href="admintournament.html"
-                  class="btn-admin btn-admin-primary"
-                  >Create Tournament</a
-                >
+                <a href="admintournament.html" class="btn-admin btn-admin-primary">Create Tournament</a>
               </div>
             </section>
 
-            <!-- ========== RIGHT: Registrations ========== -->
+            <!-- RIGHT: Registrations -->
             <section class="pane right-pane">
-              <!-- Tournament info header (shown when selected) -->
-              <div
-                id="tournamentInfoHeader"
-                class="tournament-info-header hidden"
-              >
+
+              <div id="tournamentInfoHeader" class="hidden">
                 <div class="tournament-info-content">
                   <h3 id="selectedTournamentName">Select a tournament</h3>
                   <div class="tournament-meta">
-                    <span
-                      id="selectedTournamentSport"
-                      class="sport-badge"
-                      aria-label="Sport"
-                    ></span>
-                    <span
-                      id="selectedTournamentStatus"
-                      class="badge"
-                      aria-label="Status"
-                    ></span>
-                    <span
-                      id="selectedTournamentDate"
-                      class="text-muted"
-                      aria-label="Date"
-                    ></span>
+                    <span id="selectedTournamentSport" class="sport-badge" aria-label="Sport"></span>
+                    <span id="selectedTournamentStatus" class="badge" aria-label="Status"></span>
+                    <span id="selectedTournamentDate" class="text-muted" aria-label="Date"></span>
                   </div>
                 </div>
               </div>
 
-              <!-- Toolbar: counts + chips -->
               <div class="reg-toolbar">
                 <div class="counts" role="status" aria-live="polite">
                   <span id="countAll" class="badge">All: 0</span>
-                  <span id="countPending" class="badge-pending"
-                    >Pending: 0</span
-                  >
-                  <span id="countConfirmed" class="badge-confirmed"
-                    >Confirmed: 0</span
-                  >
-                  <span id="countRejected" class="badge-rejected"
-                    >Rejected: 0</span
-                  >
+                  <span id="countPending" class="badge-pending">Pending: 0</span>
+                  <span id="countConfirmed" class="badge-confirmed">Confirmed: 0</span>
+                  <span id="countRejected" class="badge-rejected">Rejected: 0</span>
                 </div>
-                <div
-                  class="filters"
-                  role="tablist"
-                  aria-label="Registration status filters"
-                >
-                  <!-- Keep .chip class for JS compatibility -->
-                  <button
-                    class="chip filter-chip active"
-                    data-status="ALL"
-                    role="tab"
-                    aria-selected="true"
-                  >
-                    All
-                  </button>
-                  <button
-                    class="chip filter-chip"
-                    data-status="PENDING"
-                    role="tab"
-                    aria-selected="false"
-                  >
-                    Pending
-                  </button>
-                  <button
-                    class="chip filter-chip"
-                    data-status="CONFIRMED"
-                    role="tab"
-                    aria-selected="false"
-                  >
-                    Confirmed
-                  </button>
-                  <button
-                    class="chip filter-chip"
-                    data-status="REJECTED"
-                    role="tab"
-                    aria-selected="false"
-                  >
-                    Rejected
-                  </button>
+                <div class="filters" role="tablist" aria-label="Registration status filters">
+                  <button class="chip filter-chip active" data-status="ALL" role="tab" aria-selected="true">All</button>
+                  <button class="chip filter-chip" data-status="PENDING" role="tab" aria-selected="false">Pending</button>
+                  <button class="chip filter-chip" data-status="CONFIRMED" role="tab" aria-selected="false">Confirmed</button>
+                  <button class="chip filter-chip" data-status="REJECTED" role="tab" aria-selected="false">Rejected</button>
                 </div>
               </div>
 
-              <!-- Actions: search + bulk buttons -->
               <div class="reg-actions">
-                <div class="search-box" style="flex: 1">
-                  <svg
-                    class="search-icon"
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    aria-hidden="true"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                      clip-rule="evenodd"
-                    />
+                <div class="search-box" style="flex:1">
+                  <svg class="search-icon" width="16" height="16" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
                   </svg>
-                  <input
-                    type="text"
-                    id="regSearch"
-                    placeholder="Search player name/email..."
-                    aria-label="Search registrations"
-                  />
+                  <input type="text" id="regSearch" placeholder="Search player name/email..." aria-label="Search registrations"/>
                 </div>
                 <div class="action-buttons">
-                  <button
-                    id="bulkApprove"
-                    class="btn-admin btn-publish"
-                    type="button"
-                  >
-                    Approve All
-                  </button>
-                  <button
-                    id="bulkReject"
-                    class="btn-admin btn-admin-danger"
-                    type="button"
-                  >
-                    Reject All
-                  </button>
-                  <button
-                    id="exportCsv"
-                    class="btn-admin btn-admin-secondary"
-                    type="button"
-                  >
-                    Export CSV
-                  </button>
+                  <button id="bulkApprove" class="btn-admin btn-publish" type="button">Approve All</button>
+                  <button id="bulkReject" class="btn-admin btn-admin-danger" type="button">Reject All</button>
+                  <button id="exportCsv" class="btn-admin btn-admin-secondary" type="button">Export CSV</button>
                 </div>
               </div>
 
-              <!-- Registrations list -->
               <div id="registrantsList" class="registrants-grid"></div>
 
-              <!-- Empty state -->
               <div id="noRegistrations" class="empty-state hidden">
-                <svg
-                  class="empty-state-icon"
-                  width="64"
-                  height="64"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"
-                  />
+                <svg class="empty-state-icon" width="64" height="64" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
                 </svg>
                 <h3>No registrations yet</h3>
                 <p>Players will appear here once they register</p>
               </div>
+
             </section>
           </div>
         </div>
       </main>
     </div>
 
-    <!-- ===========================
-         MODALS (kept structure for JS compatibility)
-    =========================== -->
-    <!-- Reject reason modal -->
+    <!-- MODALS — structure untouched for JS compatibility -->
     <div id="rejectModal" class="modal hidden" aria-hidden="true">
       <div class="modal-inner">
-        <button class="modal-close" id="rejectClose" aria-label="Close">
-          &times;
-        </button>
+        <button class="modal-close" id="rejectClose" aria-label="Close">&times;</button>
         <h3>Reject registration</h3>
         <div class="input-box">
           <label>Reason (required)</label>
-          <textarea
-            id="rejectReason"
-            rows="3"
-            placeholder="Enter reason"
-          ></textarea>
+          <textarea id="rejectReason" rows="3" placeholder="Enter reason"></textarea>
         </div>
         <div class="btn-row right">
           <button id="rejectCancel" class="btn-tiny">Cancel</button>
@@ -319,14 +573,11 @@
       </div>
     </div>
 
-    <!-- Profile peek modal -->
     <div id="profileModal" class="modal hidden" aria-hidden="true">
       <div class="modal-inner">
-        <button class="modal-close" id="profileClose" aria-label="Close">
-          &times;
-        </button>
+        <button class="modal-close" id="profileClose" aria-label="Close">&times;</button>
         <div class="profile-peek">
-          <img id="peekAvatar" class="avatar" src="" alt="avatar" />
+          <img id="peekAvatar" class="avatar" src="" alt="avatar"/>
           <div>
             <h3 id="peekName">Player</h3>
             <p><strong>Sport:</strong> <span id="peekSport">-</span></p>
@@ -337,19 +588,26 @@
       </div>
     </div>
 
-    <!-- ===========================
-         SCRIPTS
-    =========================== -->
+    <!-- SCRIPTS — all untouched -->
     <script type="module" src="js/adminRegistrations.js"></script>
+    <script type="module" src="js/nav.js"></script>
     <script>
-      // Back button → dashboard.html (approved)
-      document
-        .getElementById("backBtn")
-        ?.addEventListener("click", function () {
-          window.location.href = "dashboard.html";
-        });
+      document.getElementById("backBtn")?.addEventListener("click", function () {
+        window.location.href = "dashboard.html";
+      });
+    </script>
+
+    <script>
+      // Particles
+      const pc = document.getElementById('particles');
+      const cols = ['#3B82F6','#6EA8FE','#38BDF8','#ffffff'];
+      for (let i = 0; i < 20; i++) {
+        const p = document.createElement('div');
+        p.className = 'p';
+        const s = Math.random() * 3 + 1.5;
+        p.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${9+Math.random()*12}s;animation-delay:${Math.random()*10}s;`;
+        pc.appendChild(p);
+      }
     </script>
   </body>
 </html>
-<!-- Bottom Navigation -->
-<script type="module" src="js/nav.js"></script>

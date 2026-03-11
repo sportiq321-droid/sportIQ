@@ -1,207 +1,480 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tournaments — Government Monitoring</title>
 
-    <!-- Tailwind tokens + CDN -->
     <script src="js/tailwind-config.js"></script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
-    <!-- CSS (existing) -->
     <link rel="stylesheet" href="css/global.css" />
     <link rel="stylesheet" href="css/admin-components.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
 
-    <!-- Icons -->
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
-    />
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      :root {
+        --blue-950: #020B18;
+        --blue-900: #061527;
+        --blue-800: #0A2040;
+        --blue-600: #1146A0;
+        --blue-500: #1A5FD4;
+        --blue-400: #3B82F6;
+        --blue-300: #6EA8FE;
+        --white-pure: #FFFFFF;
+        --white-ghost: #A8BBDA;
+        --accent-sky: #38BDF8;
+        --card-bg: rgba(6,21,39,0.78);
+        --border: rgba(59,130,246,0.20);
+      }
+
+      html, body {
+        min-height: 100vh;
+        background: var(--blue-950);
+        color: var(--white-pure);
+        font-family: 'Rajdhani', sans-serif;
+        overflow-x: hidden;
+      }
+
+      /* ── BG ── */
+      body::before {
+        content: '';
+        position: fixed; inset: 0; z-index: 0;
+        background:
+          radial-gradient(ellipse at 20% 20%, rgba(26,95,212,0.18) 0%, transparent 55%),
+          radial-gradient(ellipse at 80% 80%, rgba(56,189,248,0.07) 0%, transparent 50%),
+          linear-gradient(135deg, #020B18 0%, #040F20 100%);
+        pointer-events: none;
+      }
+      body::after {
+        content: '';
+        position: fixed; inset: 0; z-index: 0;
+        background-image:
+          linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+        background-size: 40px 40px;
+        pointer-events: none;
+      }
+
+      /* ── PARTICLES ── */
+      .particles { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
+      .p { position:absolute; border-radius:50%; animation:floatUp linear infinite; opacity:0; }
+      @keyframes floatUp {
+        0%   { transform:translateY(100vh) scale(0); opacity:0; }
+        10%  { opacity:0.4; }
+        90%  { opacity:0.15; }
+        100% { transform:translateY(-10vh) scale(1.2); opacity:0; }
+      }
+
+      /* ── PAGE WRAP ── */
+      .page-wrap {
+        position: relative; z-index: 1;
+        display: flex; flex-direction: column;
+        min-height: 100vh;
+      }
+
+      /* ── HEADER ── */
+      header {
+        position: sticky; top: 0; z-index: 20;
+        background: rgba(2,11,24,0.92);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(59,130,246,0.14);
+        animation: fadeDown .5s ease both;
+      }
+      @keyframes fadeDown {
+        from { opacity:0; transform:translateY(-14px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+      .header-inner {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 14px 20px;
+      }
+      .header-btn {
+        width: 40px; height: 40px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--white-ghost);
+        background: rgba(59,130,246,0.08);
+        border: 1px solid rgba(59,130,246,0.15);
+        cursor: pointer; transition: all .3s;
+        text-decoration: none; outline: none;
+        flex-shrink: 0;
+      }
+      .header-btn:hover { color: var(--white-pure); background: rgba(59,130,246,0.16); border-color: var(--blue-400); }
+      .header-btn .material-symbols-outlined { font-size: 20px; }
+
+      .header-title {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.2rem; letter-spacing: .18em;
+        color: var(--white-pure); flex: 1; text-align: center;
+      }
+      .notif-wrap { position: relative; }
+      .notif-dot {
+        position: absolute; top: 1px; right: 1px;
+        width: 8px; height: 8px; background: #ef4444;
+        border-radius: 50%; border: 1.5px solid var(--blue-950);
+      }
+
+      /* ── MAIN ── */
+      main {
+        flex: 1; padding: 20px 16px 120px;
+        max-width: 1400px; margin: 0 auto; width: 100%;
+        animation: fadeUp .5s ease .1s both;
+      }
+      @keyframes fadeUp {
+        from { opacity:0; transform:translateY(18px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+
+      /* ── FILTER CARD ── */
+      .filter-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        backdrop-filter: blur(18px);
+        padding: 18px 20px;
+        margin-bottom: 18px;
+        position: relative; overflow: hidden;
+      }
+      .filter-card::before {
+        content: ''; position: absolute;
+        top: 0; left: 0; right: 0; height: 2px;
+        background: linear-gradient(90deg, var(--blue-500), var(--accent-sky));
+      }
+
+      /* filter grid */
+      .filter-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      @media(min-width:640px)  { .filter-grid { grid-template-columns: 1fr 1fr; } }
+      @media(min-width:900px)  { .filter-grid { grid-template-columns: repeat(4,1fr); } }
+
+      .f-label {
+        display: block; font-size: .7rem; font-weight: 700;
+        letter-spacing: .14em; text-transform: uppercase;
+        color: var(--blue-300); margin-bottom: 5px;
+      }
+      .f-input, .select-dark {
+        width: 100%; padding: 9px 12px;
+        background: rgba(59,130,246,0.07);
+        border: 1px solid rgba(59,130,246,0.20);
+        border-radius: 10px; color: var(--white-pure);
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .88rem; font-weight: 500;
+        outline: none; transition: border-color .3s, box-shadow .3s;
+        appearance: none; -webkit-appearance: none;
+      }
+      .f-input:focus, .select-dark:focus {
+        border-color: var(--blue-400);
+        box-shadow: 0 0 0 3px rgba(59,130,246,0.10);
+      }
+      .f-input::placeholder { color: var(--white-ghost); }
+      .select-dark option { background: #061527; color: #fff; }
+      .select-dark:disabled { opacity: .45; cursor: not-allowed; }
+
+      /* filter action row */
+      .filter-actions {
+        display: flex; align-items: center;
+        flex-wrap: wrap; gap: 8px; margin-top: 14px;
+      }
+      .btn-admin-secondary {
+        padding: 8px 18px; border-radius: 9px;
+        background: rgba(59,130,246,0.08);
+        border: 1px solid rgba(59,130,246,0.22);
+        color: var(--blue-300); cursor: pointer;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .82rem; font-weight: 700; letter-spacing: .1em;
+        text-transform: uppercase; transition: all .25s;
+      }
+      .btn-admin-secondary:hover { background: rgba(59,130,246,0.16); color: var(--white-pure); border-color: var(--blue-400); }
+
+      #resultMeta {
+        margin-left: auto;
+        font-size: .78rem; color: var(--white-ghost); letter-spacing: .06em;
+      }
+
+      /* ── LIST GRID ── */
+      #list {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+      @media(min-width:640px)  { #list { grid-template-columns: 1fr 1fr; } }
+      @media(min-width:1100px) { #list { grid-template-columns: repeat(3,1fr); } }
+
+      /* ── EMPTY STATE ── */
+      .empty-state {
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        padding: 60px 20px; text-align: center;
+        gap: 10px;
+      }
+      .empty-state-icon { color: rgba(59,130,246,0.3); margin-bottom: 6px; }
+      .empty-state h3 {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.1rem; letter-spacing: .1em;
+        color: var(--white-ghost);
+      }
+      .empty-state p { font-size: .85rem; color: rgba(255,255,255,0.3); }
+
+      /* ── PAGINATION ── */
+      .admin-pagination {
+        display: flex; align-items: center; justify-content: space-between;
+        flex-wrap: wrap; gap: 10px;
+        margin-top: 18px; padding: 12px 16px;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 12px; backdrop-filter: blur(16px);
+      }
+      #pageInfo { font-size: .8rem; color: var(--white-ghost); letter-spacing: .06em; }
+      .pagination-controls { display: flex; gap: 8px; }
+      .pagination-btn {
+        display: flex; align-items: center; gap: 4px;
+        padding: 7px 14px; border-radius: 8px;
+        background: rgba(59,130,246,0.08);
+        border: 1px solid rgba(59,130,246,0.20);
+        color: var(--blue-300); cursor: pointer;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .8rem; font-weight: 700; letter-spacing: .08em;
+        text-transform: uppercase; transition: all .25s;
+      }
+      .pagination-btn:hover:not(:disabled) { background: rgba(59,130,246,0.15); color: var(--white-pure); border-color: var(--blue-400); }
+      .pagination-btn:disabled { opacity: .35; cursor: not-allowed; }
+      .pagination-btn .material-symbols-outlined { font-size: 16px; }
+
+      /* ── REG MODAL ── */
+      .admin-modal {
+        position: fixed; inset: 0; z-index: 300;
+        display: flex; align-items: flex-end;
+      }
+      @media(min-width:600px) { .admin-modal { align-items: center; justify-content: center; } }
+      .admin-modal.hidden { display: none !important; }
+
+      .modal-overlay {
+        position: absolute; inset: 0;
+        background: rgba(0,0,0,0.65);
+        backdrop-filter: blur(6px);
+      }
+      .modal-container {
+        position: relative; z-index: 1;
+        width: 100%; max-width: 780px;
+        max-height: 88vh;
+        background: rgba(4,14,30,0.98);
+        border: 1px solid rgba(59,130,246,0.22);
+        border-radius: 20px 20px 0 0;
+        overflow: hidden; display: flex; flex-direction: column;
+        animation: slideUp .3s cubic-bezier(.22,1,.36,1);
+      }
+      @media(min-width:600px) {
+        .modal-container { border-radius: 20px; max-height: 85vh; }
+      }
+      @keyframes slideUp {
+        from { opacity:0; transform:translateY(30px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+
+      .modal-header {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 18px 20px 14px;
+        border-bottom: 1px solid rgba(59,130,246,0.12);
+        flex-shrink: 0;
+      }
+      .modal-header h3 {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.1rem; letter-spacing: .14em;
+        color: var(--white-pure);
+      }
+      .modal-close {
+        width: 32px; height: 32px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        background: rgba(239,68,68,0.08);
+        border: 1px solid rgba(239,68,68,0.25);
+        color: #f87171; cursor: pointer; font-size: 1.1rem;
+        transition: all .25s; line-height: 1;
+      }
+      .modal-close:hover { background: rgba(239,68,68,0.18); color: #fff; }
+
+      .modal-body {
+        flex: 1; overflow-y: auto; padding: 16px 20px;
+        scrollbar-width: thin; scrollbar-color: rgba(59,130,246,0.2) transparent;
+      }
+
+      /* chip filters */
+      .chip-row {
+        display: flex; align-items: center;
+        flex-wrap: wrap; gap: 6px; margin-bottom: 14px;
+      }
+      .chip-label { font-size: .72rem; color: var(--white-ghost); letter-spacing: .08em; }
+      .chip {
+        padding: 5px 13px; border-radius: 16px;
+        background: rgba(59,130,246,0.08);
+        border: 1px solid rgba(59,130,246,0.18);
+        color: var(--white-ghost); cursor: pointer;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .75rem; font-weight: 700; letter-spacing: .08em;
+        text-transform: uppercase; transition: all .2s;
+      }
+      .chip:hover, .chip.active {
+        background: rgba(59,130,246,0.18);
+        border-color: var(--blue-400); color: var(--white-pure);
+      }
+      #regCounts {
+        margin-left: auto; font-size: .75rem;
+        color: var(--white-ghost); letter-spacing: .06em;
+      }
+
+      /* table */
+      .table-responsive { overflow-x: auto; }
+      .admin-table {
+        width: 100%; border-collapse: collapse;
+        font-size: .85rem;
+      }
+      .admin-table thead tr {
+        border-bottom: 1px solid rgba(59,130,246,0.15);
+      }
+      .admin-table th {
+        padding: 10px 12px; text-align: left;
+        font-size: .7rem; font-weight: 700; letter-spacing: .12em;
+        text-transform: uppercase; color: var(--blue-300);
+        white-space: nowrap;
+      }
+      .admin-table td {
+        padding: 10px 12px; border-bottom: 1px solid rgba(59,130,246,0.07);
+        color: rgba(255,255,255,0.82); vertical-align: middle;
+      }
+      .admin-table tbody tr:hover td { background: rgba(59,130,246,0.04); }
+      .text-subtle { color: var(--white-ghost); }
+      @media(max-width:600px) { .hide-mobile { display: none; } }
+
+      .modal-footer {
+        padding: 12px 20px;
+        border-top: 1px solid rgba(59,130,246,0.12);
+        flex-shrink: 0;
+      }
+
+      .hidden { display: none !important; }
+    </style>
   </head>
 
-  <body class="font-display text-white min-h-screen bg-background-dark">
-    <div class="relative flex min-h-screen w-full flex-col">
-      <!-- Header -->
-      <header
-        class="sticky top-0 z-20 glassmorphic backdrop-blur-md border-b border-white/10"
-      >
-        <div class="flex items-center justify-between px-4 sm:px-6 py-4">
-          <button
-            id="backBtn"
-            class="flex size-10 sm:size-11 items-center justify-center rounded-full text-white/80 hover:text-white hover:bg-white/10 transition-all active:scale-95"
-            aria-label="Back"
-            title="Back"
-            type="button"
-          >
+  <body>
+    <div class="particles" id="particles"></div>
+
+    <div class="page-wrap">
+
+      <!-- HEADER -->
+      <header>
+        <div class="header-inner">
+          <button id="backBtn" class="header-btn" aria-label="Back" type="button">
             <span class="material-symbols-outlined">arrow_back</span>
           </button>
 
-          <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight">
-            Tournaments
-          </h1>
+          <h1 class="header-title">Tournaments</h1>
 
-          <a
-            href="notifications.html"
-            class="relative flex items-center justify-center size-10 sm:size-11 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition"
-            aria-label="Notifications"
-            data-notify-bell
-          >
+          <a href="notifications.html" class="header-btn notif-wrap" aria-label="Notifications" data-notify-bell>
             <span class="material-symbols-outlined">notifications</span>
+            <span class="notif-dot"></span>
           </a>
         </div>
       </header>
 
-      <!-- Main -->
-      <main
-        class="flex-grow p-4 sm:p-6 lg:p-8 pb-28 sm:pb-32 max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto w-full"
-      >
-        <!-- Filters -->
-        <section
-          class="glassmorphic rounded-xl p-4 border border-white/10 mb-4"
-        >
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-            <!-- State -->
+      <!-- MAIN -->
+      <main>
+
+        <!-- FILTERS -->
+        <section class="filter-card">
+          <div class="filter-grid">
             <div>
-              <label for="fState" class="block text-white/70 text-sm mb-1"
-                >State</label
-              >
-              <select id="fState" class="w-full select-dark rounded-lg p-2">
+              <label for="fState" class="f-label">State</label>
+              <select id="fState" class="select-dark">
                 <option value="">All India</option>
               </select>
             </div>
-
-            <!-- District -->
             <div>
-              <label for="fDistrict" class="block text-white/70 text-sm mb-1"
-                >District</label
-              >
-              <select
-                id="fDistrict"
-                class="w-full select-dark rounded-lg p-2"
-                disabled
-                title="Select a state first"
-              >
+              <label for="fDistrict" class="f-label">District</label>
+              <select id="fDistrict" class="select-dark" disabled title="Select a state first">
                 <option value="">All Districts</option>
               </select>
             </div>
-
-            <!-- Status -->
             <div>
-              <label for="fStatus" class="block text-white/70 text-sm mb-1"
-                >Status</label
-              >
-              <select id="fStatus" class="w-full select-dark rounded-lg p-2">
+              <label for="fStatus" class="f-label">Status</label>
+              <select id="fStatus" class="select-dark">
                 <option value="">All</option>
                 <option value="PUBLISHED">Published</option>
                 <option value="DRAFT">Draft</option>
               </select>
             </div>
-
-            <!-- Search -->
             <div>
-              <label for="fSearch" class="block text-white/70 text-sm mb-1"
-                >Search</label
-              >
-              <input
-                id="fSearch"
-                type="search"
-                placeholder="Search by name/sport/venue"
-                class="w-full rounded-lg p-2 select-dark"
-              />
+              <label for="fSearch" class="f-label">Search</label>
+              <input id="fSearch" type="search" placeholder="Search by name/sport/venue" class="f-input" />
             </div>
           </div>
 
-          <div class="mt-3 flex flex-wrap gap-2 items-center">
-            <button id="btnReset" class="btn-admin btn-admin-secondary">
-              Reset
-            </button>
-            <button id="btnExport" class="btn-admin btn-admin-secondary">
-              Export CSV
-            </button>
-            <span id="resultMeta" class="text-subtle text-sm ml-auto"
-              >Loading…</span
-            >
+          <div class="filter-actions">
+            <button id="btnReset" class="btn-admin-secondary">Reset</button>
+            <button id="btnExport" class="btn-admin-secondary">Export CSV</button>
+            <span id="resultMeta">Loading…</span>
           </div>
         </section>
 
-        <!-- List -->
+        <!-- LIST -->
         <section aria-live="polite">
-          <div
-            id="list"
-            class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"
-          ></div>
+          <div id="list"></div>
 
-          <!-- Empty state -->
           <div id="empty" class="empty-state hidden">
-            <svg
-              class="empty-state-icon"
-              width="64"
-              height="64"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fill-rule="evenodd"
+            <svg class="empty-state-icon" width="64" height="64" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd"
                 d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
-                clip-rule="evenodd"
-              />
+                clip-rule="evenodd" />
             </svg>
             <h3>No tournaments found</h3>
             <p>Try a different state, district, or search</p>
           </div>
         </section>
 
-        <!-- Pagination -->
-        <nav
-          id="pager"
-          class="admin-pagination mt-4 hidden"
-          aria-label="Pagination"
-        >
-          <div class="pagination-info" id="pageInfo">Page 1</div>
+        <!-- PAGINATION -->
+        <nav id="pager" class="admin-pagination hidden" aria-label="Pagination">
+          <div id="pageInfo" class="pagination-info">Page 1</div>
           <div class="pagination-controls">
             <button id="prevPage" class="pagination-btn" disabled>
-              <span class="material-symbols-outlined text-sm"
-                >chevron_left</span
-              >
+              <span class="material-symbols-outlined">chevron_left</span>
               Prev
             </button>
             <button id="nextPage" class="pagination-btn">
               Next
-              <span class="material-symbols-outlined text-sm"
-                >chevron_right</span
-              >
+              <span class="material-symbols-outlined">chevron_right</span>
             </button>
           </div>
         </nav>
-      </main>
-    </div>
 
-    <!-- Registrations Modal -->
+      </main>
+    </div><!-- /.page-wrap -->
+
+    <!-- REGISTRATIONS MODAL -->
     <div id="regModal" class="admin-modal hidden" aria-hidden="true">
       <div class="modal-overlay"></div>
       <div class="modal-container">
         <div class="modal-header">
           <h3 id="regTitle">Registrations</h3>
-          <button id="regClose" class="modal-close" aria-label="Close">
-            &times;
-          </button>
+          <button id="regClose" class="modal-close" aria-label="Close">&times;</button>
         </div>
         <div class="modal-body">
-          <div class="flex items-center gap-2 mb-3">
-            <span class="text-subtle text-sm">Filter:</span>
+          <div class="chip-row">
+            <span class="chip-label">Filter:</span>
             <button class="chip" data-regstatus="ALL">All</button>
             <button class="chip" data-regstatus="PENDING">Pending</button>
             <button class="chip" data-regstatus="CONFIRMED">Confirmed</button>
             <button class="chip" data-regstatus="REJECTED">Rejected</button>
-            <span id="regCounts" class="ml-auto text-subtle text-sm"></span>
+            <span id="regCounts"></span>
           </div>
 
           <div id="regList" class="table-responsive">
             <table class="admin-table">
               <thead>
                 <tr>
-                  <th class="table-actions-header">Player</th>
+                  <th>Player</th>
                   <th>Email</th>
                   <th class="hide-mobile">Sport</th>
                   <th>Status</th>
@@ -209,35 +482,38 @@
                 </tr>
               </thead>
               <tbody id="regTbody">
-                <tr>
-                  <td colspan="5" class="text-subtle p-4">Loading…</td>
-                </tr>
+                <tr><td colspan="5" class="text-subtle" style="padding:16px">Loading…</td></tr>
               </tbody>
             </table>
           </div>
         </div>
         <div class="modal-footer">
-          <button id="regCloseBottom" class="btn-admin btn-admin-secondary">
-            Close
-          </button>
+          <button id="regCloseBottom" class="btn-admin-secondary">Close</button>
         </div>
       </div>
     </div>
 
-    <!-- Scripts -->
+    <!-- SCRIPTS — untouched -->
     <script type="module" src="js/districts.js"></script>
     <script type="module" src="js/notify-dot.js"></script>
     <script type="module" src="js/govtour.js"></script>
     <script type="module" src="js/nav.js"></script>
 
     <script>
-      // Back button → dashboard.html
-      document
-        .getElementById("backBtn")
-        ?.addEventListener("click", function () {
-          if (history.length > 1 && document.referrer) history.back();
-          else location.href = "dashboard.html";
-        });
+      document.getElementById("backBtn")?.addEventListener("click", function () {
+        if (history.length > 1 && document.referrer) history.back();
+        else location.href = "dashboard.html";
+      });
+
+      const pc = document.getElementById('particles');
+      const cols = ['#3B82F6','#6EA8FE','#38BDF8','#ffffff'];
+      for (let i = 0; i < 18; i++) {
+        const p = document.createElement('div');
+        p.className = 'p';
+        const s = Math.random() * 3 + 1.5;
+        p.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${9+Math.random()*12}s;animation-delay:${Math.random()*10}s;`;
+        pc.appendChild(p);
+      }
     </script>
   </body>
 </html>

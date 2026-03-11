@@ -1,184 +1,338 @@
 <!DOCTYPE html>
-<html class="dark" lang="en">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Camera Capture - SportIQ</title>
 
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
 
+      :root {
+        --blue-950: #020B18;
+        --blue-900: #061527;
+        --blue-800: #0A2040;
+        --blue-700: #0D3060;
+        --blue-600: #1146A0;
+        --blue-500: #1A5FD4;
+        --blue-400: #3B82F6;
+        --blue-300: #6EA8FE;
+        --white-pure: #FFFFFF;
+        --white-ghost: #A8BBDA;
+        --accent-sky: #38BDF8;
+      }
+
       body {
-        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        background: #0f1323;
-        color: white;
+        font-family: 'Rajdhani', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: var(--blue-950);
+        color: var(--white-pure);
         overflow: hidden;
         position: fixed;
         width: 100vw;
         height: 100vh;
       }
+      @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Rajdhani:wght@500;600;700&display=swap');
 
-      /* Hide injected nav (footer) if body has nav-hidden */
       body.nav-hidden footer { display: none !important; }
 
-      /* Fullscreen video container */
+      /* ── FULLSCREEN VIDEO ── */
       #videoContainer {
-        position: fixed; inset: 0; background: black;
+        position: fixed; inset: 0; background: #000;
         display: flex; align-items: center; justify-content: center;
       }
-
       #cameraPreview { width: 100%; height: 100%; object-fit: cover; }
-
       #overlayCanvas {
         position: absolute; top: 0; left: 0;
         width: 100%; height: 100%; pointer-events: none;
       }
 
-      /* Camera Switch Button (bottom-left, safe-area aware) */
+      /* ── CAMERA SWITCH BTN ── */
       #cameraSwitchBtn {
         position: fixed;
         left: 1rem;
         bottom: calc(1rem + env(safe-area-inset-bottom));
         z-index: 15;
-        width: 56px; height: 56px; border-radius: 50%;
-        background: rgba(0, 0, 0, 0.6);
-        border: 2px solid rgba(255, 255, 255, 0.3);
-        color: white; cursor: pointer;
+        width: 52px; height: 52px; border-radius: 50%;
+        background: rgba(2,11,24,0.75);
+        border: 2px solid rgba(59,130,246,0.4);
+        color: var(--white-pure); cursor: pointer;
         display: flex; align-items: center; justify-content: center;
-        font-size: 1.5rem; transition: all 0.2s;
+        font-size: 1.4rem;
+        backdrop-filter: blur(10px);
+        transition: all 0.2s;
+        box-shadow: 0 0 14px rgba(59,130,246,0.25);
       }
       #cameraSwitchBtn:hover {
-        background: rgba(0, 0, 0, 0.8);
-        border-color: rgba(255, 255, 255, 0.5);
-        transform: scale(1.05);
+        background: rgba(26,95,212,0.5);
+        border-color: var(--blue-400);
+        transform: scale(1.06);
+        box-shadow: 0 0 22px rgba(59,130,246,0.5);
       }
-      #cameraSwitchBtn:active { transform: scale(0.95); }
+      #cameraSwitchBtn:active { transform: scale(0.94); }
       #cameraSwitchBtn.hidden { display: none; }
 
-      /* Setup Phase Overlay */
+      /* ── SETUP OVERLAY ── */
       #setupOverlay {
-        position: fixed; inset: 0; background: rgba(0,0,0,0.85);
-        display: flex; flex-direction: column; align-items: center; justify-content: center;
-        z-index: 20; padding: 2rem;
+        position: fixed; inset: 0;
+        background: rgba(2,11,24,0.92);
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        z-index: 20; padding: 24px;
+        backdrop-filter: blur(8px);
       }
       #setupOverlay.hidden { display: none; }
 
-      .setup-content { max-width: 500px; text-align: center; }
-      .setup-title { font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem; }
-      .setup-instruction { font-size: 1rem; margin-bottom: 2rem; color: rgba(255,255,255,0.8); }
+      .setup-content {
+        max-width: 480px; width: 100%;
+        text-align: center;
+      }
+      .setup-title {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.6rem; letter-spacing: .1em;
+        color: var(--white-pure); margin-bottom: 8px;
+      }
+      .setup-instruction {
+        font-size: .9rem; font-weight: 500;
+        color: var(--white-ghost); margin-bottom: 20px;
+        line-height: 1.5;
+      }
 
       .position-guide {
-        background: rgba(255,255,255,0.1);
-        border: 2px dashed rgba(255,255,255,0.3);
-        border-radius: 1rem; padding: 1.5rem; margin-bottom: 1.5rem;
+        background: rgba(59,130,246,0.08);
+        border: 1px solid rgba(59,130,246,0.25);
+        border-radius: 14px; padding: 18px 20px;
+        margin-bottom: 20px;
+        text-align: left;
       }
-      .position-guide h3 { color: #3b82f6; margin-bottom: 0.5rem; }
-      .position-guide ul { text-align: left; list-style: none; padding: 0; }
-      .position-guide li { padding: 0.5rem 0 0.5rem 1.5rem; position: relative; }
-      .position-guide li:before { content: "✓"; position: absolute; left: 0; color: #10b981; }
+      .position-guide h3 {
+        font-family: 'Oswald', sans-serif;
+        font-size: .95rem; letter-spacing: .12em;
+        color: var(--blue-300); margin-bottom: 12px;
+        text-transform: uppercase;
+      }
+      .position-guide ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+      .position-guide li {
+        font-size: .88rem; font-weight: 500;
+        color: var(--white-ghost);
+        padding-left: 22px; position: relative; line-height: 1.4;
+      }
+      .position-guide li::before {
+        content: "✓"; position: absolute; left: 0;
+        color: var(--accent-sky); font-weight: 700;
+      }
 
       #calibrationBtn, #startTestBtn {
-        padding: 1rem 2rem; background: #3b82f6; border: none; border-radius: 0.75rem;
-        color: white; font-size: 1rem; font-weight: bold; cursor: pointer; transition: all 0.2s;
-        width: 100%; max-width: 300px;
+        width: 100%; max-width: 320px;
+        padding: 13px 24px;
+        background: linear-gradient(135deg, var(--blue-500), var(--blue-600));
+        border: none; border-radius: 12px;
+        color: var(--white-pure);
+        font-family: 'Rajdhani', sans-serif;
+        font-size: 1rem; font-weight: 700; letter-spacing: .12em;
+        text-transform: uppercase;
+        cursor: pointer;
+        box-shadow: 0 0 20px rgba(26,95,212,0.45);
+        transition: all 0.2s;
+        display: block; margin: 0 auto;
       }
-      #calibrationBtn:hover, #startTestBtn:hover { background: #2563eb; transform: scale(1.02); }
-      #calibrationBtn:disabled, #startTestBtn:disabled { background: #6b7280; cursor: not-allowed; transform: scale(1); }
+      #calibrationBtn:hover, #startTestBtn:hover {
+        transform: scale(1.02);
+        box-shadow: 0 0 30px rgba(59,130,246,0.6);
+      }
+      #calibrationBtn:disabled, #startTestBtn:disabled {
+        background: rgba(59,130,246,0.2);
+        color: var(--white-ghost);
+        box-shadow: none; cursor: not-allowed; transform: scale(1);
+      }
+      #startTestBtn { margin-top: 12px; }
 
       .calibration-feedback {
-        margin-top: 1rem; padding: 1rem; background: rgba(59, 130, 246, 0.2);
-        border-radius: 0.5rem; font-size: 0.9rem;
+        margin-top: 12px; padding: 12px 16px;
+        background: rgba(59,130,246,0.12);
+        border: 1px solid rgba(59,130,246,0.25);
+        border-radius: 10px;
+        font-size: .85rem; font-weight: 500;
+        color: var(--blue-300); line-height: 1.5;
       }
 
-      /* HUD Overlay */
+      /* ── HUD OVERLAY ── */
       #hud {
-        position: fixed; top: 0; left: 0; right: 0; padding: 1rem;
-        background: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, transparent 100%);
+        position: fixed; top: 0; left: 0; right: 0;
+        padding: 16px 16px 24px;
+        background: linear-gradient(180deg, rgba(2,11,24,0.75) 0%, transparent 100%);
         z-index: 10;
       }
+
       .hud-warning {
-        text-align: center; padding: 0.75rem; background: rgba(239, 68, 68, 0.9);
-        border-radius: 0.5rem; font-weight: bold; margin-bottom: 1rem; animation: pulse 1s infinite;
+        text-align: center; padding: 10px 16px;
+        background: rgba(239,68,68,0.88);
+        border-radius: 10px; font-weight: 700;
+        font-size: .88rem; letter-spacing: .08em;
+        margin-bottom: 12px;
+        animation: pulse 1s infinite;
+        backdrop-filter: blur(6px);
       }
       .hud-warning.hidden { display: none; }
-      @keyframes pulse { 0%,100% { opacity:1 } 50% { opacity:.7 } }
+      @keyframes pulse { 0%,100% { opacity:1 } 50% { opacity:.65 } }
 
-      #stats { display: flex; justify-content: space-around; margin-top: 1rem; }
-      .stat { text-align: center; }
-      .stat-label { font-size: 0.75rem; opacity: 0.7; text-transform: uppercase; }
-      .stat-value { font-size: 2rem; font-weight: bold; margin-top: 0.25rem; }
-      .stat-value.good { color: #10b981; }
-      .stat-value.warning { color: #f59e0b; }
-      .stat-value.error { color: #ef4444; }
-
-      /* Rep Flash */
-      #repFlash {
-        position: fixed; inset: 0; background: rgba(16, 185, 129, 0.3);
-        display: none; z-index: 5; animation: flashFade 0.3s;
+      .hud-title {
+        text-align: center;
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.1rem; letter-spacing: .14em;
+        color: var(--white-pure); margin-bottom: 2px;
       }
-      @keyframes flashFade { 0% {opacity:1} 100% {opacity:0} }
+      #phaseText {
+        text-align: center;
+        font-size: .8rem; font-weight: 600;
+        color: var(--white-ghost); letter-spacing: .08em;
+        margin-bottom: 10px;
+      }
 
-      /* Controls */
+      #stats {
+        display: flex; justify-content: space-around;
+        gap: 10px; margin-top: 8px;
+      }
+      .stat { text-align: center; flex: 1; }
+      .stat-label {
+        font-size: .65rem; font-weight: 700;
+        letter-spacing: .16em; text-transform: uppercase;
+        color: var(--white-ghost);
+      }
+      .stat-value {
+        font-family: 'Oswald', sans-serif;
+        font-size: 2rem; font-weight: 700;
+        margin-top: 2px; line-height: 1;
+        color: var(--white-pure);
+        text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+      }
+      .stat-value.good  { color: var(--accent-sky); text-shadow: 0 0 14px rgba(56,189,248,0.5); }
+      .stat-value.warning { color: #FCD34D; text-shadow: 0 0 14px rgba(245,158,11,0.5); }
+      .stat-value.error { color: #f87171; text-shadow: 0 0 14px rgba(239,68,68,0.5); }
+
+      /* ── REP FLASH ── */
+      #repFlash {
+        position: fixed; inset: 0;
+        background: rgba(59,130,246,0.25);
+        display: none; z-index: 5;
+        animation: flashFade 0.3s;
+      }
+      @keyframes flashFade { 0% { opacity:1 } 100% { opacity:0 } }
+
+      /* ── CONTROLS ── */
       #controls {
-        position: fixed; bottom: 0; left: 0; right: 0; padding: 1.5rem;
-        background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, transparent 100%);
-        z-index: 10; padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+        position: fixed; bottom: 0; left: 0; right: 0;
+        padding: 16px 20px calc(16px + env(safe-area-inset-bottom));
+        background: linear-gradient(0deg, rgba(2,11,24,0.85) 0%, transparent 100%);
+        z-index: 10;
       }
       #stopBtn {
-        width: 100%; padding: 1rem; background: #f59e0b; border: none; border-radius: 0.75rem;
-        color: white; font-size: 1.125rem; font-weight: bold; cursor: pointer; transition: all 0.2s;
+        width: 100%; padding: 14px;
+        background: rgba(239,68,68,0.15);
+        border: 1px solid rgba(239,68,68,0.4);
+        border-radius: 12px;
+        color: #f87171;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: 1.05rem; font-weight: 700; letter-spacing: .14em;
+        text-transform: uppercase; cursor: pointer;
+        backdrop-filter: blur(8px);
+        transition: all 0.2s;
       }
-      #stopBtn:hover { background: #d97706; }
+      #stopBtn:hover { background: rgba(239,68,68,0.28); border-color: #f87171; color: #fff; }
       #stopBtn:active { transform: scale(0.98); }
 
-      /* Loading overlay */
+      /* ── LOADING OVERLAY ── */
       #loading {
-        position: fixed; inset: 0; background: rgba(0,0,0,0.9);
-        display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100;
+        position: fixed; inset: 0;
+        background: rgba(2,11,24,0.95);
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        z-index: 100;
+        backdrop-filter: blur(10px);
       }
       #loading.hidden { display: none; }
+
       .spinner {
-        width: 3rem; height: 3rem; border: 3px solid rgba(255,255,255,0.3);
-        border-top-color: #3b82f6; border-radius: 50%; animation: spin 1s linear infinite;
+        width: 48px; height: 48px;
+        border: 3px solid rgba(59,130,246,0.2);
+        border-top-color: var(--blue-400);
+        border-radius: 50%;
+        animation: spin 0.9s linear infinite;
+        box-shadow: 0 0 20px rgba(59,130,246,0.25);
       }
       @keyframes spin { to { transform: rotate(360deg); } }
-      #loadingText { margin-top: 1rem; font-size: 1rem; opacity: 0.8; }
 
-      /* Error message */
+      #loadingText {
+        margin-top: 16px;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .92rem; font-weight: 600;
+        letter-spacing: .1em; text-transform: uppercase;
+        color: var(--white-ghost);
+      }
+
+      /* ── ERROR OVERLAY ── */
       #error {
-        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-        background: #ef4444; color: white; padding: 1.5rem; border-radius: 0.75rem; text-align: center;
-        max-width: 80%; z-index: 200;
+        position: fixed; top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(2,11,24,0.95);
+        border: 1px solid rgba(239,68,68,0.3);
+        border-radius: 16px;
+        color: var(--white-pure);
+        padding: 24px 28px; text-align: center;
+        max-width: 85%; z-index: 200;
+        backdrop-filter: blur(12px);
+        box-shadow: 0 16px 48px rgba(0,0,0,0.6);
       }
       #error.hidden { display: none; }
-      #backBtn {
-        margin-top: 1rem; padding: 0.75rem 1.5rem; background: white; color: #ef4444;
-        border: none; border-radius: 0.5rem; font-weight: bold; cursor: pointer;
+      #error h2 {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.2rem; letter-spacing: .1em;
+        color: #f87171; margin-bottom: 10px;
       }
+      #errorText {
+        font-size: .88rem; color: var(--white-ghost);
+        line-height: 1.5; margin-bottom: 16px;
+      }
+      #backBtn {
+        padding: 10px 24px;
+        background: linear-gradient(135deg, var(--blue-500), var(--blue-600));
+        border: none; border-radius: 10px;
+        color: #fff; font-family: 'Rajdhani', sans-serif;
+        font-size: .9rem; font-weight: 700; letter-spacing: .1em;
+        text-transform: uppercase; cursor: pointer;
+        box-shadow: 0 0 14px rgba(26,95,212,0.4);
+        transition: box-shadow .3s;
+      }
+      #backBtn:hover { box-shadow: 0 0 22px rgba(59,130,246,0.6); }
+
+      .hidden { display: none !important; }
     </style>
   </head>
+
   <body>
-    <!-- Loading Overlay -->
+
+    <!-- LOADING OVERLAY -->
     <div id="loading">
       <div class="spinner"></div>
       <p id="loadingText">Initializing camera...</p>
     </div>
 
-    <!-- Error Overlay -->
+    <!-- ERROR OVERLAY -->
     <div id="error" class="hidden">
       <h2>Camera Error</h2>
       <p id="errorText"></p>
       <button id="backBtn">Go Back</button>
     </div>
 
-    <!-- Setup Overlay (Positioning + Calibration) -->
+    <!-- SETUP OVERLAY -->
     <div id="setupOverlay">
       <div class="setup-content">
         <h1 class="setup-title">🎯 Position Yourself</h1>
         <p class="setup-instruction">For accurate counting, position your camera to the side (profile view)</p>
 
         <div class="position-guide">
-          <h3>Setup Checklist:</h3>
+          <h3>Setup Checklist</h3>
           <ul>
             <li>Camera on your LEFT or RIGHT side</li>
             <li>Full body visible (head to hips)</li>
@@ -193,13 +347,13 @@
       </div>
     </div>
 
-    <!-- Camera Switch Button (bottom-left) -->
+    <!-- CAMERA SWITCH -->
     <button id="cameraSwitchBtn" class="hidden" title="Switch Camera" aria-label="Switch Camera">🔄</button>
 
-    <!-- Rep Flash Effect -->
+    <!-- REP FLASH -->
     <div id="repFlash"></div>
 
-    <!-- Video Container -->
+    <!-- VIDEO -->
     <div id="videoContainer">
       <video id="cameraPreview" autoplay playsinline muted></video>
       <canvas id="overlayCanvas"></canvas>
@@ -208,10 +362,8 @@
     <!-- HUD -->
     <div id="hud">
       <div id="hudWarning" class="hud-warning hidden">⚠️ Stay in frame!</div>
-      <div style="text-align: center;">
-        <h1 style="font-size: 1.25rem; font-weight: bold;">Sit-Up Test</h1>
-        <p id="phaseText" style="font-size: 0.875rem; opacity: 0.7; margin-top: 0.25rem;">Get ready...</p>
-      </div>
+      <div class="hud-title">Sit-Up Test</div>
+      <div id="phaseText">Get ready...</div>
       <div id="stats">
         <div class="stat">
           <div class="stat-label">Reps</div>
@@ -228,12 +380,13 @@
       </div>
     </div>
 
-    <!-- Controls -->
+    <!-- CONTROLS -->
     <div id="controls" class="hidden">
       <button id="stopBtn">Stop Test</button>
     </div>
 
-    <!-- Controller -->
+    <!-- SCRIPT — untouched -->
     <script type="module" src="js/assessments/situps-camera.js"></script>
+
   </body>
 </html>

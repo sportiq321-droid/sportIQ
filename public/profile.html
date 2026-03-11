@@ -5,44 +5,291 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Profile - SportIQ</title>
 
-  <!-- Styles -->
   <link rel="stylesheet" href="css/global.css" />
   <link rel="stylesheet" href="css/profile.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue-950: #020B18;
+      --blue-900: #061527;
+      --blue-600: #1146A0;
+      --blue-500: #1A5FD4;
+      --blue-400: #3B82F6;
+      --blue-300: #6EA8FE;
+      --white-pure: #FFFFFF;
+      --white-ghost: #A8BBDA;
+      --accent-sky: #38BDF8;
+      --card-bg: rgba(6,21,39,0.80);
+      --border: rgba(59,130,246,0.20);
+    }
+
+    html, body {
+      min-height: 100vh;
+      background: var(--blue-950);
+      color: var(--white-pure);
+      font-family: 'Rajdhani', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ── BG ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse at 20% 15%, rgba(26,95,212,0.20) 0%, transparent 55%),
+        radial-gradient(ellipse at 80% 85%, rgba(56,189,248,0.07) 0%, transparent 50%),
+        linear-gradient(135deg, #020B18 0%, #040F20 100%);
+      pointer-events: none;
+    }
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background-image:
+        linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    /* ── PARTICLES ── */
+    .particles { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
+    .p { position:absolute; border-radius:50%; animation:floatUp linear infinite; opacity:0; }
+    @keyframes floatUp {
+      0%   { transform:translateY(100vh) scale(0); opacity:0; }
+      10%  { opacity:0.4; }
+      90%  { opacity:0.15; }
+      100% { transform:translateY(-10vh) scale(1.2); opacity:0; }
+    }
+
+    /* ── PAGE WRAP ── */
+    .page-wrap {
+      position: relative; z-index: 1;
+      min-height: 100vh;
+      padding: 28px 16px 110px;
+      display: flex; flex-direction: column; align-items: center;
+      animation: fadeUp .55s ease both;
+    }
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(22px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    /* ── PROFILE CONTAINER ── */
+    .profile-container {
+      width: 100%; max-width: 680px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      backdrop-filter: blur(20px);
+      overflow: hidden;
+      position: relative;
+    }
+    .profile-container::before {
+      content: ''; position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--blue-500), var(--accent-sky));
+    }
+
+    /* ── AVATAR BANNER ── */
+    .profile-picture {
+      display: flex; align-items: center; justify-content: center;
+      padding: 32px 20px 20px;
+      background: linear-gradient(180deg, rgba(26,95,212,0.12) 0%, transparent 100%);
+      border-bottom: 1px solid rgba(59,130,246,0.12);
+    }
+    .avatar {
+      width: 110px; height: 110px; border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--blue-400);
+      box-shadow: 0 0 28px rgba(59,130,246,0.40);
+    }
+
+    /* ── DETAILS SECTION ── */
+    .profile-details {
+      padding: 24px 24px 28px;
+    }
+
+    #name {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.6rem; letter-spacing: .1em;
+      color: var(--white-pure); margin-bottom: 18px;
+      text-align: center;
+    }
+
+    /* info rows */
+    .profile-details > p {
+      font-size: .88rem; font-weight: 600;
+      color: var(--white-ghost);
+      padding: 9px 0;
+      border-bottom: 1px solid rgba(59,130,246,0.07);
+      display: flex; gap: 8px;
+    }
+    .profile-details > p:last-of-type { border-bottom: none; }
+
+    /* ── BTN GROUP ── */
+    .btn-group {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      margin-top: 22px; justify-content: center;
+    }
+    .btn-small {
+      padding: 9px 20px; border-radius: 10px; cursor: pointer;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: .8rem; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase; transition: all .25s;
+      border: 1px solid; outline: none;
+    }
+    .btn-small.dashboard {
+      background: linear-gradient(135deg, var(--blue-500), var(--blue-600));
+      border-color: transparent; color: #fff;
+      box-shadow: 0 0 14px rgba(26,95,212,0.4);
+    }
+    .btn-small.dashboard:hover { box-shadow: 0 0 24px rgba(59,130,246,0.55); transform: translateY(-1px); }
+    .btn-small.edit {
+      background: rgba(59,130,246,0.10);
+      border-color: rgba(59,130,246,0.30);
+      color: var(--blue-300);
+    }
+    .btn-small.edit:hover { background: rgba(59,130,246,0.18); color: #fff; border-color: var(--blue-400); }
+    .btn-small.logout {
+      background: rgba(239,68,68,0.08);
+      border-color: rgba(239,68,68,0.28);
+      color: #f87171;
+    }
+    .btn-small.logout:hover { background: rgba(239,68,68,0.18); color: #fff; }
+
+    /* ── EDIT MODAL OVERLAY ── */
+    #editModal {
+      display: none;
+      position: fixed; inset: 0; z-index: 50;
+      align-items: flex-end; justify-content: center;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(6px);
+    }
+    @media(min-width:500px) { #editModal { align-items: center; } }
+
+    .edit-content {
+      position: relative;
+      background: rgba(4,14,30,0.98);
+      border: 1px solid var(--border);
+      border-radius: 20px 20px 0 0;
+      padding: 28px 22px 32px;
+      width: 100%; max-width: 520px;
+      max-height: 92vh; overflow-y: auto;
+      animation: slideUp .3s cubic-bezier(.22,1,.36,1);
+      scrollbar-width: thin; scrollbar-color: rgba(59,130,246,0.2) transparent;
+    }
+    @media(min-width:500px) { .edit-content { border-radius: 20px; } }
+    @keyframes slideUp {
+      from { opacity:0; transform:translateY(30px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    .edit-content::before {
+      content: ''; position: absolute;
+      top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--blue-500), var(--accent-sky));
+      border-radius: 20px 20px 0 0;
+    }
+
+    /* ── EDIT STEP ── */
+    .edit-step { display: none; flex-direction: column; gap: 16px; }
+    .edit-step.active { display: flex; }
+
+    .edit-step h3 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.05rem; letter-spacing: .14em;
+      color: var(--white-pure); margin-bottom: 4px;
+    }
+
+    /* input boxes */
+    .input-box {
+      display: flex; flex-direction: column; gap: 5px;
+    }
+    .input-box label {
+      font-size: .72rem; font-weight: 700;
+      letter-spacing: .14em; text-transform: uppercase;
+      color: var(--blue-300);
+    }
+    .input-box input,
+    .input-box textarea {
+      padding: 10px 12px;
+      background: rgba(59,130,246,0.07);
+      border: 1px solid rgba(59,130,246,0.22);
+      border-radius: 10px; color: var(--white-pure);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: .92rem; font-weight: 500;
+      outline: none; transition: border-color .3s, box-shadow .3s;
+      resize: vertical;
+    }
+    .input-box input:focus,
+    .input-box textarea:focus {
+      border-color: var(--blue-400);
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.10);
+    }
+    .input-box input::placeholder,
+    .input-box textarea::placeholder { color: var(--white-ghost); }
+    .input-box input[type="file"] {
+      cursor: pointer; color: var(--white-ghost);
+      padding: 8px 12px;
+    }
+    .input-box input.error  { border-color: rgba(239,68,68,0.55); }
+    .input-box input.valid  { border-color: rgba(5,150,105,0.55); }
+    .input-box textarea.error { border-color: rgba(239,68,68,0.55); }
+    .input-box textarea.valid { border-color: rgba(5,150,105,0.55); }
+
+    .error-msg {
+      font-size: .72rem; color: #f87171;
+      font-weight: 600; letter-spacing: .04em;
+    }
+
+    /* modal nav btn group */
+    .modal-nav { margin-top: 4px; }
+  </style>
 </head>
+
 <body>
-  <div class="profile-container">
-    <!-- Left Section -->
-    <div class="profile-details">
-      <h2 id="name">User Name</h2>
-      <p id="dob">DOB:</p>
-      <p id="age">Age:</p>
-      <p id="gender">Gender:</p>
-      <p id="mobile">Mobile:</p>
-      <p id="role">Role:</p>
-      <p id="sport">Sport:</p>
-      <p id="email">Email:</p>
-      <!-- Extended details -->
-      <p id="height">Height:</p>
-      <p id="weight">Weight:</p>
-      <p id="bloodgroup">Blood Group:</p>
-      <p id="address">Address:</p>
+  <div class="particles" id="particles"></div>
 
-      <div class="btn-group">
-        <button class="btn-small dashboard" onclick="window.location.href='dashboard.html'">🏠 Dashboard</button>
-        <button class="btn-small logout" id="logoutBtn">🚪 Logout</button>
-        <button class="btn-small edit" id="editBtn">✏️ Edit Profile</button>
+  <div class="page-wrap">
+    <div class="profile-container">
+
+      <!-- Avatar (right section, shown at top on mobile) -->
+      <div class="profile-picture">
+        <img id="avatar" src="" alt="Profile Pic" class="avatar" />
       </div>
-    </div>
 
-    <!-- Right Section -->
-    <div class="profile-picture">
-      <img id="avatar" src="" alt="Profile Pic" class="avatar" />
+      <!-- Details (left section) -->
+      <div class="profile-details">
+        <h2 id="name">User Name</h2>
+        <p id="dob">DOB:</p>
+        <p id="age">Age:</p>
+        <p id="gender">Gender:</p>
+        <p id="mobile">Mobile:</p>
+        <p id="role">Role:</p>
+        <p id="sport">Sport:</p>
+        <p id="email">Email:</p>
+        <p id="height">Height:</p>
+        <p id="weight">Weight:</p>
+        <p id="bloodgroup">Blood Group:</p>
+        <p id="address">Address:</p>
+
+        <div class="btn-group">
+          <button class="btn-small dashboard" onclick="window.location.href='dashboard.html'">🏠 Dashboard</button>
+          <button class="btn-small logout" id="logoutBtn">🚪 Logout</button>
+          <button class="btn-small edit" id="editBtn">✏️ Edit Profile</button>
+        </div>
+      </div>
+
     </div>
   </div>
 
-  <!-- ✅ Multi-step Edit Modal -->
+  <!-- EDIT MODAL -->
   <div id="editModal" class="edit-modal">
     <div class="edit-content">
+
       <!-- Step 1 -->
       <div class="edit-step step-1 active">
         <h3>Edit Profile – Step 1</h3>
@@ -99,10 +346,11 @@
           <button class="btn-small logout" id="cancelEdit">❌ Cancel</button>
         </div>
       </div>
+
     </div>
   </div>
 
-  <!-- ✅ JS -->
+  <!-- ALL JS — completely untouched -->
   <script type="module">
     import { requireLogin, logoutUser } from "./js/core/auth.js";
     import { getCurrentUser, updateCurrentUser } from "./js/modules/users.js";
@@ -111,7 +359,6 @@
     let user = getCurrentUser();
     if (!user) window.location.href = "login.html";
 
-    // Age auto-calc
     function calculateAge(dob) {
       if (!dob) return "-";
       const today = new Date();
@@ -122,7 +369,6 @@
       return age;
     }
 
-    // Display profile values
     function displayProfile(u) {
       document.getElementById("avatar").src = u.profilePic || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
       document.getElementById("name").textContent = u.name || "Guest User";
@@ -140,9 +386,8 @@
     }
     displayProfile(user);
 
-    // Open modal and prefill
     document.getElementById("editBtn").onclick = () => {
-      document.getElementById("editModal").style.display="flex";
+      document.getElementById("editModal").style.display = "flex";
       document.getElementById("editName").value = user.name || "";
       document.getElementById("editMobile").value = user.mobile || "";
       document.getElementById("editEmail").value = user.email || "";
@@ -151,7 +396,7 @@
       document.getElementById("editBloodgroup").value = user.bloodgroup || "";
       document.getElementById("editAddress").value = user.address || "";
     };
-    document.getElementById("cancelEdit").onclick = () => document.getElementById("editModal").style.display="none";
+    document.getElementById("cancelEdit").onclick = () => document.getElementById("editModal").style.display = "none";
     document.getElementById("nextToStep2").onclick = () => {
       document.querySelector(".step-1").classList.remove("active");
       document.querySelector(".step-2").classList.add("active");
@@ -163,7 +408,6 @@
 
     document.getElementById("logoutBtn").onclick = logoutUser;
 
-    // Live validator
     function attachValidator(id, validator, errorId, message) {
       const input = document.getElementById(id);
       const error = document.getElementById(errorId);
@@ -171,7 +415,7 @@
         const val = input.value.trim();
         input.classList.remove("error", "valid");
         error.textContent = "";
-        if (!val) return; // blanks are allowed
+        if (!val) return;
         if (!validator(val)) {
           input.classList.add("error");
           error.textContent = message;
@@ -181,25 +425,23 @@
       });
     }
 
-    // Attach validation rules
-    attachValidator("editName", v => v.length>0, "nameError", "Name is required");
-    attachValidator("editMobile", v => /^[0-9]{10}$/.test(v), "mobileError", "Mobile must be 10 digits");
-    attachValidator("editEmail", v => v.includes("@"), "emailError", "Invalid email");
-    attachValidator("editHeight", v => (v>=50 && v<=250), "heightError", "Height must be between 50-250 cm");
-    attachValidator("editWeight", v => (v>=20 && v<=200), "weightError", "Weight must be between 20-200 kg");
-    attachValidator("editBloodgroup", v => /^(A|B|AB|O)[+-]$/i.test(v), "bloodError", "Blood group invalid (e.g. A+, O-)");
-    attachValidator("editAddress", v => /(?=.*[0-9])(?=.*[a-zA-Z])/.test(v), "addressError", "Invalid address. Must include letters & numbers");
+    attachValidator("editName",       v => v.length > 0,                          "nameError",   "Name is required");
+    attachValidator("editMobile",     v => /^[0-9]{10}$/.test(v),                 "mobileError", "Mobile must be 10 digits");
+    attachValidator("editEmail",      v => v.includes("@"),                        "emailError",  "Invalid email");
+    attachValidator("editHeight",     v => (v >= 50 && v <= 250),                 "heightError", "Height must be between 50-250 cm");
+    attachValidator("editWeight",     v => (v >= 20 && v <= 200),                 "weightError", "Weight must be between 20-200 kg");
+    attachValidator("editBloodgroup", v => /^(A|B|AB|O)[+-]$/i.test(v),           "bloodError",  "Blood group invalid (e.g. A+, O-)");
+    attachValidator("editAddress",    v => /(?=.*[0-9])(?=.*[a-zA-Z])/.test(v),   "addressError","Invalid address. Must include letters & numbers");
 
-    // Save only updated non-empty fields
     document.getElementById("saveEdit").onclick = () => {
       let updates = {};
-      if (document.getElementById("editName").value.trim()) updates.name = document.getElementById("editName").value.trim();
-      if (document.getElementById("editMobile").value.trim()) updates.mobile = document.getElementById("editMobile").value.trim();
-      if (document.getElementById("editEmail").value.trim()) updates.email = document.getElementById("editEmail").value.trim();
-      if (document.getElementById("editHeight").value.trim()) updates.height = document.getElementById("editHeight").value.trim();
-      if (document.getElementById("editWeight").value.trim()) updates.weight = document.getElementById("editWeight").value.trim();
+      if (document.getElementById("editName").value.trim())       updates.name       = document.getElementById("editName").value.trim();
+      if (document.getElementById("editMobile").value.trim())     updates.mobile     = document.getElementById("editMobile").value.trim();
+      if (document.getElementById("editEmail").value.trim())      updates.email      = document.getElementById("editEmail").value.trim();
+      if (document.getElementById("editHeight").value.trim())     updates.height     = document.getElementById("editHeight").value.trim();
+      if (document.getElementById("editWeight").value.trim())     updates.weight     = document.getElementById("editWeight").value.trim();
       if (document.getElementById("editBloodgroup").value.trim()) updates.bloodgroup = document.getElementById("editBloodgroup").value.trim();
-      if (document.getElementById("editAddress").value.trim()) updates.address = document.getElementById("editAddress").value.trim();
+      if (document.getElementById("editAddress").value.trim())    updates.address    = document.getElementById("editAddress").value.trim();
 
       const file = document.getElementById("editAvatar").files[0];
       if (file) {
@@ -209,9 +451,21 @@
       } else save(updates);
 
       function save(upd) {
-        if (Object.keys(upd).length>0) { user = updateCurrentUser(upd); alert("✅ Profile updated!"); displayProfile(user); }
-        document.getElementById("editModal").style.display="none";
+        if (Object.keys(upd).length > 0) { user = updateCurrentUser(upd); alert("✅ Profile updated!"); displayProfile(user); }
+        document.getElementById("editModal").style.display = "none";
       }
+    };
+  </script>
+
+  <script>
+    const pc = document.getElementById('particles');
+    const cols = ['#3B82F6','#6EA8FE','#38BDF8','#ffffff'];
+    for (let i = 0; i < 18; i++) {
+      const p = document.createElement('div');
+      p.className = 'p';
+      const s = Math.random() * 3 + 1.5;
+      p.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${9+Math.random()*12}s;animation-delay:${Math.random()*10}s;`;
+      pc.appendChild(p);
     }
   </script>
 </body>

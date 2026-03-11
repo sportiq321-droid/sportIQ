@@ -1,634 +1,243 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Create Tournament - SportIQ</title>
-
-    <!-- Tailwind tokens + CDN (approved) -->
     <script src="js/tailwind-config.js"></script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
-    <!-- Fonts/Icons (for header icons) -->
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
-    />
-
-    <!-- Global + Admin shared styles -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/global.css" />
     <link rel="stylesheet" href="css/admin-components.css" />
     <link rel="stylesheet" href="css/admintournament.css" />
-
-    <!-- Lordicon (kept if used elsewhere) -->
     <script src="https://cdn.lordicon.com/lordicon.js"></script>
+    <style>
+      *, *::before, *::after { box-sizing: border-box; }
+      :root {
+        --blue-950: #020B18; --blue-900: #061527; --blue-800: #0A2040;
+        --blue-700: #0D3060; --blue-600: #1146A0; --blue-500: #1A5FD4;
+        --blue-400: #3B82F6; --blue-300: #6EA8FE; --blue-200: #A8CCFF;
+        --white-pure: #FFFFFF; --white-ghost: #A8BBDA; --accent-sky: #38BDF8;
+        --card-bg: rgba(6,21,39,0.75); --border: rgba(59,130,246,0.20);
+      }
+      html, body { min-height:100vh; background:var(--blue-950); color:var(--white-pure); font-family:'Rajdhani',sans-serif; overflow-x:hidden; }
+      body::before { content:''; position:fixed; inset:0; z-index:0; background: radial-gradient(ellipse at 20% 20%, rgba(26,95,212,0.2) 0%, transparent 55%), radial-gradient(ellipse at 80% 80%, rgba(56,189,248,0.07) 0%, transparent 50%), linear-gradient(135deg,#020B18 0%,#040F20 100%); pointer-events:none; }
+      body::after { content:''; position:fixed; inset:0; z-index:0; background-image: linear-gradient(rgba(59,130,246,0.04) 1px,transparent 1px), linear-gradient(90deg,rgba(59,130,246,0.04) 1px,transparent 1px); background-size:40px 40px; pointer-events:none; }
+      .particles { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
+      .p { position:absolute; border-radius:50%; animation:floatUp linear infinite; opacity:0; }
+      @keyframes floatUp { 0%{transform:translateY(100vh) scale(0);opacity:0;} 10%{opacity:0.4;} 90%{opacity:0.15;} 100%{transform:translateY(-10vh) scale(1.2);opacity:0;} }
+      .page-wrap { position:relative; z-index:1; display:flex; flex-direction:column; min-height:100vh; }
+      header { position:sticky; top:0; z-index:20; display:flex; align-items:center; justify-content:space-between; padding:14px 20px; background:rgba(2,11,24,0.90); backdrop-filter:blur(20px); border-bottom:1px solid rgba(59,130,246,0.14); animation:fadeDown .5s ease both; }
+      @keyframes fadeDown { from{opacity:0;transform:translateY(-14px);} to{opacity:1;transform:translateY(0);} }
+      .header-btn { width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:var(--white-ghost); background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.15); cursor:pointer; transition:all .3s; text-decoration:none; }
+      .header-btn:hover { color:var(--white-pure); background:rgba(59,130,246,0.16); border-color:var(--blue-400); }
+      .header-btn .material-symbols-outlined { font-size:20px; }
+      header h1 { font-family:'Oswald',sans-serif; font-size:clamp(.95rem,3vw,1.25rem); letter-spacing:.12em; color:var(--white-pure); text-align:center; flex:1; padding:0 10px; }
+      .notif-wrap { position:relative; }
+      .notif-dot { position:absolute; top:1px; right:1px; width:8px; height:8px; background:#ef4444; border-radius:50%; border:1.5px solid var(--blue-950); }
+      main { flex:1; padding:24px 16px 120px; animation:fadeUp .5s ease .1s both; }
+      @keyframes fadeUp { from{opacity:0;transform:translateY(18px);} to{opacity:1;transform:translateY(0);} }
+      .inner-wrap { max-width:860px; margin:0 auto; display:flex; flex-direction:column; gap:20px; }
+      .step { background:var(--card-bg); border:1px solid var(--border); border-radius:20px; backdrop-filter:blur(20px); padding:24px; display:none; position:relative; overflow:hidden; box-shadow:0 8px 32px rgba(0,0,0,0.35); }
+      .step.active { display:block; animation:fadeUp .4s ease both; }
+      .step-1::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue-500),var(--accent-sky));}
+      .step-2::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#8B5CF6,#A78BFA);}
+      .step-3::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#F59E0B,#FCD34D);}
+      .step-4::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#0D9488,var(--accent-sky));}
+      .step-5::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#EC4899,#F472B6);}
+      .step-6::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#22C55E,var(--accent-sky));}
+      .section-head { padding-bottom:14px; margin-bottom:18px; border-bottom:1px solid rgba(59,130,246,0.14); display:flex; align-items:center; gap:10px; }
+      .section-head .material-symbols-outlined { font-size:26px; }
+      .section-head h3 { font-family:'Oswald',sans-serif; font-size:1.2rem; letter-spacing:.1em; color:var(--white-pure); }
+      .s1-icon{color:var(--blue-400);} .s2-icon{color:#A78BFA;} .s3-icon{color:#FCD34D;} .s4-icon{color:var(--accent-sky);} .s5-icon{color:#F472B6;} .s6-icon{color:#22C55E;}
+      #wizardMsg { font-size:.82rem; color:var(--white-ghost); margin-bottom:4px; }
+      .input-box { display:flex; flex-direction:column; gap:5px; margin-bottom:14px; }
+      .input-box label { font-size:.75rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--blue-300); }
+      .form-input { background:rgba(59,130,246,0.07); border:1px solid rgba(59,130,246,0.22); border-radius:10px; padding:10px 14px; color:var(--white-pure); font-family:'Rajdhani',sans-serif; font-size:.95rem; font-weight:500; outline:none; width:100%; transition:border-color .3s,box-shadow .3s; appearance:none; -webkit-appearance:none; }
+      .form-input:focus { border-color:var(--blue-400); box-shadow:0 0 0 3px rgba(59,130,246,0.12); }
+      .form-input::placeholder { color:var(--white-ghost); }
+      .form-input option { background:#061527; color:#fff; }
+      input[type="file"].form-input { padding:8px 12px; cursor:pointer; color:var(--white-ghost); }
+      input[type="file"].form-input::-webkit-file-upload-button { background:var(--blue-500); border:none; border-radius:6px; padding:5px 12px; color:#fff; font-family:'Rajdhani',sans-serif; font-size:.82rem; font-weight:700; cursor:pointer; margin-right:10px; }
+      .radio-row { display:flex; flex-wrap:wrap; gap:16px; }
+      .radio-row label, .checkbox-col label { display:flex; align-items:center; gap:7px; font-size:.9rem; font-weight:600; color:var(--white-ghost); cursor:pointer; text-transform:none; letter-spacing:0; }
+      .radio-row input[type="radio"], .checkbox-col input[type="checkbox"], input[type="checkbox"] { accent-color:var(--blue-400); width:15px; height:15px; cursor:pointer; }
+      .checkbox-col { display:flex; flex-direction:column; gap:8px; }
+      .field-error { font-size:.75rem; color:#f87171; min-height:14px; }
+      .text-muted, .muted { color:var(--white-ghost); font-size:.82rem; }
+      .grid-3 { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; }
+      .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+      @media(max-width:480px) { .grid-2,.grid-3{grid-template-columns:1fr;} }
+      .wizard-footer { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:20px; padding-top:16px; border-top:1px solid rgba(59,130,246,0.12); flex-wrap:wrap; }
+      .wizard-footer.end { justify-content:flex-start; }
+      .btn { display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:10px 22px; border-radius:10px; font-family:'Rajdhani',sans-serif; font-size:.92rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; border:none; transition:transform .2s,box-shadow .3s; text-decoration:none; background:linear-gradient(135deg,var(--blue-500),var(--blue-600)); color:#fff; box-shadow:0 0 16px rgba(26,95,212,0.35); }
+      .btn:hover { transform:translateY(-1px); box-shadow:0 0 24px rgba(59,130,246,0.5); }
+      .btn.btn-secondary { background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.22); color:var(--blue-300); box-shadow:none; }
+      .btn.btn-secondary:hover { background:rgba(59,130,246,0.16); box-shadow:none; }
+      .btn.btn-secondary:disabled { opacity:.35; cursor:not-allowed; transform:none; }
+      .btn-small { display:inline-flex; align-items:center; padding:8px 16px; border-radius:8px; font-family:'Rajdhani',sans-serif; font-size:.82rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; background:rgba(59,130,246,0.1); border:1px solid rgba(59,130,246,0.22); color:var(--blue-300); transition:background .3s; }
+      .btn-small:hover { background:rgba(59,130,246,0.18); }
+      .btn-admin { display:inline-flex; align-items:center; gap:6px; padding:10px 20px; border-radius:10px; font-family:'Rajdhani',sans-serif; font-size:.9rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; border:none; transition:transform .2s,box-shadow .3s; }
+      .btn-admin:hover { transform:translateY(-1px); }
+      .btn-admin-primary { background:linear-gradient(135deg,var(--blue-500),var(--blue-600)); color:#fff; box-shadow:0 0 16px rgba(26,95,212,0.4); }
+      .btn-admin-primary:hover { box-shadow:0 0 26px rgba(59,130,246,0.55); }
+      .btn-admin-secondary { background:rgba(59,130,246,0.1); color:var(--blue-300); border:1px solid rgba(59,130,246,0.25); }
+      .btn-admin-secondary:hover { background:rgba(59,130,246,0.18); }
+      .info-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:10px; }
+      @media(max-width:480px) { .info-grid{grid-template-columns:1fr;} }
+      .info-box { padding:14px 16px; border-radius:12px; }
+      .info-box-draft { background:rgba(168,187,218,0.07); border:1px solid rgba(168,187,218,0.2); }
+      .info-box-publish { background:rgba(34,197,94,0.07); border:1px solid rgba(34,197,94,0.22); }
+      .info-box-head { display:flex; align-items:center; gap:8px; font-family:'Oswald',sans-serif; font-size:.95rem; letter-spacing:.08em; margin-bottom:6px; }
+      .info-box-draft .info-box-head { color:var(--white-ghost); }
+      .info-box-publish .info-box-head { color:#4ADE80; }
+      .info-box p { font-size:.82rem; color:var(--white-ghost); line-height:1.5; }
+      #submitMsg { font-size:.85rem; color:var(--blue-300); min-height:20px; margin-bottom:8px; }
+      #bannerPreviewImg { max-width:100%; max-height:280px; border-radius:12px; border:1px solid rgba(59,130,246,0.25); margin-top:10px; }
+    </style>
   </head>
-
-  <body
-    data-page="admin-tournament"
-    class="font-display text-white min-h-screen"
-  >
-    <div class="relative flex min-h-screen w-full flex-col">
-      <!-- ===========================
-           HEADER (Schedules-like)
-      =========================== -->
-      <header
-        class="sticky top-0 z-20 glassmorphic backdrop-blur-md border-b border-white/10"
-      >
-        <div class="flex items-center justify-between px-4 sm:px-6 py-4">
-          <!-- Back Button -->
-          <button
-            id="backBtn"
-            class="flex size-10 sm:size-11 items-center justify-center rounded-full text-white/80 hover:text-white hover:bg-white/10 transition-all active:scale-95"
-            aria-label="Back to Dashboard"
-            title="Back"
-            type="button"
-          >
-            <span class="material-symbols-outlined">arrow_back</span>
-          </button>
-
-          <!-- Title -->
-          <h1
-            class="text-xl sm:text-2xl lg:text-3xl font-bold text-white tracking-tight"
-          >
-            Create Tournament
-          </h1>
-
-          <!-- Notifications -->
-          <a
-            href="notifications.html"
-            class="relative flex items-center justify-center size-10 sm:size-11 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-all duration-200"
-            aria-label="Notifications"
-            data-notify-bell
-          >
-            <span class="material-symbols-outlined">notifications</span>
-          </a>
-        </div>
+  <body data-page="admin-tournament">
+    <div class="particles" id="particles"></div>
+    <div class="page-wrap">
+      <header>
+        <button id="backBtn" class="header-btn" aria-label="Back" type="button">
+          <span class="material-symbols-outlined">arrow_back</span>
+        </button>
+        <h1>Create Tournament</h1>
+        <a href="notifications.html" class="header-btn notif-wrap" aria-label="Notifications" data-notify-bell>
+          <span class="material-symbols-outlined">notifications</span>
+          <span class="notif-dot"></span>
+        </a>
       </header>
-
-      <!-- ===========================
-           CONTENT
-      =========================== -->
-      <main class="flex-grow p-4 sm:p-6 lg:p-8 pb-28 sm:pb-32">
-        <div class="max-w-5xl mx-auto w-full space-y-6">
+      <main>
+        <div class="inner-wrap">
           <div class="admin-giant">
-            <p id="wizardMsg" class="muted text-muted mb-2"></p>
-
-            <!-- Section 1 -->
-            <div
-              class="step step-1 active glassmorphic rounded-2xl p-6 sm:p-8 shadow-2xl space-y-4"
-            >
-              <div class="border-b border-white/10 pb-3">
-                <h3
-                  class="text-2xl font-bold text-white flex items-center gap-3"
-                >
-                  <span class="material-symbols-outlined text-3xl text-blue-400"
-                    >assignment</span
-                  >
-                  Section 1. Basic Details
-                </h3>
-              </div>
-
-              <div class="input-box">
-                <label>Tournament Name</label>
-                <input
-                  type="text"
-                  id="name"
-                  class="form-input"
-                  placeholder="Enter tournament name"
-                />
-                <p class="field-error" id="e_name"></p>
-              </div>
-
-              <div class="input-box">
-                <label>Sport Type</label>
-                <select id="sport" class="form-input">
-                  <option value="">Select Sport</option>
-                  <option>Cricket</option>
-                  <option>Football</option>
-                  <option>Kabaddi</option>
-                  <option>Volleyball</option>
-                  <option>Badminton</option>
-                  <option>Hockey</option>
-                  <option>Basketball</option>
-                  <option>Athletics</option>
-                </select>
-                <p class="field-error" id="e_sport"></p>
-              </div>
-
+            <p id="wizardMsg" class="muted"></p>
+            <!-- SECTION 1 -->
+            <div class="step step-1 active">
+              <div class="section-head"><span class="material-symbols-outlined s1-icon">assignment</span><h3>Section 1. Basic Details</h3></div>
+              <div class="input-box"><label>Tournament Name</label><input type="text" id="name" class="form-input" placeholder="Enter tournament name"/><p class="field-error" id="e_name"></p></div>
+              <div class="input-box"><label>Sport Type</label><select id="sport" class="form-input"><option value="">Select Sport</option><option>Cricket</option><option>Football</option><option>Kabaddi</option><option>Volleyball</option><option>Badminton</option><option>Hockey</option><option>Basketball</option><option>Athletics</option></select><p class="field-error" id="e_sport"></p></div>
               <div class="grid-3">
-                <div class="input-box">
-                  <label>Start Date</label>
-                  <input type="date" id="startDate" class="form-input" />
-                  <p class="field-error" id="e_startDate"></p>
-                </div>
-                <div class="input-box">
-                  <label>Start Time</label>
-                  <input type="time" id="startTime" class="form-input" />
-                  <p class="field-error" id="e_startTime"></p>
-                </div>
-                <div class="input-box">
-                  <label>End Date</label>
-                  <input type="date" id="endDate" class="form-input" />
-                  <p class="field-error" id="e_endDate"></p>
-                </div>
-                <div class="input-box">
-                  <label>End Time</label>
-                  <input type="time" id="endTime" class="form-input" />
-                  <p class="field-error" id="e_endTime"></p>
-                </div>
+                <div class="input-box"><label>Start Date</label><input type="date" id="startDate" class="form-input"/><p class="field-error" id="e_startDate"></p></div>
+                <div class="input-box"><label>Start Time</label><input type="time" id="startTime" class="form-input"/><p class="field-error" id="e_startTime"></p></div>
+                <div class="input-box"><label>End Date</label><input type="date" id="endDate" class="form-input"/><p class="field-error" id="e_endDate"></p></div>
+                <div class="input-box"><label>End Time</label><input type="time" id="endTime" class="form-input"/><p class="field-error" id="e_endTime"></p></div>
               </div>
-
               <div class="grid-3">
-                <div class="input-box">
-                  <label>State</label>
-                  <select id="state" class="form-input">
-                    <option value="">Select State</option>
-                  </select>
-                  <p class="field-error" id="e_state"></p>
-                </div>
-                <div class="input-box">
-                  <label>District</label>
-                  <select id="district" class="form-input">
-                    <option value="">Select District</option>
-                  </select>
-                  <p class="field-error" id="e_district"></p>
-                </div>
-                <div class="input-box">
-                  <label>Venue/Location</label>
-                  <input
-                    type="text"
-                    id="venue"
-                    class="form-input"
-                    placeholder="Stadium or ground"
-                  />
-                  <p class="field-error" id="e_venue"></p>
-                </div>
+                <div class="input-box"><label>State</label><select id="state" class="form-input"><option value="">Select State</option></select><p class="field-error" id="e_state"></p></div>
+                <div class="input-box"><label>District</label><select id="district" class="form-input"><option value="">Select District</option></select><p class="field-error" id="e_district"></p></div>
+                <div class="input-box"><label>Venue / Location</label><input type="text" id="venue" class="form-input" placeholder="Stadium or ground"/><p class="field-error" id="e_venue"></p></div>
               </div>
-
               <div class="wizard-footer">
-                <button class="btn btn-secondary left" id="prev1" disabled>
-                  Previous
-                </button>
-                <a href="dashboard.html" class="btn center">Dashboard</a>
-                <button class="btn right" id="next1">Next</button>
+                <button class="btn btn-secondary" id="prev1" disabled>Previous</button>
+                <a href="dashboard.html" class="btn btn-secondary">Dashboard</a>
+                <button class="btn" id="next1">Next →</button>
               </div>
             </div>
-
-            <!-- Section 2 -->
-            <div
-              class="step step-2 glassmorphic rounded-2xl p-6 sm:p-8 shadow-2xl space-y-4"
-            >
-              <div class="border-b border-white/10 pb-3">
-                <h3
-                  class="text-2xl font-bold text-white flex items-center gap-3"
-                >
-                  <span
-                    class="material-symbols-outlined text-3xl text-purple-400"
-                    >rule</span
-                  >
-                  Section 2. Rules & Eligibility
-                </h3>
-              </div>
-
+            <!-- SECTION 2 -->
+            <div class="step step-2">
+              <div class="section-head"><span class="material-symbols-outlined s2-icon">rule</span><h3>Section 2. Rules & Eligibility</h3></div>
               <div class="grid-3">
-                <div class="input-box">
-                  <label>Age Min (optional)</label>
-                  <input
-                    type="number"
-                    id="ageMin"
-                    min="5"
-                    max="80"
-                    class="form-input"
-                    placeholder="e.g., 18"
-                  />
-                </div>
-                <div class="input-box">
-                  <label>Age Max (optional)</label>
-                  <input
-                    type="number"
-                    id="ageMax"
-                    min="5"
-                    max="80"
-                    class="form-input"
-                    placeholder="e.g., 35"
-                  />
-                  <p class="field-error" id="e_ageRange"></p>
-                </div>
-                <div class="input-box">
-                  <label>Gender</label>
-                  <select id="gender" class="form-input">
-                    <option value="ANY">Any</option>
-                    <option value="MALE">Male</option>
-                    <option value="FEMALE">Female</option>
-                    <option value="OTHER">Other</option>
-                    <option value="MIXED">Mixed</option>
-                  </select>
-                </div>
+                <div class="input-box"><label>Age Min (optional)</label><input type="number" id="ageMin" min="5" max="80" class="form-input" placeholder="e.g. 18"/></div>
+                <div class="input-box"><label>Age Max (optional)</label><input type="number" id="ageMax" min="5" max="80" class="form-input" placeholder="e.g. 35"/><p class="field-error" id="e_ageRange"></p></div>
+                <div class="input-box"><label>Gender</label><select id="gender" class="form-input"><option value="ANY">Any</option><option value="MALE">Male</option><option value="FEMALE">Female</option><option value="OTHER">Other</option><option value="MIXED">Mixed</option></select></div>
               </div>
-
-              <div class="input-box">
-                <label>District Restriction</label>
-                <select id="districtRestriction" class="form-input">
-                  <option value="DISTRICT_ONLY">Only this district</option>
-                  <option value="STATE_OPEN">Open to all in state</option>
-                </select>
-              </div>
-
-              <div class="input-box">
-                <label>Format</label>
-                <div class="radio-row">
-                  <label
-                    ><input
-                      type="radio"
-                      name="format"
-                      value="KNOCKOUT"
-                      checked
-                    />
-                    Knockout</label
-                  >
-                  <label
-                    ><input type="radio" name="format" value="LEAGUE" />
-                    League</label
-                  >
-                  <label
-                    ><input type="radio" name="format" value="POINTS" /> Points
-                    system</label
-                  >
-                </div>
-              </div>
-
+              <div class="input-box"><label>District Restriction</label><select id="districtRestriction" class="form-input"><option value="DISTRICT_ONLY">Only this district</option><option value="STATE_OPEN">Open to all in state</option></select></div>
+              <div class="input-box"><label>Format</label><div class="radio-row"><label><input type="radio" name="format" value="KNOCKOUT" checked/> Knockout</label><label><input type="radio" name="format" value="LEAGUE"/> League</label><label><input type="radio" name="format" value="POINTS"/> Points system</label></div></div>
               <div class="grid-2">
-                <div class="input-box">
-                  <label>Max Teams (optional)</label>
-                  <input
-                    type="number"
-                    id="maxTeams"
-                    min="1"
-                    class="form-input"
-                  />
-                </div>
-                <div class="input-box">
-                  <label>Max Players (optional)</label>
-                  <input
-                    type="number"
-                    id="maxPlayers"
-                    min="1"
-                    class="form-input"
-                  />
-                </div>
+                <div class="input-box"><label>Max Teams (optional)</label><input type="number" id="maxTeams" min="1" class="form-input"/></div>
+                <div class="input-box"><label>Max Players (optional)</label><input type="number" id="maxPlayers" min="1" class="form-input"/></div>
               </div>
-
               <div class="wizard-footer">
-                <button class="btn btn-secondary left" id="prev2">
-                  Previous
-                </button>
-                <a href="dashboard.html" class="btn center">Dashboard</a>
-                <button class="btn right" id="next2">Next</button>
+                <button class="btn btn-secondary" id="prev2">Previous</button>
+                <a href="dashboard.html" class="btn btn-secondary">Dashboard</a>
+                <button class="btn" id="next2">Next →</button>
               </div>
             </div>
-
-            <!-- Section 3 -->
-            <div
-              class="step step-3 glassmorphic rounded-2xl p-6 sm:p-8 shadow-2xl space-y-4"
-            >
-              <div class="border-b border-white/10 pb-3">
-                <h3
-                  class="text-2xl font-bold text-white flex items-center gap-3"
-                >
-                  <span
-                    class="material-symbols-outlined text-3xl text-yellow-400"
-                    >badge</span
-                  >
-                  Section 3. Registration Details
-                </h3>
-              </div>
-
+            <!-- SECTION 3 -->
+            <div class="step step-3">
+              <div class="section-head"><span class="material-symbols-outlined s3-icon">badge</span><h3>Section 3. Registration Details</h3></div>
               <div class="grid-3">
-                <div class="input-box">
-                  <label>Registration Fee (₹)</label>
-                  <input
-                    type="number"
-                    id="regFee"
-                    min="0"
-                    step="1"
-                    class="form-input"
-                    placeholder="0"
-                  />
-                </div>
-                <div class="input-box">
-                  <label>Required Documents</label>
-                  <div class="checkbox-col">
-                    <label
-                      ><input type="checkbox" value="ID Proof" class="docChk" />
-                      ID Proof</label
-                    >
-                    <label
-                      ><input
-                        type="checkbox"
-                        value="Previous Certificates"
-                        class="docChk"
-                      />
-                      Previous Certificates</label
-                    >
-                  </div>
-                </div>
-                <div class="input-box">
-                  <label>Last Date for Registration</label>
-                  <input type="date" id="lastDate" class="form-input" />
-                  <p class="field-error" id="e_lastDate"></p>
-                </div>
+                <div class="input-box"><label>Registration Fee (₹)</label><input type="number" id="regFee" min="0" step="1" class="form-input" placeholder="0"/></div>
+                <div class="input-box"><label>Required Documents</label><div class="checkbox-col"><label><input type="checkbox" value="ID Proof" class="docChk"/> ID Proof</label><label><input type="checkbox" value="Previous Certificates" class="docChk"/> Previous Certificates</label></div></div>
+                <div class="input-box"><label>Last Date for Registration</label><input type="date" id="lastDate" class="form-input"/><p class="field-error" id="e_lastDate"></p></div>
               </div>
-
               <div class="input-box">
-                <label>
-                  <input type="checkbox" id="needsApproval" />
-                  Requires approval (registrations start as Pending)
-                </label>
-                <p
-                  class="muted text-muted"
-                  style="margin-top: 0.5rem; margin-left: 1.5rem"
-                >
-                  If checked, you'll need to manually approve each registration.
-                  Otherwise, players are auto-confirmed.
-                </p>
+                <label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-size:.9rem;"><input type="checkbox" id="needsApproval"/> Requires approval (registrations start as Pending)</label>
+                <p class="text-muted" style="margin-left:22px;margin-top:4px;">If checked, you'll need to manually approve each registration. Otherwise, players are auto-confirmed.</p>
               </div>
-
               <div class="wizard-footer">
-                <button class="btn btn-secondary left" id="prev3">
-                  Previous
-                </button>
-                <a href="dashboard.html" class="btn center">Dashboard</a>
-                <button class="btn right" id="next3">Next</button>
+                <button class="btn btn-secondary" id="prev3">Previous</button>
+                <a href="dashboard.html" class="btn btn-secondary">Dashboard</a>
+                <button class="btn" id="next3">Next →</button>
               </div>
             </div>
-
-            <!-- Section 4 -->
-            <div
-              class="step step-4 glassmorphic rounded-2xl p-6 sm:p-8 shadow-2xl space-y-4"
-            >
-              <div class="border-b border-white/10 pb-3">
-                <h3
-                  class="text-2xl font-bold text-white flex items-center gap-3"
-                >
-                  <span class="material-symbols-outlined text-3xl text-teal-400"
-                    >image</span
-                  >
-                  Section 4. Tournament Media
-                </h3>
-              </div>
-
-              <div class="input-box">
-                <label>Poster/Logo/Banner (optional)</label>
-                <input
-                  type="file"
-                  id="banner"
-                  accept="image/*"
-                  class="form-input"
-                />
-                <p class="muted text-muted" style="margin-top: 0.5rem">
-                  We compress images to save storage. Recommended size:
-                  1280x720px
-                </p>
-              </div>
-
-              <!-- Image Preview -->
-              <div id="bannerPreview" style="display: none; margin-top: 1rem">
-                <label
-                  class="muted text-muted"
-                  style="display: block; margin-bottom: 0.5rem"
-                  >Preview:</label
-                >
-                <img
-                  id="bannerPreviewImg"
-                  style="
-                    max-width: 100%;
-                    max-height: 300px;
-                    border-radius: 0.5rem;
-                    border: 1px solid rgba(255, 255, 255, 0.1);
-                  "
-                  alt="Banner preview"
-                />
-              </div>
-
+            <!-- SECTION 4 -->
+            <div class="step step-4">
+              <div class="section-head"><span class="material-symbols-outlined s4-icon">image</span><h3>Section 4. Tournament Media</h3></div>
+              <div class="input-box"><label>Poster / Logo / Banner (optional)</label><input type="file" id="banner" accept="image/*" class="form-input"/><p class="text-muted" style="margin-top:6px;">We compress images to save storage. Recommended: 1280×720px</p></div>
+              <div id="bannerPreview" style="display:none"><p class="text-muted" style="margin-bottom:6px;">Preview:</p><img id="bannerPreviewImg" alt="Banner preview"/></div>
               <div class="wizard-footer">
-                <button class="btn btn-secondary left" id="prev4">
-                  Previous
-                </button>
-                <a href="dashboard.html" class="btn center">Dashboard</a>
-                <button class="btn right" id="next4">Next</button>
+                <button class="btn btn-secondary" id="prev4">Previous</button>
+                <a href="dashboard.html" class="btn btn-secondary">Dashboard</a>
+                <button class="btn" id="next4">Next →</button>
               </div>
             </div>
-
-            <!-- Section 5 -->
-            <div
-              class="step step-5 glassmorphic rounded-2xl p-6 sm:p-8 shadow-2xl space-y-4"
-            >
-              <div class="border-b border-white/10 pb-3">
-                <h3
-                  class="text-2xl font-bold text-white flex items-center gap-3"
-                >
-                  <span class="material-symbols-outlined text-3xl text-pink-400"
-                    >badge</span
-                  >
-                  Section 5. Organizer Information
-                </h3>
-              </div>
-
+            <!-- SECTION 5 -->
+            <div class="step step-5">
+              <div class="section-head"><span class="material-symbols-outlined s5-icon">badge</span><h3>Section 5. Organizer Information</h3></div>
               <div class="grid-3">
-                <div class="input-box">
-                  <label>Organizer Name</label>
-                  <input
-                    type="text"
-                    id="orgName"
-                    class="form-input"
-                    placeholder="Your name"
-                  />
-                  <p class="field-error" id="e_orgName"></p>
-                </div>
-                <div class="input-box">
-                  <label>Mobile</label>
-                  <input
-                    type="tel"
-                    id="orgMobile"
-                    class="form-input"
-                    placeholder="10-digit number"
-                    maxlength="10"
-                  />
-                  <p class="field-error" id="e_orgMobile"></p>
-                </div>
-                <div class="input-box">
-                  <label>Email</label>
-                  <input
-                    type="email"
-                    id="orgEmail"
-                    class="form-input"
-                    placeholder="your@email.com"
-                  />
-                  <p class="field-error" id="e_orgEmail"></p>
-                </div>
+                <div class="input-box"><label>Organizer Name</label><input type="text" id="orgName" class="form-input" placeholder="Your name"/><p class="field-error" id="e_orgName"></p></div>
+                <div class="input-box"><label>Mobile</label><input type="tel" id="orgMobile" class="form-input" placeholder="10-digit number" maxlength="10"/><p class="field-error" id="e_orgMobile"></p></div>
+                <div class="input-box"><label>Email</label><input type="email" id="orgEmail" class="form-input" placeholder="your@email.com"/><p class="field-error" id="e_orgEmail"></p></div>
               </div>
-
               <div class="wizard-footer">
-                <button class="btn btn-secondary left" id="prev5">
-                  Previous
-                </button>
-                <a href="dashboard.html" class="btn center">Dashboard</a>
-                <button class="btn right" id="next5">Next</button>
+                <button class="btn btn-secondary" id="prev5">Previous</button>
+                <a href="dashboard.html" class="btn btn-secondary">Dashboard</a>
+                <button class="btn" id="next5">Next →</button>
               </div>
             </div>
-
-            <!-- Section 6 -->
-            <div
-              class="step step-6 glassmorphic rounded-2xl p-6 sm:p-8 shadow-2xl space-y-4"
-            >
-              <div class="border-b border-white/10 pb-3">
-                <h3
-                  class="text-2xl font-bold text-white flex items-center gap-3"
-                >
-                  <span
-                    class="material-symbols-outlined text-3xl text-green-400"
-                    >verified</span
-                  >
-                  Section 6. Review & Publish
-                </h3>
+            <!-- SECTION 6 -->
+            <div class="step step-6">
+              <div class="section-head"><span class="material-symbols-outlined s6-icon">verified</span><h3>Section 6. Review & Publish</h3></div>
+              <p class="text-muted" style="margin-bottom:14px;">Save as draft to publish later, or publish immediately to make it visible to players.</p>
+              <div id="submitMsg"></div>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;margin-top:6px;">
+                <button class="btn btn-secondary" id="cancelWizard" type="button">Cancel</button>
+                <button class="btn-admin btn-admin-secondary" id="saveDraft" type="button">💾 Save as Draft</button>
+                <button class="btn-admin btn-admin-primary" id="publishTournament" type="button">🚀 Publish Tournament</button>
               </div>
-
-              <p class="muted text-muted">
-                You can save this tournament as a draft to publish later, or
-                publish it immediately to make it visible to players.
-              </p>
-
-              <div
-                id="submitMsg"
-                class="muted"
-                style="margin-bottom: 0.5rem"
-              ></div>
-
-              <!-- Action buttons -->
-              <div
-                class="btn-row"
-                style="
-                  display: flex;
-                  gap: 0.75rem;
-                  margin-bottom: 1rem;
-                  flex-wrap: wrap;
-                "
-              >
-                <button
-                  class="btn btn-secondary"
-                  id="cancelWizard"
-                  type="button"
-                >
-                  Cancel
-                </button>
-                <button
-                  class="btn-admin btn-admin-secondary"
-                  id="saveDraft"
-                  type="button"
-                >
-                  💾 Save as Draft
-                </button>
-                <button
-                  class="btn-admin btn-admin-primary"
-                  id="publishTournament"
-                  type="button"
-                >
-                  🚀 Publish Tournament
-                </button>
+              <div class="info-grid">
+                <div class="info-box info-box-draft"><div class="info-box-head">💾 Draft</div><p>Save for later. Only visible to you. Can be edited anytime.</p></div>
+                <div class="info-box info-box-publish"><div class="info-box-head">🚀 Published</div><p>Visible to all players. Can still edit venue and dates if needed.</p></div>
               </div>
-
-              <!-- Info boxes -->
-              <div
-                style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem"
-              >
-                <div
-                  style="
-                    padding: 1rem;
-                    background: rgba(156, 163, 175, 0.1);
-                    border: 1px solid rgba(156, 163, 175, 0.3);
-                    border-radius: 0.5rem;
-                  "
-                >
-                  <div
-                    style="
-                      display: flex;
-                      align-items: center;
-                      gap: 0.5rem;
-                      margin-bottom: 0.25rem;
-                    "
-                  >
-                    <span style="font-size: 1.25rem">💾</span>
-                    <strong style="color: #9ca3af">Draft</strong>
-                  </div>
-                  <p
-                    class="muted text-subtle"
-                    style="font-size: 0.875rem; margin: 0"
-                  >
-                    Save for later. Only visible to you. Can be edited anytime.
-                  </p>
-                </div>
-                <div
-                  style="
-                    padding: 1rem;
-                    background: rgba(34, 197, 94, 0.1);
-                    border: 1px solid rgba(34, 197, 94, 0.3);
-                    border-radius: 0.5rem;
-                  "
-                >
-                  <div
-                    style="
-                      display: flex;
-                      align-items: center;
-                      gap: 0.5rem;
-                      margin-bottom: 0.25rem;
-                    "
-                  >
-                    <span style="font-size: 1.25rem">🚀</span>
-                    <strong style="color: #22c55e">Published</strong>
-                  </div>
-                  <p
-                    class="muted text-subtle"
-                    style="font-size: 0.875rem; margin: 0"
-                  >
-                    Visible to all players. Can still edit venue and dates if
-                    needed.
-                  </p>
-                </div>
-              </div>
-
               <div class="wizard-footer end">
-                <button class="btn btn-secondary left" id="prev6">
-                  Previous
-                </button>
-                <a href="dashboard.html" class="btn center">Dashboard</a>
-                <button
-                  class="btn-small right"
-                  id="createAnother"
-                  style="display: none"
-                >
-                  Create another
-                </button>
+                <button class="btn btn-secondary" id="prev6">Previous</button>
+                <a href="dashboard.html" class="btn btn-secondary">Dashboard</a>
+                <button class="btn-small" id="createAnother" style="display:none">Create another</button>
               </div>
             </div>
           </div>
         </div>
       </main>
     </div>
-
-    <!-- Data + Controller -->
     <script src="js/districts.js"></script>
     <script type="module" src="js/adminTournament.js"></script>
-
-    <!-- Back button → dashboard.html (approved) -->
+    <script type="module" src="js/nav.js"></script>
     <script>
-      document
-        .getElementById("backBtn")
-        ?.addEventListener("click", function () {
-          window.location.href = "dashboard.html";
-        });
+      document.getElementById("backBtn")?.addEventListener("click", function() { window.location.href = "dashboard.html"; });
+    </script>
+    <script>
+      const pc = document.getElementById('particles');
+      const cols = ['#3B82F6','#6EA8FE','#38BDF8','#ffffff'];
+      for (let i = 0; i < 20; i++) {
+        const p = document.createElement('div'); p.className = 'p';
+        const s = Math.random()*3+1.5;
+        p.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${9+Math.random()*12}s;animation-delay:${Math.random()*10}s;`;
+        pc.appendChild(p);
+      }
     </script>
   </body>
 </html>
-<!-- Bottom Navigation -->
-<script type="module" src="js/nav.js"></script>

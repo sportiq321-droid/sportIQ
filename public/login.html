@@ -1,153 +1,430 @@
 <!DOCTYPE html>
-<html class="dark" lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Login - SportIQ</title>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SportIQ - Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Cinzel:wght@700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --blue-950: #020B18;
+    --blue-900: #061527;
+    --blue-800: #0A2040;
+    --blue-700: #0D3060;
+    --blue-600: #1146A0;
+    --blue-500: #1A5FD4;
+    --blue-400: #3B82F6;
+    --blue-300: #6EA8FE;
+    --blue-200: #A8CCFF;
+    --blue-100: #D6E8FF;
+    --blue-50:  #EEF5FF;
+    --white-pure:  #FFFFFF;
+    --white-warm:  #F8FAFF;
+    --white-muted: #EDF2FB;
+    --white-dim:   #D1DCEF;
+    --white-ghost: #A8BBDA;
+    --accent-sky:  #38BDF8;
+    --accent-cyan: #06B6D4;
+    --accent-ice:  #BAE6FD;
+  }
+  body {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Rajdhani', sans-serif;
+    background: var(--blue-950);
+    overflow: hidden;
+  }
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/icon?family=Material+Icons"
-      rel="stylesheet"
-    />
+  /* ── BG ── */
+  .bg {
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(26,95,212,0.2) 0%, transparent 55%),
+      radial-gradient(ellipse at 80% 30%, rgba(59,130,246,0.15) 0%, transparent 50%),
+      linear-gradient(135deg, var(--blue-950) 0%, var(--blue-900) 50%, var(--blue-950) 100%);
+  }
+  .olympic-img {
+    position: fixed; inset: 0;
+    width: 100%; height: 100%; object-fit: cover;
+    opacity: 0.13; mix-blend-mode: luminosity;
+    animation: imgBreath 8s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes imgBreath {
+    0%,100% { opacity: 0.10; transform: scale(1.00); }
+    50%      { opacity: 0.18; transform: scale(1.03); }
+  }
+  .overlay {
+    position: fixed; inset: 0;
+    background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.6) 100%);
+    pointer-events: none;
+  }
+  .light-leak {
+    position: fixed; inset: 0;
+    background: radial-gradient(ellipse at 85% 85%, rgba(59,130,246,0.12) 0%, transparent 55%);
+    pointer-events: none;
+  }
 
-    <!-- Tailwind config BEFORE CDN -->
-    <script src="js/tailwind-config.js"></script>
-    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  /* ── PARTICLES ── */
+  .particles { position: fixed; inset: 0; pointer-events: none; overflow: hidden; }
+  .p { position: absolute; border-radius: 50%; animation: floatUp linear infinite; opacity: 0; }
+  @keyframes floatUp {
+    0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: 0.6; }
+    100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+  }
 
-    <!-- Global CSS -->
-    <link rel="stylesheet" href="css/global.css" />
-  </head>
+  /* ── CARD ── */
+  .card {
+    position: relative; z-index: 10;
+    background: rgba(6,21,39,0.65);
+    border: 1px solid rgba(59,130,246,0.20);
+    border-radius: 24px;
+    padding: 44px 52px 48px;
+    width: 100%; max-width: 460px;
+    backdrop-filter: blur(24px) saturate(1.5);
+    box-shadow:
+      0 0 0 1px rgba(59,130,246,0.07),
+      0 0 80px rgba(59,130,246,0.07),
+      0 40px 80px rgba(0,0,0,0.7);
+    animation: cardReveal 0.9s cubic-bezier(.22,1,.36,1) both;
+  }
+  @keyframes cardReveal {
+    from { opacity:0; transform: translateY(40px) scale(0.96); }
+    to   { opacity:1; transform: translateY(0) scale(1); }
+  }
+  .card::before, .card::after {
+    content: ''; position: absolute;
+    width: 36px; height: 36px;
+    border-color: var(--blue-400); border-style: solid; opacity: 0.6;
+  }
+  .card::before { top:14px; left:14px; border-width:2px 0 0 2px; border-radius:6px 0 0 0; }
+  .card::after  { bottom:14px; right:14px; border-width:0 2px 2px 0; border-radius:0 0 6px 0; }
 
-  <body
-    class="font-display bg-background-light dark:bg-background-dark"
-    data-page="login"
-  >
-    <div class="min-h-screen grid grid-cols-1 lg:grid-cols-2">
-      <!-- Header (sticky, like Reports) -->
-      <header class="sticky top-0 z-20 col-span-full glassmorphic px-4 py-3">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
-          <div class="w-10"></div>
-          <h1 class="text-lg font-bold text-white">Login</h1>
-          <div class="w-10"></div>
-        </div>
-      </header>
+  /* ── LOGO / TITLE ── */
+  .logo-wrap {
+    text-align: center; margin-bottom: 28px;
+    animation: fadeUp 0.7s ease 0.3s both;
+  }
+  .logo-icon {
+    width: 52px; height: 52px; margin: 0 auto 10px;
+    border: 2px solid var(--blue-400);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 20px rgba(59,130,246,0.4);
+    animation: ringPulse 3s ease-in-out infinite;
+  }
+  @keyframes ringPulse {
+    0%,100% { box-shadow: 0 0 16px rgba(59,130,246,0.4); }
+    50%      { box-shadow: 0 0 36px rgba(59,130,246,0.8), 0 0 60px rgba(26,95,212,0.3); }
+  }
+  .logo-icon svg { width:28px; height:28px; fill:var(--blue-400); }
+  .brand {
+    font-family: 'Cinzel', serif;
+    font-size: 1rem; letter-spacing: .3em;
+    color: rgba(255,255,255,0.5); text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.8rem; letter-spacing: .12em;
+    color: #fff; font-weight: 700;
+  }
+  .title span { color: var(--blue-400); }
 
-      <!-- Left visual panel (hidden on mobile) -->
-      <aside class="hidden lg:block">
-        <div class="relative h-full">
-          <div
-            class="absolute inset-0 bg-cover bg-center"
-            style="
-              background-image: url('https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=1600&auto=format&fit=crop');
-            "
-            aria-hidden="true"
-          ></div>
-          <div
-            class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent"
-          ></div>
+  @keyframes fadeUp {
+    from { opacity:0; transform: translateY(20px); }
+    to   { opacity:1; transform: translateY(0); }
+  }
 
-          <div class="relative h-full flex items-end">
-            <div class="p-8 lg:p-10">
-              <img
-                src="SportIQ blue logo.png"
-                alt="SportIQ logo"
-                class="h-14 w-auto mb-4"
-              />
-              <h2 class="text-2xl font-extrabold text-white">Welcome back</h2>
-              <p class="text-white/70 mt-1">
-                Continue managing your players, schedules, and tournaments.
-              </p>
-            </div>
-          </div>
-        </div>
-      </aside>
+  /* ── DIVIDER ── */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(59,130,246,0.25), transparent);
+    margin: 0 0 28px;
+  }
 
-      <!-- Right form panel -->
-      <main class="flex items-center justify-center p-4 lg:p-8">
-        <div
-          class="w-full max-w-md glassmorphic rounded-xl p-6 md:p-8 shadow-lg"
-        >
-          <div class="mb-6 text-center">
-            <img
-              src="SportIQ blue logo.png"
-              alt="SportIQ logo"
-              class="h-16 w-auto mx-auto"
-            />
-            <h2 class="text-2xl font-bold text-white mt-4">Welcome Back</h2>
-            <p class="text-white/70 mt-1">Log in to continue</p>
-          </div>
+  /* ── FORM ── */
+  .field {
+    position: relative; margin-bottom: 18px;
+    animation: fadeUp 0.6s ease both;
+  }
+  .field:nth-child(1) { animation-delay: 0.5s; }
+  .field:nth-child(2) { animation-delay: 0.65s; }
 
-          <form id="loginForm" class="mt-4 space-y-4" novalidate>
-            <div>
-              <label for="loginEmail" class="sr-only">Email or Username</label>
-              <div class="relative">
-                <span
-                  class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-white/50"
-                  >person</span
-                >
-                <input
-                  type="text"
-                  id="loginEmail"
-                  class="form-input"
-                  placeholder="Email or Username"
-                  required
-                />
-              </div>
-            </div>
+  .field label {
+    display: block;
+    font-size: 0.78rem; font-weight: 700;
+    letter-spacing: .15em; text-transform: uppercase;
+    color: rgba(59,130,246,0.7);
+    margin-bottom: 7px;
+  }
+  .field-inner {
+    position: relative;
+    display: flex; align-items: center;
+  }
+  .field-inner svg {
+    position: absolute; left: 14px;
+    width: 18px; height: 18px;
+    stroke: rgba(59,130,246,0.5); fill: none;
+    stroke-width: 2; pointer-events: none;
+    transition: stroke .3s;
+  }
+  .field input {
+    width: 100%;
+    padding: 13px 14px 13px 42px;
+    background: rgba(59,130,246,0.05);
+    border: 1px solid rgba(59,130,246,0.18);
+    border-radius: 10px;
+    color: #fff;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem; font-weight: 500;
+    letter-spacing: .04em;
+    outline: none;
+    transition: border-color .3s, box-shadow .3s, background .3s;
+  }
+  .field input::placeholder { color: rgba(255,255,255,0.28); }
+  .field input:focus {
+    border-color: var(--blue-400);
+    background: rgba(59,130,246,0.08);
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.12), 0 0 20px rgba(59,130,246,0.08);
+  }
+  .field input:focus + svg, .field-inner:focus-within svg {
+    stroke: var(--blue-400);
+  }
 
-            <div>
-              <label for="loginPass" class="sr-only">Password</label>
-              <div class="relative">
-                <span
-                  class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-white/50"
-                  >lock</span
-                >
-                <input
-                  type="password"
-                  id="loginPass"
-                  class="form-input"
-                  placeholder="Password"
-                  required
-                />
-              </div>
-            </div>
+  /* password toggle */
+  .eye-btn {
+    position: absolute; right: 14px;
+    background: none; border: none; cursor: pointer;
+    color: rgba(255,255,255,0.3);
+    display: flex; align-items: center;
+    transition: color .3s;
+    padding: 0;
+  }
+  .eye-btn:hover { color: var(--blue-400); }
+  .eye-btn svg { width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:2; }
 
-            <div class="flex items-center justify-between text-sm">
-              <label class="inline-flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="showLoginPass"
-                  class="h-4 w-4 rounded border-gray-500 bg-white/10 text-primary focus:ring-primary focus:ring-offset-background-dark"
-                />
-                <span class="text-white/70">Show password</span>
-              </label>
-              <a href="register.html" class="text-primary hover:underline"
-                >Create account</a
-              >
-            </div>
+  /* ── ROW ── */
+  .row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 26px;
+    animation: fadeUp 0.6s ease 0.8s both;
+  }
+  .remember {
+    display: flex; align-items: center; gap: 8px; cursor: pointer;
+  }
+  .remember input[type=checkbox] {
+    appearance: none; width: 17px; height: 17px;
+    border: 1.5px solid rgba(59,130,246,0.4);
+    border-radius: 4px; background: transparent;
+    cursor: pointer; position: relative;
+    transition: border-color .3s, background .3s;
+  }
+  .remember input[type=checkbox]:checked {
+    background: var(--blue-500);
+    border-color: var(--blue-400);
+  }
+  .remember input[type=checkbox]:checked::after {
+    content: '';
+    position: absolute; top: 2px; left: 5px;
+    width: 5px; height: 9px;
+    border: 2px solid #000;
+    border-top: none; border-left: none;
+    transform: rotate(45deg);
+  }
+  .remember span {
+    font-size: 0.88rem; font-weight: 600;
+    color: rgba(255,255,255,0.55); letter-spacing: .04em;
+  }
+  .forgot {
+    font-size: 0.88rem; font-weight: 600;
+    color: var(--blue-300);
+    text-decoration: none; letter-spacing: .04em;
+    transition: color .3s;
+  }
+  .forgot:hover { color: var(--blue-400); text-decoration: underline; }
 
-            <p id="msg" class="text-sm font-medium h-5" aria-live="polite"></p>
+  /* ── LOGIN BUTTON ── */
+  .btn-login {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, var(--blue-500), var(--blue-600));
+    color: #fff;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.05rem; font-weight: 700;
+    letter-spacing: .22em; text-transform: uppercase;
+    border: none; border-radius: 12px; cursor: pointer;
+    box-shadow: 0 0 24px rgba(26,95,212,0.45), 0 4px 16px rgba(0,0,0,0.4);
+    transition: transform .2s, box-shadow .3s;
+    margin-bottom: 22px;
+    animation: fadeUp 0.6s ease 0.95s both;
+    position: relative; overflow: hidden;
+  }
+  .btn-login::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+    opacity: 0; transition: opacity .3s;
+  }
+  .btn-login:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 40px rgba(59,130,246,0.6), 0 8px 24px rgba(0,0,0,0.5);
+  }
+  .btn-login:hover::before { opacity: 1; }
+  .btn-login:active { transform: translateY(0); }
 
-            <div class="pt-2">
-              <button
-                type="submit"
-                class="btn-neon-blue flex w-full items-center justify-center rounded-lg bg-primary px-6 py-3 text-base font-bold text-white transition-all duration-300 hover:bg-primary/90 hover:scale-[1.02] active:scale-100"
-              >
-                Login
-              </button>
-            </div>
-          </form>
-        </div>
-      </main>
+  /* ── OR DIVIDER ── */
+  .or-wrap {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 18px;
+    animation: fadeUp 0.6s ease 1.05s both;
+  }
+  .or-wrap .line {
+    flex: 1; height: 1px;
+    background: rgba(255,255,255,0.1);
+  }
+  .or-wrap span {
+    font-size: 0.78rem; font-weight: 700;
+    color: rgba(255,255,255,0.3); letter-spacing: .15em;
+  }
+
+  /* ── SOCIAL BUTTONS ── */
+  .socials {
+    display: flex; gap: 12px;
+    margin-bottom: 26px;
+    animation: fadeUp 0.6s ease 1.15s both;
+  }
+  .btn-social {
+    flex: 1; display: flex; align-items: center; justify-content: center; gap: 9px;
+    padding: 12px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(59,130,246,0.2);
+    border-radius: 10px; cursor: pointer;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.92rem; font-weight: 700;
+    letter-spacing: .06em; color: rgba(255,255,255,0.75);
+    transition: background .3s, border-color .3s, transform .2s, box-shadow .3s;
+  }
+  .btn-social:hover {
+    transform: translateY(-2px);
+    background: rgba(255,255,255,0.09);
+  }
+  .btn-social.google:hover  { border-color: var(--blue-400); box-shadow: 0 0 18px rgba(59,130,246,0.2); color:#fff; }
+  .btn-social.facebook:hover { border-color: var(--blue-400); box-shadow: 0 0 18px rgba(59,130,246,0.2); color:#fff; }
+  .btn-social svg { width:20px; height:20px; flex-shrink:0; }
+
+  /* ── SIGNUP ── */
+  .signup {
+    text-align: center;
+    font-size: 0.9rem; font-weight: 600;
+    color: rgba(255,255,255,0.4); letter-spacing: .04em;
+    animation: fadeUp 0.6s ease 1.3s both;
+  }
+  .signup a {
+    color: var(--blue-300); text-decoration: none;
+    transition: color .3s;
+  }
+  .signup a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<div class="bg"></div>
+<img class="olympic-img" src="data:image/png;base64,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UkJJJJIASSSYoASSSSQA0kkkgBJJJJACSSSQQQSSSSQASSSSQAkkkk0JJJJJACSSSQAkkkk0JJJJJACSSSQwSSSSQASSSSQAkkkk0JJJJJIASSSQQAkkkk0JJJIASSSSQAkkkuQQSSSSymSSSSSSSSAAAASSSSSSSSAEkkkgBJJJJIASSSQQAkkkk0JJJJJIASSSQQAkkkk0JJJJJASSSSQAkkkk0JJJJJASSSSQAkkkk0JJJJJASSSSQAkkk6AEkkkgBJJJJIASSSQQAkkkk0JJJJJIASSSQQAkkkk0JJJJJASSSSQAkkkk0JJJJJASSSSQAkkkk0JJJJJASSSSQAkkk6AEkkkgBJJJJIASSSQQAkkkk0JJJJJIASSSQQAkkkk0JJJJJASSSSQAkkkk0JJJJJASSSSQAkkkk0JJJJJASSSSQAkkk6AEkkkgBJJJJIASSSQQAkkkk0JJJJJIASSSQQAkkkk0JJJJJASSSSQAkkkk0JJJJJASSSSQAkkkk0JJJJJASSSSQAkkk6AEkkkgBJJJJIASSSQQAkkkk0JJJJJIASSSQQAkkkk0JJJJJASSSSQAkkkk0JJJJJASSSSQAkkkk0JJJJJASSSSQAkkk6AEkkkgBJJJJIASSSQQAkkkk0JJJJJIASSSQQ" alt="">
+<div class="overlay"></div>
+<div class="light-leak"></div>
+<div class="particles" id="particles"></div>
+
+<div class="card">
+  <!-- Logo -->
+  <div class="logo-wrap">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24"><path d="M12 2L3 7l9 5 9-5-9-5zM3 17l9 5 9-5M3 12l9 5 9-5"/></svg>
     </div>
+    <p class="brand">SportIQ</p>
+    <h1 class="title">WELCOME <span>BACK</span></h1>
+  </div>
+  <div class="divider"></div>
 
-    <script type="module" src="js/auth-pages.js"></script>
-  </body>
+  <!-- Form -->
+  <div class="field">
+    <label>Email / Username</label>
+    <div class="field-inner">
+      <input type="text" placeholder="Enter your email or username" id="email">
+      <svg viewBox="0 0 24 24" style="position:absolute;left:14px;pointer-events:none"><path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2z"/><path d="M22 6l-10 7L2 6"/></svg>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Password</label>
+    <div class="field-inner">
+      <input type="password" placeholder="Enter your password" id="password">
+      <svg viewBox="0 0 24 24" style="position:absolute;left:14px;pointer-events:none"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+      <button class="eye-btn" onclick="togglePw()" type="button" id="eyebtn">
+        <svg id="eye-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Remember + Forgot -->
+  <div class="row">
+    <label class="remember">
+      <input type="checkbox" id="remember">
+      <span>Remember Me</span>
+    </label>
+    <a href="#" class="forgot">Forgot Password?</a>
+  </div>
+
+  <!-- Login -->
+  <button class="btn-login" onclick="window.location.href='dashboard.html'">Login to SportIQ</button>
+
+  <!-- OR -->
+  <div class="or-wrap">
+    <div class="line"></div><span>OR CONTINUE WITH</span><div class="line"></div>
+  </div>
+
+  <!-- Social -->
+  <div class="socials">
+    <button class="btn-social google">
+      <svg viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+      Google
+    </button>
+    <button class="btn-social facebook">
+      <svg viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.886v2.267h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
+      Facebook
+    </button>
+  </div>
+
+  <p class="signup">Don't have an account? <a href="signup.html">Sign Up Free</a></p>
+</div>
+
+<script>
+  // Password toggle
+  function togglePw() {
+    const inp = document.getElementById('password');
+    const icon = document.getElementById('eye-icon');
+    if (inp.type === 'password') {
+      inp.type = 'text';
+      icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>';
+    } else {
+      inp.type = 'password';
+      icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+    }
+  }
+
+  // Particles
+  const container = document.getElementById('particles');
+  const colors = ['#3B82F6', '#6EA8FE', '#ffffff', '#38BDF8'];
+  for (let i = 0; i < 45; i++) {
+    const p = document.createElement('div');
+    p.className = 'p';
+    const size = Math.random() * 5 + 2;
+    p.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;background:${colors[Math.floor(Math.random()*colors.length)]};animation-duration:${6+Math.random()*10}s;animation-delay:${Math.random()*8}s;box-shadow:0 0 ${size*2}px currentColor;`;
+    container.appendChild(p);
+  }
+</script>
+</body>
 </html>

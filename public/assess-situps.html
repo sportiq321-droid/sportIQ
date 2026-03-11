@@ -1,223 +1,381 @@
 <!DOCTYPE html>
-<html class="dark" lang="en">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sit-Up Assessment - SportIQ</title>
 
-    <!-- Tailwind (project-wide tokens) -->
+    <!-- Existing scripts — untouched -->
     <script src="js/tailwind-config.js"></script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
-      rel="stylesheet"
-    />
-
-    <!-- Global CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <link rel="stylesheet" href="css/global.css" />
 
     <style>
-      body[data-page="assess-situps"] {
-        background: #0f1323 !important;
+      *, *::before, *::after { box-sizing: border-box; }
+
+      :root {
+        --blue-950: #020B18;
+        --blue-900: #061527;
+        --blue-800: #0A2040;
+        --blue-600: #1146A0;
+        --blue-500: #1A5FD4;
+        --blue-400: #3B82F6;
+        --blue-300: #6EA8FE;
+        --white-pure: #FFFFFF;
+        --white-ghost: #A8BBDA;
+        --accent-sky: #38BDF8;
+        --card-bg: rgba(6,21,39,0.75);
+        --border: rgba(59,130,246,0.20);
       }
 
-      .hidden {
-        display: none !important;
+      html, body {
+        min-height: 100vh;
+        background: var(--blue-950);
+        color: var(--white-pure);
+        font-family: 'Rajdhani', sans-serif;
+        overflow-x: hidden;
       }
+
+      /* ── BG ── */
+      body::before {
+        content: '';
+        position: fixed; inset: 0; z-index: 0;
+        background:
+          radial-gradient(ellipse at 20% 20%, rgba(26,95,212,0.18) 0%, transparent 55%),
+          radial-gradient(ellipse at 80% 80%, rgba(56,189,248,0.07) 0%, transparent 50%),
+          linear-gradient(135deg, #020B18 0%, #040F20 100%);
+        pointer-events: none;
+      }
+      body::after {
+        content: '';
+        position: fixed; inset: 0; z-index: 0;
+        background-image:
+          linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+        background-size: 40px 40px;
+        pointer-events: none;
+      }
+
+      /* ── PARTICLES ── */
+      .particles { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
+      .p { position:absolute; border-radius:50%; animation:floatUp linear infinite; opacity:0; }
+      @keyframes floatUp {
+        0%   { transform:translateY(100vh) scale(0); opacity:0; }
+        10%  { opacity:0.4; }
+        90%  { opacity:0.15; }
+        100% { transform:translateY(-10vh) scale(1.2); opacity:0; }
+      }
+
+      /* ── PAGE WRAP ── */
+      .page-wrap {
+        position: relative; z-index: 1;
+        min-height: 100vh;
+        display: flex; flex-direction: column;
+        animation: fadeUp .5s ease both;
+      }
+      @keyframes fadeUp {
+        from { opacity:0; transform:translateY(18px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+
+      /* ── HEADER ── */
+      header {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 14px 16px;
+        background: rgba(2,11,24,0.88);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(59,130,246,0.14);
+        position: sticky; top: 0; z-index: 20;
+        animation: fadeDown .5s ease both;
+      }
+      @keyframes fadeDown {
+        from { opacity:0; transform:translateY(-14px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+      .header-btn {
+        width: 38px; height: 38px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--white-ghost); background: rgba(59,130,246,0.08);
+        border: 1px solid rgba(59,130,246,0.15);
+        cursor: pointer; transition: all .3s;
+        text-decoration: none; outline: none;
+      }
+      .header-btn:hover {
+        color: var(--white-pure);
+        background: rgba(59,130,246,0.16);
+        border-color: var(--blue-400);
+      }
+      .header-btn .material-symbols-outlined { font-size: 20px; }
+      header h1 {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.05rem; letter-spacing: .14em;
+        color: var(--white-pure); flex: 1; text-align: center;
+      }
+
+      /* ── MAIN ── */
+      .main-content {
+        flex: 1;
+        padding: 20px 16px 110px;
+        display: flex; flex-direction: column; gap: 14px;
+      }
+
+      /* ── CARD ── */
+      .iq-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        backdrop-filter: blur(20px);
+        padding: 20px;
+        position: relative; overflow: hidden;
+      }
+      .iq-card::before {
+        content: ''; position: absolute;
+        top: 0; left: 0; right: 0; height: 2px;
+        background: linear-gradient(90deg, var(--blue-500), var(--accent-sky));
+      }
+
+      .card-title {
+        font-family: 'Oswald', sans-serif;
+        font-size: .95rem; letter-spacing: .12em; text-transform: uppercase;
+        color: var(--white-pure); margin-bottom: 14px;
+      }
+
+      /* ── MODE GRID ── */
+      .mode-grid {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+      }
+
+      /* ── BUTTONS ── */
+      .btn-primary {
+        display: flex; align-items: center; justify-content: center; gap: 7px;
+        padding: 13px 18px; border-radius: 12px;
+        background: linear-gradient(135deg, var(--blue-500), var(--blue-600));
+        color: #fff; border: none; cursor: pointer;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .92rem; font-weight: 700; letter-spacing: .1em;
+        text-transform: uppercase;
+        box-shadow: 0 0 16px rgba(26,95,212,0.4);
+        transition: transform .2s, box-shadow .3s;
+        width: 100%;
+      }
+      .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 0 26px rgba(59,130,246,0.55); }
+      .btn-primary:active { transform: scale(.97); }
+      .btn-primary .material-symbols-outlined { font-size: 18px; }
+
+      .btn-secondary {
+        display: flex; align-items: center; justify-content: center; gap: 7px;
+        padding: 12px 18px; border-radius: 12px;
+        background: rgba(59,130,246,0.08);
+        border: 1px solid rgba(59,130,246,0.22);
+        color: var(--white-ghost); cursor: pointer;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .92rem; font-weight: 700; letter-spacing: .1em;
+        text-transform: uppercase;
+        transition: all .25s;
+        width: 100%;
+      }
+      .btn-secondary:hover {
+        background: rgba(59,130,246,0.16);
+        border-color: var(--blue-400);
+        color: var(--white-pure);
+      }
+      .btn-secondary .material-symbols-outlined { font-size: 18px; }
+
+      .btn-stop {
+        flex: 1; padding: 12px 16px; border-radius: 12px;
+        background: rgba(239,68,68,0.12);
+        border: 1px solid rgba(239,68,68,0.3);
+        color: #f87171; cursor: pointer;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .9rem; font-weight: 700; letter-spacing: .1em;
+        text-transform: uppercase;
+        transition: background .25s;
+      }
+      .btn-stop:hover { background: rgba(239,68,68,0.22); border-color: #f87171; color: #fff; }
+
+      /* ── UPLOAD SECTION ── */
+      .upload-hint {
+        font-size: .75rem; font-weight: 600;
+        color: var(--white-ghost); letter-spacing: .06em;
+        text-align: center; margin-top: 6px;
+      }
+      #uploadFileName {
+        font-size: .85rem; font-weight: 600;
+        color: var(--blue-300); text-align: center;
+        letter-spacing: .04em;
+      }
+      #uploadError {
+        font-size: .82rem; font-weight: 600;
+        color: #f87171; text-align: center;
+        letter-spacing: .04em;
+      }
+
+      /* ── VIDEO PREVIEW AREA ── */
+      #uploadPreviewArea {
+        border-radius: 16px; overflow: hidden;
+        border: 1px solid var(--border);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      }
+      .video-wrap {
+        position: relative; width: 100%;
+        aspect-ratio: 3/4; max-height: 70vh;
+        background: rgba(6,21,39,0.9);
+      }
+      #uploadedVideoPreview {
+        position: absolute; top: 0; left: 0;
+        width: 100%; height: 100%;
+        object-fit: cover; background: black;
+      }
+      #overlayCanvas {
+        position: absolute; top: 0; left: 0;
+        width: 100%; height: 100%; pointer-events: none;
+      }
+
+      /* ── UPLOAD CONTROLS ROW ── */
+      #uploadControls {
+        display: flex; gap: 12px;
+      }
+      #startUploadBtn {
+        flex: 1; padding: 13px 16px; border-radius: 12px;
+        background: linear-gradient(135deg, var(--blue-500), var(--blue-600));
+        color: #fff; border: none; cursor: pointer;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .9rem; font-weight: 700; letter-spacing: .1em;
+        text-transform: uppercase;
+        box-shadow: 0 0 14px rgba(26,95,212,0.4);
+        transition: transform .2s, box-shadow .3s;
+      }
+      #startUploadBtn:hover { transform: translateY(-1px); box-shadow: 0 0 22px rgba(59,130,246,0.55); }
+
+      /* ── STATS HUD ── */
+      #statsHUD {
+        display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+      }
+      .stat-box {
+        background: rgba(59,130,246,0.08);
+        border: 1px solid rgba(59,130,246,0.18);
+        border-radius: 14px; padding: 14px 10px;
+        text-align: center;
+        transition: border-color .3s;
+      }
+      .stat-box:hover { border-color: rgba(59,130,246,0.32); }
+      .stat-label {
+        font-size: .68rem; font-weight: 700;
+        letter-spacing: .14em; text-transform: uppercase;
+        color: var(--white-ghost); margin-bottom: 5px;
+      }
+      .stat-value {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.7rem; font-weight: 700;
+        color: var(--white-pure); line-height: 1;
+      }
+      .stat-value.sm { font-size: 1.3rem; }
+
+      /* ── HIDDEN ── */
+      .hidden { display: none !important; }
     </style>
   </head>
-  <body data-page="assess-situps" class="font-display text-white min-h-screen">
-    <div class="relative min-h-screen flex flex-col">
-      <!-- Header: Back + Title + Notifications -->
-      <header class="p-4 flex items-center justify-between">
-        <button
-          id="backBtn"
-          onclick="history.back()"
-          class="text-gray-300 hover:text-white transition-colors"
-          aria-label="Back"
-        >
+
+  <body data-page="assess-situps">
+    <div class="particles" id="particles"></div>
+
+    <div class="page-wrap">
+
+      <!-- HEADER -->
+      <header>
+        <button id="backBtn" class="header-btn" onclick="history.back()" aria-label="Back">
           <span class="material-symbols-outlined">arrow_back</span>
         </button>
-        <h1 class="text-lg font-bold text-white flex-1 text-center">
-          Sit-Up Assessment
-        </h1>
-        <a
-          href="notifications.html"
-          class="relative flex items-center justify-center text-gray-300 hover:text-white transition-colors"
-          aria-label="Notifications"
-          data-notify-bell
-        >
+        <h1>Sit-Up Assessment</h1>
+        <a href="notifications.html" class="header-btn" aria-label="Notifications" data-notify-bell>
           <span class="material-symbols-outlined">notifications</span>
         </a>
       </header>
 
-      <!-- Main Content -->
-      <div class="flex-grow px-4 pb-28">
-        <!-- Mode Selection -->
-        <section
-          id="modeSection"
-          class="glassmorphic rounded-xl p-5 border border-white/10 mb-4"
-        >
-          <h2 class="text-base font-semibold mb-3 text-white">Select Mode</h2>
-          <div class="grid grid-cols-2 gap-3">
-            <button
-              id="liveCameraBtn"
-              class="px-4 py-3 rounded-lg bg-primary text-white font-semibold hover:bg-primary/90 transition"
-              type="button"
-            >
-              <span class="flex items-center justify-center gap-2">
-                <span class="material-symbols-outlined text-lg">videocam</span>
-                Live Camera
-              </span>
+      <!-- MAIN -->
+      <div class="main-content">
+
+        <!-- MODE SELECTION -->
+        <section id="modeSection" class="iq-card">
+          <div class="card-title">Select Mode</div>
+          <div class="mode-grid">
+            <button id="liveCameraBtn" class="btn-primary" type="button">
+              <span class="material-symbols-outlined">videocam</span>
+              Live Camera
             </button>
-            <button
-              id="uploadVideoBtn"
-              class="px-4 py-3 rounded-lg bg-white/10 border border-white/10 hover:bg-white/15 transition text-white font-semibold"
-              type="button"
-            >
-              <span class="flex items-center justify-center gap-2">
-                <span class="material-symbols-outlined text-lg">upload</span>
-                Upload Video
-              </span>
+            <button id="uploadVideoBtn" class="btn-secondary" type="button">
+              <span class="material-symbols-outlined">upload</span>
+              Upload Video
             </button>
           </div>
         </section>
 
-        <!-- Upload Section -->
-        <section
-          id="uploadSection"
-          class="glassmorphic rounded-xl p-5 border border-white/10 mb-4 hidden"
-        >
-          <h2 class="text-base font-semibold mb-3 text-white">Upload Video</h2>
-          <div class="space-y-3">
-            <input
-              type="file"
-              id="videoFileInput"
-              accept="video/mp4,video/webm"
-              class="hidden"
-            />
-            <button
-              id="chooseVideoBtn"
-              class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/10 hover:bg-white/15 transition text-white font-semibold flex items-center justify-center gap-2"
-            >
-              <span class="material-symbols-outlined">folder_open</span>
-              Choose Video File
-            </button>
-            <p class="text-xs text-white/60 text-center">
-              MP4 or WebM • Max 20MB
-            </p>
-            <p
-              id="uploadFileName"
-              class="text-sm text-white/80 text-center hidden"
-            ></p>
-            <p
-              id="uploadError"
-              class="text-sm text-rose-400 text-center hidden"
-              aria-live="assertive"
-            ></p>
-          </div>
+        <!-- UPLOAD SECTION -->
+        <section id="uploadSection" class="iq-card hidden">
+          <div class="card-title">Upload Video</div>
+          <input type="file" id="videoFileInput" accept="video/mp4,video/webm" class="hidden" />
+          <button id="chooseVideoBtn" class="btn-secondary" type="button">
+            <span class="material-symbols-outlined">folder_open</span>
+            Choose Video File
+          </button>
+          <p class="upload-hint">MP4 or WebM &bull; Max 20MB</p>
+          <p id="uploadFileName" class="hidden" style="margin-top:8px"></p>
+          <p id="uploadError" class="hidden" style="margin-top:8px" aria-live="assertive"></p>
         </section>
 
-        <!-- Video Preview (Upload Mode) -->
-        <div id="uploadPreviewArea" class="hidden mb-4">
-          <div
-            style="
-              position: relative;
-              width: 100%;
-              aspect-ratio: 3/4;
-              max-height: 70vh;
-              background: #1f2937;
-              border-radius: 0.75rem;
-              overflow: hidden;
-            "
-          >
-            <video
-              id="uploadedVideoPreview"
-              playsinline
-              muted
-              style="
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                background: black;
-              "
-            ></video>
-            <canvas
-              id="overlayCanvas"
-              style="
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                pointer-events: none;
-              "
-            ></canvas>
+        <!-- VIDEO PREVIEW -->
+        <div id="uploadPreviewArea" class="hidden">
+          <div class="video-wrap">
+            <video id="uploadedVideoPreview" playsinline muted></video>
+            <canvas id="overlayCanvas"></canvas>
           </div>
         </div>
 
-        <!-- Upload Controls -->
-        <div id="uploadControls" class="flex gap-3 mb-4 hidden">
-          <button
-            id="startUploadBtn"
-            class="flex-1 py-3 px-4 rounded-lg bg-primary text-white text-sm font-bold hover:bg-primary/90 transition"
-            type="button"
-          >
-            Start Analysis
-          </button>
-          <button
-            id="stopUploadBtn"
-            class="flex-1 py-3 px-4 rounded-lg bg-amber-600 text-black text-sm font-bold hover:bg-amber-500 transition hidden"
-            type="button"
-          >
-            Stop
-          </button>
+        <!-- UPLOAD CONTROLS -->
+        <div id="uploadControls" class="hidden">
+          <button id="startUploadBtn" type="button">Start Analysis</button>
+          <button id="stopUploadBtn" class="btn-stop hidden" type="button">Stop</button>
         </div>
 
-        <!-- Stats HUD (Upload Mode) -->
-        <div id="statsHUD" class="grid grid-cols-3 gap-3 mb-4 hidden">
-          <div
-            class="bg-primary/10 dark:bg-primary/20 rounded-xl p-4 text-center border border-white/10"
-          >
-            <p class="text-sm text-white/70">Reps</p>
-            <p id="repCount" class="text-2xl font-bold text-white">0</p>
+        <!-- STATS HUD -->
+        <div id="statsHUD" class="hidden">
+          <div class="stat-box">
+            <div class="stat-label">Reps</div>
+            <div id="repCount" class="stat-value">0</div>
           </div>
-          <div
-            class="bg-primary/10 dark:bg-primary/20 rounded-xl p-4 text-center border border-white/10"
-          >
-            <p class="text-sm text-white/70">Timer</p>
-            <p id="timerText" class="text-2xl font-bold text-white">00:00</p>
+          <div class="stat-box">
+            <div class="stat-label">Timer</div>
+            <div id="timerText" class="stat-value">00:00</div>
           </div>
-          <div
-            class="bg-primary/10 dark:bg-primary/20 rounded-xl p-4 text-center border border-white/10"
-          >
-            <p class="text-sm text-white/70">Confidence</p>
-            <p id="confidenceText" class="text-xl font-bold text-white">—</p>
+          <div class="stat-box">
+            <div class="stat-label">Confidence</div>
+            <div id="confidenceText" class="stat-value sm">—</div>
           </div>
         </div>
+
       </div>
-
-      <!-- THE OLD SUMMARY MODAL HAS BEEN DELETED FROM HERE -->
     </div>
 
-    <!-- Bell dot helper -->
+    <!-- SCRIPTS — all untouched -->
     <script type="module" src="js/notify-dot.js"></script>
-
-    <!-- Controller -->
     <script type="module" src="js/assessments/situps.js"></script>
-
-    <!-- Shared bottom nav (Player) -->
     <script type="module" src="js/nav.js"></script>
+
+    <script>
+      // Particles
+      const pc = document.getElementById('particles');
+      const cols = ['#3B82F6','#6EA8FE','#38BDF8','#ffffff'];
+      for (let i = 0; i < 18; i++) {
+        const p = document.createElement('div');
+        p.className = 'p';
+        const s = Math.random() * 3 + 1.5;
+        p.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${9+Math.random()*12}s;animation-delay:${Math.random()*10}s;`;
+        pc.appendChild(p);
+      }
+    </script>
   </body>
 </html>

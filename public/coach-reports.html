@@ -1,198 +1,353 @@
 <!DOCTYPE html>
-<html class="dark" lang="en">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Coach Reports</title>
+    <title>Coach Reports - SportIQ</title>
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
 
-    <!-- Tailwind tokens + CDN -->
+    <!-- Existing scripts — untouched -->
     <script src="js/tailwind-config.js"></script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap"
-      rel="stylesheet"
-    />
-    <!-- Material Symbols (for back arrow + notifications icon) -->
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
-    />
-
-    <!-- Global CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
     <link rel="stylesheet" href="css/global.css" />
 
     <style>
-      .glassmorphic {
-        background-color: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+      *, *::before, *::after { box-sizing: border-box; }
+
+      :root {
+        --blue-950: #020B18;
+        --blue-900: #061527;
+        --blue-800: #0A2040;
+        --blue-600: #1146A0;
+        --blue-500: #1A5FD4;
+        --blue-400: #3B82F6;
+        --blue-300: #6EA8FE;
+        --white-pure: #FFFFFF;
+        --white-ghost: #A8BBDA;
+        --accent-sky: #38BDF8;
+        --card-bg: rgba(6,21,39,0.75);
+        --border: rgba(59,130,246,0.20);
       }
-      .dark .glassmorphic {
-        background-color: rgba(15, 19, 35, 0.5);
-        border: 1px solid rgba(255, 255, 255, 0.05);
+
+      html, body {
+        min-height: 100vh;
+        background: var(--blue-950);
+        color: var(--white-pure);
+        font-family: 'Rajdhani', sans-serif;
+        overflow-x: hidden;
       }
+
+      /* ── BG ── */
+      body::before {
+        content: '';
+        position: fixed; inset: 0; z-index: 0;
+        background:
+          radial-gradient(ellipse at 20% 20%, rgba(26,95,212,0.18) 0%, transparent 55%),
+          radial-gradient(ellipse at 80% 80%, rgba(56,189,248,0.07) 0%, transparent 50%),
+          linear-gradient(135deg, #020B18 0%, #040F20 100%);
+        pointer-events: none;
+      }
+      body::after {
+        content: '';
+        position: fixed; inset: 0; z-index: 0;
+        background-image:
+          linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+        background-size: 40px 40px;
+        pointer-events: none;
+      }
+
+      /* ── PARTICLES ── */
+      .particles { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
+      .p { position:absolute; border-radius:50%; animation:floatUp linear infinite; opacity:0; }
+      @keyframes floatUp {
+        0%   { transform:translateY(100vh) scale(0); opacity:0; }
+        10%  { opacity:0.4; }
+        90%  { opacity:0.15; }
+        100% { transform:translateY(-10vh) scale(1.2); opacity:0; }
+      }
+
+      /* ── PAGE WRAP ── */
+      .page-wrap {
+        position: relative; z-index: 1;
+        display: flex; flex-direction: column;
+        min-height: 100vh;
+        animation: fadeUp .5s ease both;
+      }
+      @keyframes fadeUp {
+        from { opacity:0; transform:translateY(18px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+
+      /* ── HEADER ── */
+      header {
+        position: sticky; top: 0; z-index: 20;
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 13px 16px;
+        background: rgba(2,11,24,0.92);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(59,130,246,0.14);
+        animation: fadeDown .5s ease both;
+      }
+      @keyframes fadeDown {
+        from { opacity:0; transform:translateY(-14px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+      .header-btn {
+        width: 40px; height: 40px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--white-ghost); background: rgba(59,130,246,0.08);
+        border: 1px solid rgba(59,130,246,0.15);
+        cursor: pointer; transition: all .3s;
+        text-decoration: none; outline: none;
+      }
+      .header-btn:hover {
+        color: var(--white-pure);
+        background: rgba(59,130,246,0.16);
+        border-color: var(--blue-400);
+      }
+      .header-btn .material-symbols-outlined { font-size: 20px; }
+      #pageTitle {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.1rem; letter-spacing: .14em;
+        color: var(--white-pure); text-align: center; flex: 1;
+      }
+      .notif-wrap { position: relative; }
+      .notif-dot {
+        position: absolute; top: 1px; right: 1px;
+        width: 8px; height: 8px; background: #ef4444;
+        border-radius: 50%; border: 1.5px solid var(--blue-950);
+      }
+
+      /* ── TABS STRIP ── */
+      .strip-wrap {
+        position: sticky; z-index: 10;
+        padding: 10px 16px 0;
+        background: rgba(2,11,24,0.80);
+        backdrop-filter: blur(12px);
+      }
+      .strip-wrap:first-of-type { top: 57px; }
+      .strip-wrap:last-of-type  { top: 106px; padding-bottom: 10px; }
+
+      .strip {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 8px 12px;
+        display: flex; align-items: center; gap: 6px;
+        overflow-x: auto; scrollbar-width: none;
+      }
+      .strip::-webkit-scrollbar { display: none; }
+
+      /* ── CHIPS ── */
       .chip {
-        transition: all 0.2s ease;
+        display: inline-flex; align-items: center;
+        padding: 6px 14px; border-radius: 20px;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .78rem; font-weight: 700;
+        letter-spacing: .1em; text-transform: uppercase;
+        white-space: nowrap; text-decoration: none;
+        cursor: pointer; transition: all .25s;
+        background: transparent;
+        color: var(--white-ghost);
+        border: 1px solid transparent;
       }
+      .chip:hover {
+        background: rgba(59,130,246,0.12);
+        color: var(--white-pure);
+        border-color: rgba(59,130,246,0.25);
+      }
+      .chip.active, .chip[aria-current="true"] {
+        background: linear-gradient(135deg, var(--blue-500), var(--blue-600));
+        color: #fff;
+        border-color: transparent;
+        box-shadow: 0 0 12px rgba(26,95,212,0.4);
+      }
+
+      /* range buttons */
+      button[data-range] {
+        display: inline-flex; align-items: center;
+        padding: 6px 12px; border-radius: 20px;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .78rem; font-weight: 700;
+        letter-spacing: .1em; text-transform: uppercase;
+        white-space: nowrap; cursor: pointer;
+        transition: all .25s;
+        background: transparent;
+        color: var(--white-ghost);
+        border: 1px solid transparent;
+      }
+      button[data-range]:hover {
+        background: rgba(59,130,246,0.12);
+        color: var(--white-pure);
+        border-color: rgba(59,130,246,0.25);
+      }
+      button[data-range].active {
+        background: rgba(59,130,246,0.18);
+        color: var(--blue-300);
+        border-color: rgba(59,130,246,0.35);
+      }
+
+      /* strip label */
+      .strip-label {
+        font-size: .7rem; font-weight: 700;
+        letter-spacing: .14em; text-transform: uppercase;
+        color: var(--white-ghost); padding: 0 6px;
+        flex-shrink: 0;
+      }
+      .strip-meta {
+        margin-left: auto;
+        font-size: .68rem; color: rgba(168,187,218,0.5);
+        white-space: nowrap; padding-right: 4px;
+        flex-shrink: 0;
+      }
+
+      /* ── VIEW FILTERS (dynamic) ── */
+      #viewFilters {
+        display: flex; align-items: center; gap: 8px;
+      }
+
+      /* ── MAIN ── */
+      main {
+        flex: 1; overflow-y: auto;
+        padding: 16px 16px 110px;
+      }
+      #viewContainer {
+        max-width: 900px; margin: 0 auto;
+        display: flex; flex-direction: column; gap: 14px;
+      }
+
+      /* loading state */
+      #loading {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 16px; padding: 28px;
+        text-align: center;
+        font-size: .9rem; font-weight: 600;
+        color: var(--white-ghost); letter-spacing: .08em;
+        animation: pulse 1.4s ease infinite;
+      }
+      @keyframes pulse { 0%,100%{opacity:.5} 50%{opacity:1} }
+
+      /* JS-injected content cards */
+      #viewContainer .glassmorphic,
+      #viewContainer > div:not(#loading) {
+        background: var(--card-bg) !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 16px !important;
+        backdrop-filter: blur(16px) !important;
+      }
+
+      /* tables injected by coach-reports.js */
+      table { width: 100%; border-collapse: collapse; }
+      thead th {
+        font-size: .7rem; font-weight: 700;
+        letter-spacing: .14em; text-transform: uppercase;
+        color: var(--blue-300); padding: 10px 12px; text-align: left;
+        border-bottom: 1px solid rgba(59,130,246,0.14);
+      }
+      tbody td {
+        padding: 11px 12px; font-size: .88rem; font-weight: 500;
+        color: rgba(255,255,255,0.82);
+        border-bottom: 1px solid rgba(59,130,246,0.07);
+      }
+      tbody tr:last-child td { border-bottom: none; }
+      tbody tr:hover td { background: rgba(59,130,246,0.05); }
     </style>
   </head>
 
-  <body
-    class="font-display bg-background-light dark:bg-background-dark text-stone-100 min-h-screen"
-  >
-    <div class="relative flex min-h-screen w-full flex-col">
-      <!-- Header -->
-      <header
-        class="sticky top-0 z-20 flex items-center justify-between px-4 py-3 glassmorphic"
-      >
-        <button
-          id="backBtn"
-          class="flex h-10 w-10 items-center justify-center rounded-full text-white/80 hover:text-white hover:bg-white/10 transition"
-          aria-label="Back"
-          title="Back"
-        >
+  <body>
+    <div class="particles" id="particles"></div>
+
+    <div class="page-wrap">
+
+      <!-- HEADER -->
+      <header>
+        <button id="backBtn" class="header-btn" aria-label="Back" title="Back">
           <span class="material-symbols-outlined">arrow_back</span>
         </button>
-        <h1 id="pageTitle" class="text-lg font-bold text-white">Reports</h1>
-        <a
-          href="notifications.html"
-          class="relative flex size-10 items-center justify-center text-white/70 hover:text-white hover:bg-white/10 rounded-full transition"
-          aria-label="Notifications"
-          data-notify-bell
-        >
+        <h1 id="pageTitle">Reports</h1>
+        <a href="notifications.html" class="header-btn notif-wrap" aria-label="Notifications" data-notify-bell>
           <span class="material-symbols-outlined">notifications</span>
+          <span class="notif-dot"></span>
         </a>
       </header>
 
-      <!-- Breadcrumb / tabs -->
-      <div class="sticky top-14 z-10 px-4 pt-2">
-        <div
-          class="glassmorphic rounded-xl px-3 py-2 flex items-center gap-2 overflow-x-auto"
-          role="toolbar"
-          aria-label="Report views"
-        >
-          <a
-            href="coach-reports.html?view=attendance"
-            class="chip rounded-full px-3 py-1 text-xs font-medium hover:bg-white/10"
-            data-chip="attendance"
-            >Attendance</a
-          >
-          <a
-            href="coach-reports.html?view=achievements"
-            class="chip rounded-full px-3 py-1 text-xs font-medium hover:bg-white/10"
-            data-chip="achievements"
-            >Achievements</a
-          >
-          <a
-            href="coach-reports.html?view=players"
-            class="chip rounded-full px-3 py-1 text-xs font-medium hover:bg-white/10"
-            data-chip="players"
-            >Players</a
-          >
-          <a
-            href="coach-reports.html?view=schedules"
-            class="chip rounded-full px-3 py-1 text-xs font-medium hover:bg-white/10"
-            data-chip="schedules"
-            >Schedules</a
-          >
-          <a
-            href="coach-reports.html?view=tournaments"
-            class="chip rounded-full px-3 py-1 text-xs font-medium hover:bg-white/10"
-            data-chip="tournaments"
-            >Tournaments</a
-          >
-          <span class="ml-auto text-[11px] text-white/50 pr-1"
-            >(detail views)</span
-          >
+      <!-- TABS STRIP -->
+      <div class="strip-wrap">
+        <div class="strip" role="toolbar" aria-label="Report views">
+          <a href="coach-reports.html?view=attendance"  class="chip" data-chip="attendance">Attendance</a>
+          <a href="coach-reports.html?view=achievements" class="chip" data-chip="achievements">Achievements</a>
+          <a href="coach-reports.html?view=players"     class="chip" data-chip="players">Players</a>
+          <a href="coach-reports.html?view=schedules"   class="chip" data-chip="schedules">Schedules</a>
+          <a href="coach-reports.html?view=tournaments" class="chip" data-chip="tournaments">Tournaments</a>
+          <span class="strip-meta">(detail views)</span>
         </div>
       </div>
-      <!-- Filters: common range + per-view controls -->
-      <div class="px-4 pt-2">
-        <div
-          id="filterBar"
-          class="glassmorphic rounded-xl px-3 py-2 flex items-center gap-2 overflow-x-auto"
-        >
-          <span class="text-xs text-white/60 px-2">Range</span>
-          <button
-            class="chip rounded-full px-3 py-1 text-xs font-medium text-white/80 hover:text-white hover:bg-white/10 transition"
-            data-range="7d"
-          >
-            7D
-          </button>
-          <button
-            class="chip rounded-full px-3 py-1 text-xs font-medium text-white/80 hover:text-white hover:bg-white/10 transition"
-            data-range="30d"
-          >
-            30D
-          </button>
-          <button
-            class="chip rounded-full px-3 py-1 text-xs font-medium text-white/80 hover:text-white hover:bg-white/10 transition"
-            data-range="90d"
-          >
-            90D
-          </button>
 
-          <span class="ml-3 text-[11px] text-white/50">Filters</span>
-          <!-- Per-view dynamic filter controls will be injected here -->
-          <div id="viewFilters" class="flex items-center gap-2"></div>
+      <!-- FILTER STRIP -->
+      <div class="strip-wrap">
+        <div id="filterBar" class="strip">
+          <span class="strip-label">Range</span>
+          <button class="chip" data-range="7d">7D</button>
+          <button class="chip" data-range="30d">30D</button>
+          <button class="chip" data-range="90d">90D</button>
+          <span class="strip-label" style="margin-left:10px">Filters</span>
+          <div id="viewFilters"></div>
         </div>
       </div>
-      <!-- Main -->
-      <main class="flex-1 overflow-y-auto p-4 pb-28" role="main">
-        <div id="viewContainer" class="max-w-5xl mx-auto space-y-4">
-          <!-- Dynamic content injected here -->
-          <div
-            id="loading"
-            class="glassmorphic rounded-xl p-6 text-center text-white/70"
-          >
-            Loading…
-          </div>
+
+      <!-- MAIN -->
+      <main role="main">
+        <div id="viewContainer">
+          <div id="loading">Loading…</div>
         </div>
       </main>
+
     </div>
 
-    <!-- Bell dot helper -->
+    <!-- SCRIPTS — all untouched -->
     <script type="module" src="js/notify-dot.js"></script>
-    <!-- Bottom navigation injection -->
     <script type="module" src="js/nav.js"></script>
     <script type="module">
       (async () => {
         try {
           const res = await fetch("/api/me", { credentials: "same-origin" });
           if (!res.ok) {
-            const returnTo = encodeURIComponent(
-              location.pathname + location.search
-            );
+            const returnTo = encodeURIComponent(location.pathname + location.search);
             location.href = `login.html?returnTo=${returnTo}`;
           }
         } catch {
-          const returnTo = encodeURIComponent(
-            location.pathname + location.search
-          );
+          const returnTo = encodeURIComponent(location.pathname + location.search);
           location.href = `login.html?returnTo=${returnTo}`;
         }
       })();
     </script>
-    <!-- Page controller -->
     <script type="module" src="js/modules/coach-reports.js"></script>
 
     <script>
-      // Back button behavior
-      document
-        .getElementById("backBtn")
-        ?.addEventListener("click", function () {
-          if (window.history.length > 1 && document.referrer) {
-            window.history.back();
-          } else {
-            window.location.href = "reports.html";
-          }
-        });
+      document.getElementById("backBtn")?.addEventListener("click", function () {
+        if (window.history.length > 1 && document.referrer) {
+          window.history.back();
+        } else {
+          window.location.href = "reports.html";
+        }
+      });
+
+      // Particles
+      const pc = document.getElementById('particles');
+      const cols = ['#3B82F6','#6EA8FE','#38BDF8','#ffffff'];
+      for (let i = 0; i < 18; i++) {
+        const p = document.createElement('div');
+        p.className = 'p';
+        const s = Math.random() * 3 + 1.5;
+        p.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${9+Math.random()*12}s;animation-delay:${Math.random()*10}s;`;
+        pc.appendChild(p);
+      }
     </script>
   </body>
 </html>

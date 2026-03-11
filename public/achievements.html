@@ -1,164 +1,373 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Achievements - SportIQ</title>
-
-    <!-- Tailwind tokens + CDN -->
-    <script src="js/tailwind-config.js"></script>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
-    <!-- Global + page CSS (achievements.css kept as requested) -->
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
     <link rel="stylesheet" href="css/global.css" />
     <link rel="stylesheet" href="css/achievements.css" />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
-    />
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      :root {
+        --blue-950: #020B18;
+        --blue-900: #061527;
+        --blue-800: #0A2040;
+        --blue-700: #0D3060;
+        --blue-600: #1146A0;
+        --blue-500: #1A5FD4;
+        --blue-400: #3B82F6;
+        --blue-300: #6EA8FE;
+        --blue-200: #A8CCFF;
+        --white-pure: #FFFFFF;
+        --white-ghost: #A8BBDA;
+        --accent-sky: #38BDF8;
+        --card-bg: rgba(6,21,39,0.75);
+        --border: rgba(59,130,246,0.20);
+      }
+
+      html, body {
+        min-height: 100vh;
+        background: var(--blue-950);
+        color: var(--white-pure);
+        font-family: 'Rajdhani', sans-serif;
+        overflow-x: hidden;
+      }
+
+      /* ── BG ── */
+      body::before {
+        content: '';
+        position: fixed; inset: 0; z-index: 0;
+        background:
+          radial-gradient(ellipse at 25% 30%, rgba(26,95,212,0.18) 0%, transparent 55%),
+          radial-gradient(ellipse at 75% 70%, rgba(56,189,248,0.07) 0%, transparent 50%),
+          linear-gradient(135deg, #020B18 0%, #040F20 100%);
+        pointer-events: none;
+      }
+      body::after {
+        content: '';
+        position: fixed; inset: 0; z-index: 0;
+        background-image:
+          linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+        background-size: 40px 40px;
+        pointer-events: none;
+      }
+
+      /* ── PARTICLES ── */
+      .particles { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
+      .p { position:absolute; border-radius:50%; animation:floatUp linear infinite; opacity:0; }
+      @keyframes floatUp {
+        0%   { transform:translateY(100vh) scale(0); opacity:0; }
+        10%  { opacity:0.4; }
+        90%  { opacity:0.15; }
+        100% { transform:translateY(-10vh) scale(1.2); opacity:0; }
+      }
+
+      /* ── WRAPPER ── */
+      .page-wrap {
+        position: relative; z-index: 1;
+        display: flex; flex-direction: column;
+        min-height: 100vh;
+        max-width: 480px; margin: 0 auto;
+        padding-bottom: 80px;
+      }
+
+      /* ── HEADER ── */
+      header {
+        position: sticky; top: 0; z-index: 20;
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 14px 16px;
+        background: rgba(2,11,24,0.88);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(59,130,246,0.12);
+        animation: fadeDown .5s ease both;
+      }
+      @keyframes fadeDown {
+        from { opacity:0; transform:translateY(-14px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+      .header-btn {
+        width: 38px; height: 38px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--white-ghost);
+        text-decoration: none;
+        background: rgba(59,130,246,0.08);
+        border: 1px solid rgba(59,130,246,0.15);
+        transition: color .3s, background .3s, border-color .3s;
+      }
+      .header-btn:hover {
+        color: var(--white-pure);
+        background: rgba(59,130,246,0.16);
+        border-color: var(--blue-400);
+      }
+      .header-btn .material-symbols-outlined { font-size: 20px; }
+      header h1 {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.1rem; letter-spacing: .14em;
+        color: var(--white-pure);
+      }
+      .notif-wrap { position: relative; }
+      .notif-dot {
+        position: absolute; top: 2px; right: 2px;
+        width: 8px; height: 8px; background: #ef4444;
+        border-radius: 50%; border: 1.5px solid var(--blue-950);
+      }
+
+      /* ── MAIN ── */
+      main {
+        flex: 1;
+        display: flex; flex-direction: column; gap: 16px;
+        padding: 20px 16px;
+        animation: fadeUp .5s ease .1s both;
+      }
+      @keyframes fadeUp {
+        from { opacity:0; transform:translateY(18px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+
+      /* ── ACHIEVEMENT CARD ── */
+      .achieve-card {
+        position: relative;
+        overflow: hidden;
+        border-radius: 20px;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        backdrop-filter: blur(20px);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        transition: border-color .3s, box-shadow .3s, transform .25s;
+      }
+      .achieve-card:hover {
+        border-color: rgba(59,130,246,0.4);
+        box-shadow: 0 12px 40px rgba(59,130,246,0.15);
+        transform: translateY(-2px);
+      }
+
+      /* top accent line */
+      .achieve-card::before {
+        content: ''; position: absolute;
+        top: 0; left: 0; right: 0; height: 2px;
+        background: linear-gradient(90deg, var(--blue-500), var(--accent-sky));
+        z-index: 1;
+      }
+
+      /* hover glow overlay */
+      .card-glow {
+        position: absolute; inset: 0;
+        background: rgba(59,130,246,0.06);
+        opacity: 0; transition: opacity .3s;
+        pointer-events: none;
+      }
+      .achieve-card:hover .card-glow { opacity: 1; }
+
+      /* image */
+      .card-img-wrap {
+        width: 100%;
+        aspect-ratio: 16/9;
+        overflow: hidden;
+        border-radius: 19px 19px 0 0;
+      }
+      .card-img-wrap img {
+        width: 100%; height: 100%; object-fit: cover;
+        transition: transform .4s ease;
+      }
+      .achieve-card:hover .card-img-wrap img { transform: scale(1.04); }
+
+      /* card body */
+      .card-body {
+        padding: 16px 18px 18px;
+        display: flex; align-items: flex-start;
+        justify-content: space-between; gap: 14px;
+      }
+      .card-text h2 {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.15rem; letter-spacing: .06em;
+        color: var(--white-pure); margin-bottom: 5px;
+      }
+      .card-text p {
+        font-size: .85rem; font-weight: 500;
+        color: var(--white-ghost); line-height: 1.5;
+      }
+
+      /* action button */
+      .card-btn {
+        flex-shrink: 0;
+        display: flex; align-items: center; gap: 6px;
+        height: 40px; padding: 0 18px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, var(--blue-500), var(--blue-600));
+        color: var(--white-pure);
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .88rem; font-weight: 700; letter-spacing: .1em;
+        text-decoration: none;
+        border: none; cursor: pointer;
+        box-shadow: 0 0 18px rgba(26,95,212,0.5);
+        transition: transform .2s, box-shadow .3s;
+        white-space: nowrap;
+      }
+      .card-btn:hover {
+        transform: translateY(-1px) scale(1.03);
+        box-shadow: 0 0 28px rgba(59,130,246,0.65);
+      }
+      .card-btn:active { transform: scale(0.97); }
+      .card-btn .material-symbols-outlined { font-size: 17px; }
+
+      /* ── BOTTOM NAV ── */
+      nav.bottomnav {
+        position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+        background: rgba(2,11,24,0.93);
+        backdrop-filter: blur(20px);
+        border-top: 1px solid rgba(59,130,246,0.12);
+        display: flex; align-items: center;
+        padding: 8px 0 10px;
+        max-width: 480px;
+        left: 50%; transform: translateX(-50%);
+        width: 100%;
+      }
+      .nav-item {
+        flex: 1; display: flex; flex-direction: column;
+        align-items: center; gap: 3px;
+        cursor: pointer; padding: 4px 0;
+        color: var(--white-ghost);
+        transition: color .3s;
+        border: none; background: none;
+        font-family: 'Rajdhani', sans-serif;
+        text-decoration: none;
+      }
+      .nav-item svg { width:22px; height:22px; stroke:currentColor; fill:none; stroke-width:1.8; }
+      .nav-item span { font-size:.68rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
+      .nav-item.active { color: var(--blue-400); }
+      .nav-item.active svg { filter: drop-shadow(0 0 6px rgba(59,130,246,0.7)); }
+      .nav-item:hover { color: var(--blue-300); }
+      a.nav-item, a.nav-item:visited { color: var(--white-ghost); text-decoration: none; }
+      a.nav-item.active, a.nav-item.active:visited { color: var(--blue-400); }
+    </style>
   </head>
 
-  <body
-    class="font-display bg-background-light dark:bg-background-dark text-stone-900 dark:text-stone-100 min-h-screen"
-    data-page="achievements.html"
-  >
-    <div class="relative flex min-h-screen w-full flex-col max-w-xl mx-auto">
-      <!-- Header: back (returns to last visited page), centered title, notifications bell with dot -->
-      <header
-        class="sticky top-0 z-20 flex items-center justify-between bg-background-light/80 px-4 py-3 backdrop-blur-sm dark:bg-background-dark/80"
-      >
-        <a
-          href="dashboard.html"
-          id="backBtn"
-          class="flex size-10 items-center justify-center rounded-full text-stone-900 dark:text-stone-100"
-          aria-label="Back"
-          title="Back"
-        >
-          <span class="material-symbols-outlined"> arrow_back </span>
+  <body data-page="achievements.html">
+    <div class="particles" id="particles"></div>
+
+    <div class="page-wrap">
+
+      <!-- HEADER -->
+      <header>
+        <a href="dashboard.html" id="backBtn" class="header-btn" aria-label="Back">
+          <span class="material-symbols-outlined">arrow_back</span>
         </a>
-        <h1 class="text-lg font-bold">Achievements</h1>
-        <a
-          href="notifications.html"
-          class="relative flex size-10 items-center justify-center text-stone-300 hover:text-white transition"
-          aria-label="Notifications"
-          data-notify-bell
-        >
-          <span class="material-symbols-outlined"> notifications </span>
+        <h1>Achievements</h1>
+        <a href="notifications.html" class="header-btn notif-wrap" aria-label="Notifications" data-notify-bell>
+          <span class="material-symbols-outlined">notifications</span>
+          <span class="notif-dot"></span>
         </a>
       </header>
 
-      <!-- Content -->
-      <main class="flex-1 space-y-6 p-4">
-        <!-- Upload Achievement card -->
-        <div
-          class="group relative overflow-hidden rounded-2xl bg-background-light/50 shadow-lg backdrop-blur-xl dark:bg-background-dark/50"
-        >
-          <div
-            class="absolute inset-0 bg-primary/20 opacity-0 transition-opacity group-hover:opacity-100"
-          ></div>
-          <div class="relative flex flex-col gap-4">
-            <div class="aspect-video w-full overflow-hidden rounded-t-2xl">
-              <img
-                alt="Achievement graphic with a person holding a trophy"
-                class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAslhK7mI1YJxryvV-kla6qyoNdzU9Z8MEcFYZyeoKKLDt2gaxCbPM5IL1sbyLfDNcLEyxHezhIpbjIBZpgmeXwTz-gK-RZ5Qu2NZ-6X2tPhssMD90ZHxP7l-absz3TY5jomzjxsgBrwg-M4-8ZcG_jreyUV3VILBNpjJej794cOvFqOfVRywpUZX_l0ijE3U6sKHYpbRfvvGE1rvM1t49rVGvv0OqqJJs7MVd1sOImpEGoBPAEn7-p-ymS9XnzXOZ-NwNeYYdyxh0"
-              />
-            </div>
+      <!-- MAIN CONTENT -->
+      <main>
 
-            <div class="flex flex-col gap-4 p-4 pt-0">
-              <div class="flex items-start justify-between gap-4">
-                <div class="flex flex-col gap-1">
-                  <h2 class="text-xl font-bold">Upload Achievement</h2>
-                  <p class="text-sm text-stone-400">
-                    Share your latest victories and milestones with the
-                    community.
-                  </p>
-                </div>
-                <a
-                  href="upload.html"
-                  class="flex h-10 shrink-0 items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-medium text-white shadow-[0_0_20px_rgba(96,122,251,0.55)] transition-transform active:scale-95"
-                  aria-label="Upload Achievement"
-                >
-                  <span class="material-symbols-outlined text-base">
-                    upload
-                  </span>
-                  <span>Upload</span>
-                </a>
-              </div>
+        <!-- Upload Achievement Card -->
+        <div class="achieve-card">
+          <div class="card-glow"></div>
+          <div class="card-img-wrap">
+            <img
+              alt="Achievement graphic with a person holding a trophy"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuAslhK7mI1YJxryvV-kla6qyoNdzU9Z8MEcFYZyeoKKLDt2gaxCbPM5IL1sbyLfDNcLEyxHezhIpbjIBZpgmeXwTz-gK-RZ5Qu2NZ-6X2tPhssMD90ZHxP7l-absz3TY5jomzjxsgBrwg-M4-8ZcG_jreyUV3VILBNpjJej794cOvFqOfVRywpUZX_l0ijE3U6sKHYpbRfvvGE1rvM1t49rVGvv0OqqJJs7MVd1sOImpEGoBPAEn7-p-ymS9XnzXOZ-NwNeYYdyxh0"
+            />
+          </div>
+          <div class="card-body">
+            <div class="card-text">
+              <h2>Upload Achievement</h2>
+              <p>Share your latest victories and milestones with the community.</p>
             </div>
+            <a href="upload.html" class="card-btn" aria-label="Upload Achievement">
+              <span class="material-symbols-outlined">upload</span>
+              Upload
+            </a>
           </div>
         </div>
 
-        <!-- My Achievements card -->
-        <div
-          class="group relative overflow-hidden rounded-2xl bg-background-light/50 shadow-lg backdrop-blur-xl dark:bg-background-dark/50"
-        >
-          <div
-            class="absolute inset-0 bg-primary/20 opacity-0 transition-opacity group-hover:opacity-100"
-          ></div>
-          <div class="relative flex flex-col gap-4">
-            <div class="aspect-video w-full overflow-hidden rounded-t-2xl">
-              <img
-                alt="Collection of medals and trophies"
-                class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0bdFkqUQ-0SuoCzyjvkXeyi5W8F0zcb-fyYzwbAJDQ8yoE17caTshBmqB-pTd8rXeNDbXfmt5hTRxUPKoTNF0VXA6TSEC0rdEsQbNwBWxc_nxKUn8FztLUMkzsIGomyBYQNLot0ioWLdAEQHZN8fj3-6yKvEYPKhkpAfL9LbG5_PXe57_VxoHegRV2yowUhpYYtPF7zOAPhDZ4K_Ad9nV70roaUofHKgoaGAXcdjuKTTN4x6NDuOAfGrFENcnfRT4ldgLysA2_yg"
-              />
+        <!-- My Achievements Card -->
+        <div class="achieve-card">
+          <div class="card-glow"></div>
+          <div class="card-img-wrap">
+            <img
+              alt="Collection of medals and trophies"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0bdFkqUQ-0SuoCzyjvkXeyi5W8F0zcb-fyYzwbAJDQ8yoE17caTshBmqB-pTd8rXeNDbXfmt5hTRxUPKoTNF0VXA6TSEC0rdEsQbNwBWxc_nxKUn8FztLUMkzsIGomyBYQNLot0ioWLdAEQHZN8fj3-6yKvEYPKhkpAfL9LbG5_PXe57_VxoHegRV2yowUhpYYtPF7zOAPhDZ4K_Ad9nV70roaUofHKgoaGAXcdjuKTTN4x6NDuOAfGrFENcnfRT4ldgLysA2_yg"
+            />
+          </div>
+          <div class="card-body">
+            <div class="card-text">
+              <h2>My Achievements</h2>
+              <p>View and manage your personal collection of accomplishments.</p>
             </div>
-
-            <div class="flex flex-col gap-4 p-4 pt-0">
-              <div class="flex items-start justify-between gap-4">
-                <div class="flex flex-col gap-1">
-                  <h2 class="text-xl font-bold">My Achievements</h2>
-                  <p class="text-sm text-stone-400">
-                    View and manage your personal collection of accomplishments.
-                  </p>
-                </div>
-                <a
-                  href="myachieve.html"
-                  class="flex h-10 shrink-0 items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-medium text-white shadow-[0_0_20px_rgba(96,122,251,0.55)] transition-transform active:scale-95"
-                  aria-label="View My Achievements"
-                >
-                  <span class="material-symbols-outlined text-base">
-                    visibility
-                  </span>
-                  <span>View</span>
-                </a>
-              </div>
-            </div>
+            <a href="myachieve.html" class="card-btn" aria-label="View My Achievements">
+              <span class="material-symbols-outlined">visibility</span>
+              View
+            </a>
           </div>
         </div>
+
       </main>
 
-      <!-- Bell dot helper -->
-      <script type="module" src="js/notify-dot.js"></script>
+      <!-- BOTTOM NAV -->
+      <nav class="bottomnav">
+        <a class="nav-item" href="dashboard.html">
+          <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span>Home</span>
+        </a>
+        <a class="nav-item" href="tournaments.html">
+          <svg viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 000 5H6"/><path d="M18 9h1.5a2.5 2.5 0 010 5H18"/><path d="M8 9h8"/><path d="M8 15h8"/><path d="M9 6l3-3 3 3"/><path d="M9 18l3 3 3-3"/></svg>
+          <span>Tournaments</span>
+        </a>
+        <a class="nav-item active" href="achievements.html">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+          <span>Achievement</span>
+        </a>
+        <a class="nav-item" href="explore.html">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span>Explore</span>
+        </a>
+        <a class="nav-item" href="leaderboard.html">
+          <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          <span>Leaderboard</span>
+        </a>
+      </nav>
 
-      <!-- Player bottom nav (existing shared nav) -->
-      <script type="module" src="js/nav.js"></script>
-
-      <!-- Back behavior: return to last visited page; fallback to dashboard.html -->
-      <script type="module">
-        const back = document.getElementById("backBtn");
-        back?.addEventListener("click", (e) => {
-          // Always prevent default so we can decide smartly
-          e.preventDefault();
-          try {
-            const ref = document.referrer || "";
-            const hasHistory = window.history.length > 1;
-            const sameOrigin =
-              ref &&
-              new URL(ref, window.location.href).origin ===
-                window.location.origin;
-
-            // Prefer history back when possible (same-origin or history stack > 1)
-            if ((sameOrigin && ref !== window.location.href) || hasHistory) {
-              window.history.back();
-              return;
-            }
-          } catch {}
-          // Fallback
-          window.location.href = "dashboard.html";
-        });
-      </script>
     </div>
+
+    <!-- Existing JS — untouched -->
+    <script type="module" src="js/notify-dot.js"></script>
+    <script type="module" src="js/nav.js"></script>
+    <script type="module">
+      const back = document.getElementById("backBtn");
+      back?.addEventListener("click", (e) => {
+        e.preventDefault();
+        try {
+          const ref = document.referrer || "";
+          const hasHistory = window.history.length > 1;
+          const sameOrigin = ref && new URL(ref, window.location.href).origin === window.location.origin;
+          if ((sameOrigin && ref !== window.location.href) || hasHistory) {
+            window.history.back();
+            return;
+          }
+        } catch {}
+        window.location.href = "dashboard.html";
+      });
+    </script>
+
+    <script>
+      // Particles
+      const pc = document.getElementById('particles');
+      const cols = ['#3B82F6','#6EA8FE','#38BDF8','#ffffff'];
+      for (let i = 0; i < 22; i++) {
+        const p = document.createElement('div');
+        p.className = 'p';
+        const s = Math.random() * 3 + 1.5;
+        p.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${9+Math.random()*12}s;animation-delay:${Math.random()*10}s;`;
+        pc.appendChild(p);
+      }
+    </script>
+
   </body>
 </html>

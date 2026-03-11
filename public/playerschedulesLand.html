@@ -1,204 +1,357 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Player Schedules - SportIQ</title>
 
-    <!-- Tailwind tokens + CDN -->
     <script src="js/tailwind-config.js"></script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
-    />
-
-    <!-- Global + schedules styles -->
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
     <link rel="stylesheet" href="css/global.css" />
     <link rel="stylesheet" href="css/schedules.css" />
+
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      :root {
+        --blue-950: #020B18;
+        --blue-900: #061527;
+        --blue-600: #1146A0;
+        --blue-500: #1A5FD4;
+        --blue-400: #3B82F6;
+        --blue-300: #6EA8FE;
+        --white-pure: #FFFFFF;
+        --white-ghost: #A8BBDA;
+        --accent-sky: #38BDF8;
+        --card-bg: rgba(6,21,39,0.78);
+        --border: rgba(59,130,246,0.20);
+      }
+
+      html, body {
+        min-height: 100vh;
+        background: var(--blue-950);
+        color: var(--white-pure);
+        font-family: 'Rajdhani', sans-serif;
+        overflow-x: hidden;
+      }
+
+      /* ── BG ── */
+      body::before {
+        content: '';
+        position: fixed; inset: 0; z-index: 0;
+        background:
+          radial-gradient(ellipse at 20% 20%, rgba(26,95,212,0.18) 0%, transparent 55%),
+          radial-gradient(ellipse at 80% 80%, rgba(56,189,248,0.07) 0%, transparent 50%),
+          linear-gradient(135deg, #020B18 0%, #040F20 100%);
+        pointer-events: none;
+      }
+      body::after {
+        content: '';
+        position: fixed; inset: 0; z-index: 0;
+        background-image:
+          linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+        background-size: 40px 40px;
+        pointer-events: none;
+      }
+
+      /* ── PARTICLES ── */
+      .particles { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
+      .p { position:absolute; border-radius:50%; animation:floatUp linear infinite; opacity:0; }
+      @keyframes floatUp {
+        0%   { transform:translateY(100vh) scale(0); opacity:0; }
+        10%  { opacity:0.4; }
+        90%  { opacity:0.15; }
+        100% { transform:translateY(-10vh) scale(1.2); opacity:0; }
+      }
+
+      /* ── PAGE WRAP ── */
+      .page-wrap {
+        position: relative; z-index: 1;
+        display: flex; flex-direction: column;
+        min-height: 100vh;
+      }
+
+      /* ── HEADER ── */
+      header {
+        position: sticky; top: 0; z-index: 20;
+        background: rgba(2,11,24,0.92);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(59,130,246,0.14);
+        animation: fadeDown .5s ease both;
+      }
+      @keyframes fadeDown {
+        from { opacity:0; transform:translateY(-14px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+      .header-inner {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 14px 18px;
+      }
+      .header-btn {
+        width: 40px; height: 40px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--white-ghost);
+        background: rgba(59,130,246,0.08);
+        border: 1px solid rgba(59,130,246,0.15);
+        cursor: pointer; transition: all .3s;
+        text-decoration: none; outline: none; flex-shrink: 0;
+      }
+      .header-btn:hover { color: var(--white-pure); background: rgba(59,130,246,0.16); border-color: var(--blue-400); }
+      .header-btn .material-symbols-outlined { font-size: 20px; }
+      .header-title {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.15rem; letter-spacing: .16em;
+        color: var(--white-pure);
+      }
+      .notif-wrap { position: relative; }
+      .notif-dot-el {
+        position: absolute; top: 1px; right: 1px;
+        width: 8px; height: 8px; background: #ef4444;
+        border-radius: 50%; border: 1.5px solid var(--blue-950);
+      }
+
+      /* ── MAIN ── */
+      main {
+        flex: 1;
+        padding: 32px 18px 110px;
+        animation: fadeUp .55s ease .1s both;
+      }
+      @keyframes fadeUp {
+        from { opacity:0; transform:translateY(22px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+      .grid-wrap {
+        max-width: 860px; margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 22px;
+      }
+      @media(min-width: 560px) {
+        .grid-wrap { grid-template-columns: 1fr 1fr; }
+      }
+
+      /* ── TILE CARD ── */
+      .tile {
+        position: relative;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 18px; overflow: hidden;
+        backdrop-filter: blur(18px);
+        transition: border-color .3s, transform .3s, box-shadow .3s;
+        cursor: pointer;
+        text-decoration: none; display: block;
+      }
+      .tile:hover {
+        border-color: rgba(59,130,246,0.45);
+        transform: translateY(-4px);
+        box-shadow: 0 16px 48px rgba(26,95,212,0.22);
+      }
+      /* top accent line */
+      .tile::before {
+        content: ''; position: absolute;
+        top: 0; left: 0; right: 0; height: 2px;
+        background: linear-gradient(90deg, var(--blue-500), var(--accent-sky));
+        opacity: 0; transition: opacity .3s;
+        z-index: 1;
+      }
+      .tile:hover::before { opacity: 1; }
+
+      /* image wrapper */
+      .tile-img-wrap {
+        position: relative;
+        aspect-ratio: 16/9;
+        overflow: hidden;
+      }
+      .tile-img-wrap img {
+        width: 100%; height: 100%; object-fit: cover;
+        transition: transform .45s ease;
+        display: block;
+      }
+      .tile:hover .tile-img-wrap img { transform: scale(1.05); }
+      /* image overlay */
+      .tile-img-wrap::after {
+        content: '';
+        position: absolute; inset: 0;
+        background: linear-gradient(to bottom, transparent 30%, rgba(2,11,24,0.82) 100%);
+      }
+
+      /* body */
+      .tile-body {
+        padding: 22px 22px 24px;
+        display: flex; flex-direction: column; gap: 16px; align-items: center;
+      }
+
+      /* icon ring */
+      .tile-icon {
+        width: 62px; height: 62px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        background: rgba(26,95,212,0.14);
+        border: 1.5px solid rgba(59,130,246,0.28);
+        box-shadow: 0 0 18px rgba(26,95,212,0.22);
+        transition: box-shadow .3s;
+      }
+      .tile:hover .tile-icon {
+        box-shadow: 0 0 28px rgba(59,130,246,0.45);
+        border-color: var(--blue-400);
+      }
+      .tile-icon .material-symbols-outlined {
+        font-size: 2.2rem;
+        color: var(--blue-300);
+      }
+
+      /* text */
+      .tile-text { text-align: center; }
+      .tile-text h2 {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.25rem; letter-spacing: .1em;
+        color: var(--white-pure); margin-bottom: 6px;
+      }
+      .tile-text p {
+        font-size: .88rem; color: var(--white-ghost); line-height: 1.5;
+      }
+
+      /* CTA button */
+      .tile-cta {
+        width: 100%; padding: 12px 0;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--blue-500), var(--blue-600));
+        border: none; color: #fff;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .88rem; font-weight: 700; letter-spacing: .12em;
+        text-transform: uppercase;
+        display: flex; align-items: center; justify-content: center; gap: 8px;
+        box-shadow: 0 0 16px rgba(26,95,212,0.4);
+        transition: box-shadow .3s, transform .2s;
+      }
+      .tile:hover .tile-cta {
+        box-shadow: 0 0 26px rgba(59,130,246,0.55);
+        transform: translateY(-1px);
+      }
+      .tile-cta .material-symbols-outlined { font-size: 1.2rem; }
+    </style>
   </head>
 
-  <body
-    data-page="player-schedules-landing"
-    class="font-display text-white min-h-screen"
-  >
-    <div class="relative flex min-h-screen w-full flex-col">
-      <!-- Header -->
-      <header
-        class="sticky top-0 z-20 glassmorphic backdrop-blur-md border-b border-white/10"
-      >
-        <div class="flex items-center justify-between px-4 sm:px-6 py-4">
-          <button
-            id="backBtn"
-            class="flex size-10 sm:size-11 items-center justify-center rounded-full text-white/80 hover:text-white hover:bg-white/10 transition-all active:scale-95"
-            aria-label="Back"
-            title="Back"
-          >
+  <body data-page="player-schedules-landing">
+    <div class="particles" id="particles"></div>
+
+    <div class="page-wrap">
+
+      <!-- HEADER -->
+      <header>
+        <div class="header-inner">
+          <button id="backBtn" class="header-btn" aria-label="Back" title="Back">
             <span class="material-symbols-outlined">arrow_back</span>
           </button>
-
-          <h1
-            class="text-xl sm:text-2xl lg:text-3xl font-bold text-white tracking-tight"
-          >
-            Player Schedules
-          </h1>
-
-          <a
-            href="notifications.html"
-            class="relative flex items-center justify-center size-10 sm:size-11 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-all duration-200"
-            aria-label="Notifications"
-            data-notify-bell
-          >
+          <span class="header-title">Player Schedules</span>
+          <a href="notifications.html" class="header-btn notif-wrap" aria-label="Notifications" data-notify-bell>
             <span class="material-symbols-outlined">notifications</span>
+            <span class="notif-dot-el"></span>
           </a>
         </div>
       </header>
 
-      <!-- Main -->
-      <main class="flex-grow p-4 sm:p-6 lg:p-8 pb-28 sm:pb-32">
-        <div class="max-w-7xl mx-auto w-full">
-          <div
-            class="grid gap-6 sm:gap-8 grid-cols-1 sm:grid-cols-2 max-w-5xl mx-auto"
-          >
-            <!-- Available schedules tile -->
-            <article
-              class="group tile-hover glassmorphic rounded-2xl shadow-2xl cursor-pointer overflow-hidden"
-            >
-              <a href="player-schedules.html?view=available" class="block">
-                <div
-                  class="tile-image-wrapper aspect-video w-full bg-gradient-to-br from-blue-600/30 to-purple-600/30"
-                >
-                  <img
-                    alt="Available schedules"
-                    class="h-full w-full object-cover"
-                    src="https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=1200&q=80&auto=format&fit=crop"
-                    loading="lazy"
-                  />
-                </div>
-                <div class="p-6 sm:p-8 space-y-4">
-                  <div class="flex items-center justify-center">
-                    <div
-                      class="flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/30"
-                    >
-                      <span
-                        class="material-symbols-outlined text-5xl text-blue-400"
-                        >event_available</span
-                      >
-                    </div>
-                  </div>
-                  <div class="text-center space-y-2">
-                    <h2 class="text-xl sm:text-2xl font-bold text-white">
-                      Available Schedules
-                    </h2>
-                    <p class="text-sm sm:text-base text-white/70">
-                      Find and request to join upcoming sessions
-                    </p>
-                  </div>
-                  <div
-                    class="w-full btn-primary flex items-center justify-center gap-2 h-12 sm:h-14 rounded-xl text-white font-semibold text-sm sm:text-base transition-all duration-200 active:scale-95"
-                  >
-                    <span class="material-symbols-outlined text-xl"
-                      >search</span
-                    >
-                    <span>Browse</span>
-                  </div>
-                </div>
-              </a>
-            </article>
+      <!-- MAIN -->
+      <main>
+        <div class="grid-wrap">
 
-            <!-- My schedules tile -->
-            <article
-              class="group tile-hover glassmorphic rounded-2xl shadow-2xl cursor-pointer overflow-hidden"
-            >
-              <a href="player-schedules.html?view=my" class="block">
-                <div
-                  class="tile-image-wrapper aspect-video w-full bg-gradient-to-br from-green-600/30 to-teal-600/30"
-                >
-                  <img
-                    alt="My schedules"
-                    class="h-full w-full object-cover"
-                    src="https://images.unsplash.com/photo-1517649763962-0c623066013b?w=1200&q=80&auto=format&fit=crop"
-                    loading="lazy"
-                  />
-                </div>
-                <div class="p-6 sm:p-8 space-y-4">
-                  <div class="flex items-center justify-center">
-                    <div
-                      class="flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-green-500/20 to-teal-500/20 border border-green-500/30"
-                    >
-                      <span
-                        class="material-symbols-outlined text-5xl text-green-400"
-                        >schedule</span
-                      >
-                    </div>
-                  </div>
-                  <div class="text-center space-y-2">
-                    <h2 class="text-xl sm:text-2xl font-bold text-white">
-                      My Schedules
-                    </h2>
-                    <p class="text-sm sm:text-base text-white/70">
-                      See your pending and approved requests
-                    </p>
-                  </div>
-                  <div
-                    class="w-full btn-primary flex items-center justify-center gap-2 h-12 sm:h-14 rounded-xl text-white font-semibold text-sm sm:text-base transition-all duration-200 active:scale-95"
-                  >
-                    <span class="material-symbols-outlined text-xl"
-                      >list_alt</span
-                    >
-                    <span>Open</span>
-                  </div>
-                </div>
-              </a>
-            </article>
-          </div>
+          <!-- Available Schedules tile -->
+          <a href="player-schedules.html?view=available" class="tile">
+            <div class="tile-img-wrap">
+              <img
+                src="https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=1200&q=80&auto=format&fit=crop"
+                alt="Available schedules"
+                loading="lazy"
+              />
+            </div>
+            <div class="tile-body">
+              <div class="tile-icon">
+                <span class="material-symbols-outlined">event_available</span>
+              </div>
+              <div class="tile-text">
+                <h2>Available Schedules</h2>
+                <p>Find and request to join upcoming sessions</p>
+              </div>
+              <div class="tile-cta">
+                <span class="material-symbols-outlined">search</span>
+                <span>Browse</span>
+              </div>
+            </div>
+          </a>
+
+          <!-- My Schedules tile -->
+          <a href="player-schedules.html?view=my" class="tile">
+            <div class="tile-img-wrap">
+              <img
+                src="https://images.unsplash.com/photo-1517649763962-0c623066013b?w=1200&q=80&auto=format&fit=crop"
+                alt="My schedules"
+                loading="lazy"
+              />
+            </div>
+            <div class="tile-body">
+              <div class="tile-icon">
+                <span class="material-symbols-outlined">schedule</span>
+              </div>
+              <div class="tile-text">
+                <h2>My Schedules</h2>
+                <p>See your pending and approved requests</p>
+              </div>
+              <div class="tile-cta">
+                <span class="material-symbols-outlined">list_alt</span>
+                <span>Open</span>
+              </div>
+            </div>
+          </a>
+
         </div>
       </main>
+
     </div>
 
-    <!-- Session guard: redirect to login if backend session missing -->
+    <!-- SESSION GUARD — untouched -->
     <script type="module">
       (async () => {
         try {
           const r = await fetch("/api/me", { credentials: "same-origin" });
           if (!r.ok) {
-            const returnTo = encodeURIComponent(
-              location.pathname + location.search
-            );
+            const returnTo = encodeURIComponent(location.pathname + location.search);
             location.href = `login.html?returnTo=${returnTo}`;
           }
         } catch {
-          const returnTo = encodeURIComponent(
-            location.pathname + location.search
-          );
+          const returnTo = encodeURIComponent(location.pathname + location.search);
           location.href = `login.html?returnTo=${returnTo}`;
         }
       })();
     </script>
 
-    <!-- Bell dot helper + Bottom nav -->
+    <!-- SCRIPTS — untouched -->
     <script type="module" src="js/notify-dot.js"></script>
     <script type="module" src="js/nav.js"></script>
 
-    <!-- Back button -->
     <script>
-      document
-        .getElementById("backBtn")
-        ?.addEventListener("click", function () {
-          if (window.history.length > 1 && document.referrer) {
-            window.history.back();
-          } else {
-            window.location.href = "dashboard.html";
-          }
-        });
+      document.getElementById("backBtn")?.addEventListener("click", function () {
+        if (window.history.length > 1 && document.referrer) {
+          window.history.back();
+        } else {
+          window.location.href = "dashboard.html";
+        }
+      });
+    </script>
+
+    <script>
+      const pc = document.getElementById('particles');
+      const cols = ['#3B82F6','#6EA8FE','#38BDF8','#ffffff'];
+      for (let i = 0; i < 18; i++) {
+        const p = document.createElement('div');
+        p.className = 'p';
+        const s = Math.random() * 3 + 1.5;
+        p.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${9+Math.random()*12}s;animation-delay:${Math.random()*10}s;`;
+        pc.appendChild(p);
+      }
     </script>
   </body>
 </html>

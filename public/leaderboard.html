@@ -1,122 +1,318 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Leaderboard - SportIQ</title>
 
-    <!-- Tailwind tokens + CDN -->
     <script src="js/tailwind-config.js"></script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
-    <!-- Global CSS -->
     <link rel="stylesheet" href="css/global.css" />
     <link rel="stylesheet" href="css/leaderboard.css" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      :root {
+        --blue-950: #020B18;
+        --blue-900: #061527;
+        --blue-600: #1146A0;
+        --blue-500: #1A5FD4;
+        --blue-400: #3B82F6;
+        --blue-300: #6EA8FE;
+        --white-pure: #FFFFFF;
+        --white-ghost: #A8BBDA;
+        --accent-sky: #38BDF8;
+        --card-bg: rgba(6,21,39,0.78);
+        --border: rgba(59,130,246,0.20);
+      }
+
+      html, body {
+        min-height: 100vh;
+        background: var(--blue-950);
+        color: var(--white-pure);
+        font-family: 'Rajdhani', sans-serif;
+        overflow-x: hidden;
+      }
+
+      /* ── BG ── */
+      body::before {
+        content: '';
+        position: fixed; inset: 0; z-index: 0;
+        background:
+          radial-gradient(ellipse at 20% 20%, rgba(26,95,212,0.18) 0%, transparent 55%),
+          radial-gradient(ellipse at 80% 80%, rgba(56,189,248,0.07) 0%, transparent 50%),
+          linear-gradient(135deg, #020B18 0%, #040F20 100%);
+        pointer-events: none;
+      }
+      body::after {
+        content: '';
+        position: fixed; inset: 0; z-index: 0;
+        background-image:
+          linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+        background-size: 40px 40px;
+        pointer-events: none;
+      }
+
+      /* ── PARTICLES ── */
+      .particles { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
+      .p { position:absolute; border-radius:50%; animation:floatUp linear infinite; opacity:0; }
+      @keyframes floatUp {
+        0%   { transform:translateY(100vh) scale(0); opacity:0; }
+        10%  { opacity:0.4; }
+        90%  { opacity:0.15; }
+        100% { transform:translateY(-10vh) scale(1.2); opacity:0; }
+      }
+
+      /* ── PAGE WRAP ── */
+      .page-wrap {
+        position: relative; z-index: 1;
+        display: flex; flex-direction: column;
+        min-height: 100vh;
+      }
+
+      /* ── HEADER ── */
+      header {
+        position: sticky; top: 0; z-index: 20;
+        background: rgba(2,11,24,0.92);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(59,130,246,0.14);
+        animation: fadeDown .5s ease both;
+      }
+      @keyframes fadeDown {
+        from { opacity:0; transform:translateY(-14px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+      .header-inner {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 14px 20px;
+      }
+      .header-btn {
+        width: 40px; height: 40px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--white-ghost);
+        background: rgba(59,130,246,0.08);
+        border: 1px solid rgba(59,130,246,0.15);
+        cursor: pointer; transition: all .3s;
+        text-decoration: none; outline: none; flex-shrink: 0;
+      }
+      .header-btn:hover { color: var(--white-pure); background: rgba(59,130,246,0.16); border-color: var(--blue-400); }
+      .header-btn .material-symbols-outlined { font-size: 20px; }
+      .header-title {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.2rem; letter-spacing: .18em;
+        color: var(--white-pure); flex: 1; text-align: center;
+      }
+      .notif-wrap { position: relative; }
+      .notif-dot {
+        position: absolute; top: 1px; right: 1px;
+        width: 8px; height: 8px; background: #ef4444;
+        border-radius: 50%; border: 1.5px solid var(--blue-950);
+      }
+
+      /* ── FILTER BAR ── */
+      .filter-bar {
+        padding: 12px 16px;
+        position: relative; z-index: 1;
+      }
+      .filter-inner {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        backdrop-filter: blur(18px);
+        padding: 12px 14px;
+        display: flex; flex-wrap: wrap; gap: 10px;
+        position: relative; overflow: hidden;
+      }
+      .filter-inner::before {
+        content: ''; position: absolute;
+        top: 0; left: 0; right: 0; height: 2px;
+        background: linear-gradient(90deg, var(--blue-500), var(--accent-sky));
+      }
+      .filter-select {
+        flex: 1; min-width: 120px;
+        padding: 8px 12px;
+        background: rgba(59,130,246,0.07);
+        border: 1px solid rgba(59,130,246,0.20);
+        border-radius: 10px; color: var(--white-pure);
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .85rem; font-weight: 600;
+        outline: none; transition: border-color .3s, box-shadow .3s;
+        appearance: none; -webkit-appearance: none; cursor: pointer;
+      }
+      .filter-select:focus {
+        border-color: var(--blue-400);
+        box-shadow: 0 0 0 3px rgba(59,130,246,0.10);
+      }
+      .filter-select option { background: #061527; color: #fff; }
+      .filter-select:disabled { opacity: .45; cursor: not-allowed; }
+
+      /* ── MAIN ── */
+      main {
+        flex: 1; padding: 8px 16px 110px;
+        animation: fadeUp .5s ease .1s both;
+      }
+      @keyframes fadeUp {
+        from { opacity:0; transform:translateY(18px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+
+      #leaderboardContainer { max-width: 760px; margin: 0 auto; }
+
+      /* ── LOADING SKELETONS ── */
+      #loadingState { display: flex; flex-direction: column; gap: 10px; }
+      .skeleton-row {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 14px; height: 72px;
+        backdrop-filter: blur(16px);
+        position: relative; overflow: hidden;
+      }
+      .skeleton-row::after {
+        content: '';
+        position: absolute; inset: 0;
+        background: linear-gradient(90deg,
+          transparent 0%,
+          rgba(59,130,246,0.07) 50%,
+          transparent 100%);
+        background-size: 200% 100%;
+        animation: shimmer 1.6s ease infinite;
+      }
+      @keyframes shimmer {
+        0%   { background-position: -200% 0; }
+        100% { background-position:  200% 0; }
+      }
+
+      /* ── PLAYERS LIST ── */
+      #playersList { display: flex; flex-direction: column; gap: 10px; }
+
+      /* ── EMPTY STATE ── */
+      #emptyState {
+        text-align: center; padding: 56px 20px;
+      }
+      #emptyState p {
+        font-size: .9rem; color: var(--white-ghost);
+        letter-spacing: .06em;
+      }
+
+      /* ── LOAD MORE ── */
+      #loadMoreContainer { text-align: center; padding-top: 16px; }
+      #loadMoreBtn {
+        padding: 10px 28px; border-radius: 22px;
+        background: rgba(59,130,246,0.08);
+        border: 1px solid rgba(59,130,246,0.22);
+        color: var(--blue-300); cursor: pointer;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .85rem; font-weight: 700; letter-spacing: .12em;
+        text-transform: uppercase; transition: all .25s;
+      }
+      #loadMoreBtn:hover { background: rgba(59,130,246,0.16); color: var(--white-pure); border-color: var(--blue-400); }
+
+      .hidden { display: none !important; }
+      .sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); }
+    </style>
   </head>
-  <body class="bg-background-light dark:bg-background-dark font-display text-white min-h-screen" data-page="leaderboard">
-    <div class="relative flex min-h-screen w-full flex-col">
-      <!-- Header -->
-      <header class="sticky top-0 z-20 glassmorphic backdrop-blur-md border-b border-white/10">
-        <div class="flex items-center justify-between px-4 sm:px-6 py-4">
-          <button
-            id="backBtn"
-            class="flex size-10 sm:size-11 items-center justify-center rounded-full text-white/80 hover:text-white hover:bg-white/10 transition-all active:scale-95"
-            aria-label="Back"
-            title="Back"
-          >
+
+  <body data-page="leaderboard">
+    <div class="particles" id="particles"></div>
+
+    <div class="page-wrap">
+
+      <!-- HEADER -->
+      <header>
+        <div class="header-inner">
+          <button id="backBtn" class="header-btn" aria-label="Back" title="Back">
             <span class="material-symbols-outlined">arrow_back</span>
           </button>
-
-          <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-white tracking-tight">
-            Leaderboard
-          </h1>
-
-          <a
-            href="notifications.html"
-            class="relative flex items-center justify-center size-10 sm:size-11 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-all duration-200"
-            aria-label="Notifications"
-            data-notify-bell
-          >
+          <h1 class="header-title">Leaderboard</h1>
+          <a href="notifications.html" class="header-btn notif-wrap" aria-label="Notifications" data-notify-bell>
             <span class="material-symbols-outlined">notifications</span>
+            <span class="notif-dot"></span>
           </a>
         </div>
       </header>
 
-      <!-- Filters -->
-      <div class="px-4 pt-2">
-        <div class="glassmorphic rounded-xl px-3 py-2 flex flex-wrap items-center gap-2">
-          <div class="flex-1 min-w-[120px]">
-            <label for="sportFilter" class="sr-only">Sport</label>
-            <select id="sportFilter" class="w-full bg-white/10 border-white/10 rounded-lg text-sm text-white focus:ring-primary focus:border-primary">
-              <option value="">All Sports</option>
-              <option value="Cricket">Cricket</option>
-              <option value="Football">Football</option>
-              <option value="Kabaddi">Kabaddi</option>
-              <option value="Volleyball">Volleyball</option>
-              <option value="Badminton">Badminton</option>
-            </select>
-          </div>
-          
-          <div class="flex-1 min-w-[120px]">
-            <label for="stateFilter" class="sr-only">State</label>
-            <select id="stateFilter" class="w-full bg-white/10 border-white/10 rounded-lg text-sm text-white focus:ring-primary focus:border-primary">
-              <option value="">All States</option>
-            </select>
-          </div>
+      <!-- FILTERS -->
+      <div class="filter-bar">
+        <div class="filter-inner">
+          <label for="sportFilter" class="sr-only">Sport</label>
+          <select id="sportFilter" class="filter-select">
+            <option value="">All Sports</option>
+            <option value="Cricket">Cricket</option>
+            <option value="Football">Football</option>
+            <option value="Kabaddi">Kabaddi</option>
+            <option value="Volleyball">Volleyball</option>
+            <option value="Badminton">Badminton</option>
+          </select>
 
-          <div class="flex-1 min-w-[120px]">
-            <label for="districtFilter" class="sr-only">District</label>
-            <select id="districtFilter" class="w-full bg-white/10 border-white/10 rounded-lg text-sm text-white focus:ring-primary focus:border-primary" disabled>
-              <option value="">All Districts</option>
-            </select>
-          </div>
+          <label for="stateFilter" class="sr-only">State</label>
+          <select id="stateFilter" class="filter-select">
+            <option value="">All States</option>
+          </select>
+
+          <label for="districtFilter" class="sr-only">District</label>
+          <select id="districtFilter" class="filter-select" disabled>
+            <option value="">All Districts</option>
+          </select>
         </div>
       </div>
 
-      <!-- Main Content -->
-      <main class="flex-grow p-4 sm:p-6 lg:p-8 pb-28 sm:pb-32">
-        <div id="leaderboardContainer" class="max-w-4xl mx-auto space-y-3">
-          <!-- Loading State -->
-          <div id="loadingState" class="space-y-3">
-            <div class="glassmorphic rounded-xl p-4 animate-pulse h-20"></div>
-            <div class="glassmorphic rounded-xl p-4 animate-pulse h-20"></div>
-            <div class="glassmorphic rounded-xl p-4 animate-pulse h-20"></div>
+      <!-- MAIN -->
+      <main>
+        <div id="leaderboardContainer">
+
+          <!-- Loading skeletons -->
+          <div id="loadingState">
+            <div class="skeleton-row"></div>
+            <div class="skeleton-row"></div>
+            <div class="skeleton-row"></div>
+            <div class="skeleton-row"></div>
+            <div class="skeleton-row"></div>
           </div>
-          
-          <!-- List will be rendered here -->
-          <div id="playersList" class="space-y-3 hidden"></div>
-          
-          <!-- Empty State -->
-          <div id="emptyState" class="hidden text-center py-12">
-            <p class="text-white/60">No players found matching criteria.</p>
+
+          <!-- Players list -->
+          <div id="playersList" class="hidden"></div>
+
+          <!-- Empty state -->
+          <div id="emptyState" class="hidden">
+            <p>No players found matching criteria.</p>
           </div>
-          
-          <!-- Load More -->
-          <div class="text-center pt-4 hidden" id="loadMoreContainer">
-            <button id="loadMoreBtn" class="px-6 py-2 bg-white/10 hover:bg-white/20 rounded-full text-sm font-medium transition-colors">
-              Load More
-            </button>
+
+          <!-- Load more -->
+          <div class="hidden" id="loadMoreContainer">
+            <button id="loadMoreBtn">Load More</button>
           </div>
+
         </div>
       </main>
-    </div>
 
-    <!-- Scripts -->
+    </div><!-- /.page-wrap -->
+
+    <!-- SCRIPTS — untouched -->
     <script src="/js/utils.js"></script>
     <script src="/js/districts.js"></script>
     <script src="/js/api.js"></script>
     <script type="module" src="/js/leaderboard.js"></script>
     <script type="module" src="/js/nav.js"></script>
     <script type="module" src="/js/notify-dot.js"></script>
-    
+
     <script>
       document.getElementById('backBtn')?.addEventListener('click', () => {
         window.location.href = 'dashboard.html';
       });
+
+      const pc = document.getElementById('particles');
+      const cols = ['#3B82F6','#6EA8FE','#38BDF8','#ffffff'];
+      for (let i = 0; i < 18; i++) {
+        const p = document.createElement('div');
+        p.className = 'p';
+        const s = Math.random() * 3 + 1.5;
+        p.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${9+Math.random()*12}s;animation-delay:${Math.random()*10}s;`;
+        pc.appendChild(p);
+      }
     </script>
   </body>
 </html>

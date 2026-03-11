@@ -7,165 +7,550 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="/css/global.css">
   <link rel="stylesheet" href="/css/fixtures.css">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue-950: #020B18;
+      --blue-900: #061527;
+      --blue-800: #0A2040;
+      --blue-600: #1146A0;
+      --blue-500: #1A5FD4;
+      --blue-400: #3B82F6;
+      --blue-300: #6EA8FE;
+      --white-pure: #FFFFFF;
+      --white-ghost: #A8BBDA;
+      --accent-sky: #38BDF8;
+      --card-bg: rgba(6,21,39,0.78);
+      --border: rgba(59,130,246,0.20);
+    }
+
+    html, body {
+      min-height: 100vh;
+      background: var(--blue-950);
+      color: var(--white-pure);
+      font-family: 'Rajdhani', sans-serif;
+      overflow-x: hidden;
+      padding-bottom: 80px;
+    }
+
+    /* ── BG ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse at 20% 20%, rgba(26,95,212,0.18) 0%, transparent 55%),
+        radial-gradient(ellipse at 80% 80%, rgba(56,189,248,0.07) 0%, transparent 50%),
+        linear-gradient(135deg, #020B18 0%, #040F20 100%);
+      pointer-events: none;
+    }
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background-image:
+        linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    /* ── PARTICLES ── */
+    .particles { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
+    .p { position:absolute; border-radius:50%; animation:floatUp linear infinite; opacity:0; }
+    @keyframes floatUp {
+      0%   { transform:translateY(100vh) scale(0); opacity:0; }
+      10%  { opacity:0.4; }
+      90%  { opacity:0.15; }
+      100% { transform:translateY(-10vh) scale(1.2); opacity:0; }
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: sticky; top: 0; z-index: 10;
+      padding: 14px 18px;
+      background: rgba(2,11,24,0.92);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(59,130,246,0.14);
+      animation: fadeDown .5s ease both;
+    }
+    @keyframes fadeDown {
+      from { opacity:0; transform:translateY(-14px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    .header-row {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .back-link {
+      width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--white-ghost); text-decoration: none;
+      background: rgba(59,130,246,0.08);
+      border: 1px solid rgba(59,130,246,0.15);
+      font-size: 1rem; transition: all .3s; flex-shrink: 0;
+    }
+    .back-link:hover { color: var(--white-pure); background: rgba(59,130,246,0.16); border-color: var(--blue-400); }
+    #pageTitle {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.15rem; letter-spacing: .16em;
+      color: var(--white-pure); flex: 1;
+    }
+    #tournamentInfo {
+      font-size: .78rem; color: var(--blue-300);
+      letter-spacing: .06em; margin-top: 4px; padding-left: 46px;
+    }
+
+    /* ── STATES ── */
+    .state-wrap {
+      position: relative; z-index: 1;
+      display: flex; align-items: center; justify-content: center;
+      padding: 48px 20px;
+    }
+
+    /* loading spinner */
+    #loadingState {
+      position: relative; z-index: 1;
+      display: flex; justify-content: center; align-items: center;
+      padding: 60px;
+    }
+    .spinner {
+      width: 44px; height: 44px; border-radius: 50%;
+      border: 3px solid rgba(59,130,246,0.15);
+      border-top-color: var(--blue-400);
+      animation: spin .8s linear infinite;
+      box-shadow: 0 0 16px rgba(59,130,246,0.25);
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* error state */
+    #errorState {
+      position: relative; z-index: 1;
+      padding: 32px 20px;
+    }
+    .error-card {
+      background: rgba(239,68,68,0.06);
+      border: 1px solid rgba(239,68,68,0.25);
+      border-radius: 16px; padding: 28px 24px;
+      max-width: 420px; margin: 0 auto; text-align: center;
+    }
+    .error-card .icon { font-size: 2.2rem; margin-bottom: 12px; }
+    #errorMessage { color: #fca5a5; font-size: .92rem; line-height: 1.5; margin-bottom: 14px; }
+    .retry-link {
+      color: var(--blue-300); font-size: .88rem; font-weight: 700;
+      letter-spacing: .08em; text-decoration: underline; cursor: pointer;
+      background: none; border: none; transition: color .3s;
+    }
+    .retry-link:hover { color: var(--white-pure); }
+
+    /* empty state */
+    #emptyState {
+      position: relative; z-index: 1;
+      padding: 32px 20px;
+    }
+    .empty-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 18px; padding: 36px 24px;
+      max-width: 420px; margin: 0 auto; text-align: center;
+      backdrop-filter: blur(18px); position: relative; overflow: hidden;
+    }
+    .empty-card::before {
+      content: ''; position: absolute;
+      top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--blue-500), var(--accent-sky));
+    }
+    .empty-card h2 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.25rem; letter-spacing: .1em;
+      color: var(--white-pure); margin-bottom: 10px;
+    }
+    .empty-card p { font-size: .88rem; color: var(--white-ghost); line-height: 1.55; margin-bottom: 22px; }
+    #generateBtn {
+      padding: 12px 32px; border-radius: 12px;
+      background: linear-gradient(135deg, var(--blue-500), var(--blue-600));
+      border: none; cursor: pointer;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: .95rem; font-weight: 700; letter-spacing: .16em;
+      text-transform: uppercase; color: #fff;
+      box-shadow: 0 0 18px rgba(26,95,212,0.45);
+      transition: transform .2s, box-shadow .3s;
+    }
+    #generateBtn:hover { transform: translateY(-2px); box-shadow: 0 0 28px rgba(59,130,246,0.6); }
+    #generateError {
+      margin-top: 12px; font-size: .8rem;
+      color: #f87171; letter-spacing: .04em;
+    }
+
+    /* ── FIXTURES MAIN ── */
+    #fixturesContainer {
+      position: relative; z-index: 1;
+      padding: 20px 18px;
+      animation: fadeUp .5s ease both;
+    }
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(18px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    .action-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 18px;
+    }
+    #matchCount {
+      font-size: .8rem; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--white-ghost);
+    }
+    #viewLeaderboardBtn {
+      font-size: .82rem; font-weight: 700; letter-spacing: .08em;
+      color: var(--blue-300); background: none; border: none;
+      text-decoration: underline; cursor: pointer; transition: color .3s;
+    }
+    #viewLeaderboardBtn:hover { color: var(--white-pure); }
+
+    #roundsContainer { display: flex; flex-direction: column; gap: 20px; }
+
+    /* ── MODALS — shared base ── */
+    dialog {
+      position: fixed; inset: 0; margin: auto;
+      width: calc(100% - 32px); max-width: 420px;
+      border: none; padding: 0; outline: none;
+      border-radius: 18px; overflow: hidden;
+      background: transparent;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+      animation: modalIn .25s ease both;
+    }
+    @keyframes modalIn {
+      from { opacity:0; transform:translateY(20px) scale(.97); }
+      to   { opacity:1; transform:translateY(0) scale(1); }
+    }
+    dialog::backdrop {
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(6px);
+    }
+
+    .modal-shell {
+      background: rgba(4,14,30,0.98);
+      border: 1px solid var(--border);
+      border-radius: 18px; overflow: hidden;
+    }
+
+    /* modal header */
+    .modal-head {
+      padding: 18px 20px 14px;
+      position: relative;
+    }
+    .modal-head::after {
+      content: ''; position: absolute;
+      bottom: 0; left: 0; right: 0; height: 1px;
+      background: rgba(59,130,246,0.14);
+    }
+    .modal-head.blue {
+      background: linear-gradient(135deg, rgba(26,95,212,0.25), rgba(59,130,246,0.1));
+      border-bottom: none;
+    }
+    .modal-head.green {
+      background: linear-gradient(135deg, rgba(5,150,105,0.22), rgba(6,182,212,0.08));
+      border-bottom: none;
+    }
+    .modal-head h3 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.05rem; letter-spacing: .12em;
+      color: var(--white-pure);
+    }
+    .modal-head p {
+      font-size: .78rem; color: var(--white-ghost);
+      margin-top: 3px; letter-spacing: .04em;
+    }
+
+    /* modal body */
+    .modal-body {
+      padding: 20px;
+      display: flex; flex-direction: column; gap: 14px;
+    }
+
+    /* modal labels */
+    .m-label {
+      font-size: .72rem; font-weight: 700;
+      letter-spacing: .14em; text-transform: uppercase;
+      color: var(--blue-300); display: block; margin-bottom: 5px;
+    }
+
+    /* modal inputs */
+    .m-input {
+      width: 100%; padding: 10px 13px;
+      background: rgba(59,130,246,0.07);
+      border: 1px solid rgba(59,130,246,0.22);
+      border-radius: 10px; color: var(--white-pure);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: .95rem; font-weight: 600;
+      outline: none; transition: border-color .3s, box-shadow .3s;
+      appearance: none; -webkit-appearance: none;
+    }
+    .m-input:focus {
+      border-color: var(--blue-400);
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+    }
+    .m-input::placeholder { color: var(--white-ghost); }
+    .m-input option { background: #061527; color: #fff; }
+    .m-input.score-big {
+      text-align: center; font-size: 1.6rem; font-weight: 700;
+      padding: 12px; letter-spacing: .1em;
+    }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    /* validation error */
+    .val-error {
+      font-size: .78rem; color: #f87171;
+      font-weight: 600; letter-spacing: .04em;
+    }
+
+    /* modal buttons row */
+    .modal-btns {
+      display: flex; gap: 10px; margin-top: 4px;
+    }
+    .btn-cancel-modal {
+      flex: 1; padding: 12px;
+      background: rgba(59,130,246,0.06);
+      border: 1px solid rgba(59,130,246,0.18);
+      border-radius: 10px; cursor: pointer;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: .92rem; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--white-ghost);
+      transition: all .25s;
+    }
+    .btn-cancel-modal:hover { background: rgba(59,130,246,0.12); color: var(--white-pure); }
+
+    .btn-save-blue {
+      flex: 1; padding: 12px;
+      background: linear-gradient(135deg, var(--blue-500), var(--blue-600));
+      border: none; border-radius: 10px; cursor: pointer;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: .92rem; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase; color: #fff;
+      box-shadow: 0 0 14px rgba(26,95,212,0.4);
+      transition: transform .2s, box-shadow .3s;
+    }
+    .btn-save-blue:hover { transform: translateY(-1px); box-shadow: 0 0 22px rgba(59,130,246,0.55); }
+
+    .btn-save-green {
+      flex: 1; padding: 12px;
+      background: linear-gradient(135deg, #059669, #047857);
+      border: none; border-radius: 10px; cursor: pointer;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: .92rem; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase; color: #fff;
+      box-shadow: 0 0 14px rgba(5,150,105,0.35);
+      transition: transform .2s, box-shadow .3s;
+    }
+    .btn-save-green:hover { transform: translateY(-1px); box-shadow: 0 0 22px rgba(5,150,105,0.5); }
+
+    /* confirm modal */
+    .confirm-shell {
+      background: rgba(4,14,30,0.98);
+      border: 1px solid rgba(59,130,246,0.20);
+      border-radius: 18px; padding: 32px 24px;
+      text-align: center;
+    }
+    .confirm-icon { font-size: 2.2rem; margin-bottom: 14px; }
+    .confirm-title {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.2rem; letter-spacing: .1em;
+      color: var(--white-pure); margin-bottom: 8px;
+    }
+    .confirm-desc {
+      font-size: .85rem; color: var(--white-ghost);
+      line-height: 1.55; margin-bottom: 22px; letter-spacing: .03em;
+    }
+    .confirm-btns { display: flex; gap: 10px; }
+    .btn-confirm-cancel {
+      flex: 1; padding: 12px;
+      background: rgba(59,130,246,0.06);
+      border: 1px solid rgba(59,130,246,0.18);
+      border-radius: 10px; cursor: pointer;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: .92rem; font-weight: 700; letter-spacing: .1em;
+      color: var(--white-ghost); text-transform: uppercase; transition: all .25s;
+    }
+    .btn-confirm-cancel:hover { background: rgba(59,130,246,0.12); color: var(--white-pure); }
+    .btn-confirm-go {
+      flex: 1; padding: 12px;
+      background: linear-gradient(135deg, var(--blue-500), var(--blue-600));
+      border: none; border-radius: 10px; cursor: pointer;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: .92rem; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase; color: #fff;
+      box-shadow: 0 0 14px rgba(26,95,212,0.4);
+      transition: transform .2s, box-shadow .3s;
+    }
+    .btn-confirm-go:hover { transform: translateY(-1px); box-shadow: 0 0 22px rgba(59,130,246,0.55); }
+
+    .hidden { display: none !important; }
+  </style>
 </head>
-<body class="bg-gray-100 min-h-screen pb-20">
-  
-  <!-- Header -->
-  <header class="bg-blue-600 text-white p-4 sticky top-0 z-10">
-    <div class="flex items-center gap-2">
-      <a href="/dashboard.html" class="text-white">← Back</a>
-      <h1 id="pageTitle" class="text-xl font-bold flex-1">Tournament Fixtures</h1>
+
+<body>
+  <div class="particles" id="particles"></div>
+
+  <!-- ── HEADER ── -->
+  <header>
+    <div class="header-row">
+      <a href="/dashboard.html" class="back-link" aria-label="Back">←</a>
+      <h1 id="pageTitle">Tournament Fixtures</h1>
     </div>
-    <p id="tournamentInfo" class="text-sm text-blue-100 mt-1"></p>
+    <p id="tournamentInfo"></p>
   </header>
 
-  <!-- Loading State -->
-  <div id="loadingState" class="flex justify-center items-center p-12">
-    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+  <!-- ── LOADING ── -->
+  <div id="loadingState">
+    <div class="spinner"></div>
   </div>
 
-  <!-- Error State -->
-  <div id="errorState" class="hidden p-8 text-center">
-    <div class="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md mx-auto">
-      <div class="text-4xl mb-4">❌</div>
-      <p id="errorMessage" class="text-red-700 mb-4">Something went wrong</p>
-      <button onclick="location.reload()" class="text-red-600 underline">Try Again</button>
+  <!-- ── ERROR ── -->
+  <div id="errorState" class="hidden">
+    <div class="error-card">
+      <div class="icon">❌</div>
+      <p id="errorMessage">Something went wrong</p>
+      <button onclick="location.reload()" class="retry-link">Try Again</button>
     </div>
   </div>
 
-  <!-- Empty State (No Fixtures Yet) -->
-  <div id="emptyState" class="hidden p-8 text-center">
-    <div class="bg-white rounded-lg shadow p-6 max-w-md mx-auto">
-      <h2 class="text-xl font-semibold mb-4">No Fixtures Yet</h2>
-      <p class="text-gray-600 mb-6">Generate the tournament bracket to start scheduling matches.</p>
-      <button id="generateBtn" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700">
-        Generate Fixtures
-      </button>
-      <p id="generateError" class="text-red-600 mt-4 hidden"></p>
+  <!-- ── EMPTY ── -->
+  <div id="emptyState" class="hidden">
+    <div class="empty-card">
+      <h2>No Fixtures Yet</h2>
+      <p>Generate the tournament bracket to start scheduling matches.</p>
+      <button id="generateBtn">Generate Fixtures</button>
+      <p id="generateError" class="hidden"></p>
     </div>
   </div>
 
-  <!-- Fixtures Display -->
-  <main id="fixturesContainer" class="hidden p-4 space-y-6">
-    <!-- Action Bar -->
-    <div class="flex justify-between items-center">
-      <span id="matchCount" class="text-gray-600"></span>
-      <button id="viewLeaderboardBtn" class="text-blue-600 underline">View Tournament Leaderboard</button>
+  <!-- ── FIXTURES ── -->
+  <main id="fixturesContainer" class="hidden">
+    <div class="action-bar">
+      <span id="matchCount"></span>
+      <button id="viewLeaderboardBtn">View Tournament Leaderboard</button>
     </div>
-    
-    <!-- Rounds will be rendered here -->
     <div id="roundsContainer"></div>
   </main>
 
-  <!-- Score Entry Modal -->
-  <dialog id="scoreModal" class="rounded-lg shadow-xl p-0 w-full max-w-md">
-    <div class="bg-white rounded-lg">
-      <div class="bg-blue-600 text-white p-4 rounded-t-lg">
-        <h3 class="font-semibold">Enter Match Score</h3>
-        <p id="modalMatchInfo" class="text-sm text-blue-100"></p>
+  <!-- ── SCORE MODAL ── -->
+  <dialog id="scoreModal">
+    <div class="modal-shell">
+      <div class="modal-head blue">
+        <h3>Enter Match Score</h3>
+        <p id="modalMatchInfo"></p>
       </div>
-      <form id="scoreForm" class="p-4 space-y-4">
+      <form id="scoreForm" class="modal-body">
         <input type="hidden" id="scoreMatchId">
-        
-        <div class="grid grid-cols-2 gap-4">
+
+        <div class="grid-2">
           <div>
-            <label class="block text-sm font-medium mb-1" id="teamALabel">Team A</label>
-            <input type="number" id="scoreA" min="0" required 
-              class="w-full border rounded-lg p-2 text-center text-2xl font-bold">
+            <label class="m-label" id="teamALabel">Team A</label>
+            <input type="number" id="scoreA" min="0" required class="m-input score-big" />
           </div>
           <div>
-            <label class="block text-sm font-medium mb-1" id="teamBLabel">Team B</label>
-            <input type="number" id="scoreB" min="0" required
-              class="w-full border rounded-lg p-2 text-center text-2xl font-bold">
+            <label class="m-label" id="teamBLabel">Team B</label>
+            <input type="number" id="scoreB" min="0" required class="m-input score-big" />
           </div>
         </div>
-        
+
         <div>
-          <label class="block text-sm font-medium mb-1">Winner</label>
-          <select id="winner" required class="w-full border rounded-lg p-2">
+          <label class="m-label">Winner</label>
+          <select id="winner" required class="m-input">
             <option value="">Select Winner</option>
             <option value="A">Team A Wins</option>
             <option value="B">Team B Wins</option>
             <option value="DRAW">Draw</option>
           </select>
         </div>
-        
-        <p id="scoreValidationError" class="text-red-600 text-sm hidden"></p>
-        
-        <div class="flex gap-2">
-          <button type="button" id="cancelScoreBtn" class="flex-1 border rounded-lg py-2">Cancel</button>
-          <button type="submit" class="flex-1 bg-blue-600 text-white rounded-lg py-2">Save Score</button>
+
+        <p id="scoreValidationError" class="val-error hidden"></p>
+
+        <div class="modal-btns">
+          <button type="button" id="cancelScoreBtn" class="btn-cancel-modal">Cancel</button>
+          <button type="submit" class="btn-save-blue">Save Score</button>
         </div>
       </form>
     </div>
   </dialog>
 
-  <!-- Player Stats Modal -->
-  <dialog id="statsModal" class="rounded-lg shadow-xl p-0 w-full max-w-md">
-    <div class="bg-white rounded-lg">
-      <div class="bg-green-600 text-white p-4 rounded-t-lg">
-        <h3 class="font-semibold">Add Player Stats</h3>
-        <p id="statsModalMatchInfo" class="text-sm text-green-100"></p>
+  <!-- ── PLAYER STATS MODAL ── -->
+  <dialog id="statsModal">
+    <div class="modal-shell">
+      <div class="modal-head green">
+        <h3>Add Player Stats</h3>
+        <p id="statsModalMatchInfo"></p>
       </div>
-      <form id="statsForm" class="p-4 space-y-4">
+      <form id="statsForm" class="modal-body">
         <input type="hidden" id="statsMatchId">
-        
+
         <div>
-          <label class="block text-sm font-medium mb-1">Select Player</label>
-          <select id="statsPlayerId" required class="w-full border rounded-lg p-2">
+          <label class="m-label">Select Player</label>
+          <select id="statsPlayerId" required class="m-input">
             <option value="">Choose player...</option>
           </select>
         </div>
-        
-        <div class="grid grid-cols-2 gap-4">
+
+        <div class="grid-2">
           <div>
-            <label class="block text-sm font-medium mb-1">Batting Runs</label>
-            <input type="number" id="battingRuns" min="0" class="w-full border rounded-lg p-2">
+            <label class="m-label">Batting Runs</label>
+            <input type="number" id="battingRuns" min="0" class="m-input" />
           </div>
           <div>
-            <label class="block text-sm font-medium mb-1">Wickets</label>
-            <input type="number" id="bowlingWickets" min="0" class="w-full border rounded-lg p-2">
+            <label class="m-label">Wickets</label>
+            <input type="number" id="bowlingWickets" min="0" class="m-input" />
           </div>
           <div>
-            <label class="block text-sm font-medium mb-1">Catches</label>
-            <input type="number" id="catches" min="0" class="w-full border rounded-lg p-2">
+            <label class="m-label">Catches</label>
+            <input type="number" id="catches" min="0" class="m-input" />
           </div>
           <div>
-            <label class="block text-sm font-medium mb-1">Run Outs</label>
-            <input type="number" id="runOuts" min="0" class="w-full border rounded-lg p-2">
+            <label class="m-label">Run Outs</label>
+            <input type="number" id="runOuts" min="0" class="m-input" />
           </div>
         </div>
-        
-        <p id="statsError" class="text-red-600 text-sm hidden"></p>
-        
-        <div class="flex gap-2">
-          <button type="button" id="cancelStatsBtn" class="flex-1 border rounded-lg py-2">Cancel</button>
-          <button type="submit" class="flex-1 bg-green-600 text-white rounded-lg py-2">Save Stats</button>
+
+        <p id="statsError" class="val-error hidden"></p>
+
+        <div class="modal-btns">
+          <button type="button" id="cancelStatsBtn" class="btn-cancel-modal">Cancel</button>
+          <button type="submit" class="btn-save-green">Save Stats</button>
         </div>
       </form>
     </div>
   </dialog>
 
-  <!-- Confirmation Modal -->
-  <dialog id="confirmModal" class="rounded-lg shadow-xl p-0 w-full max-w-sm">
-    <div class="bg-white rounded-lg p-6 text-center">
-      <div class="text-4xl mb-4">⚠️</div>
-      <h3 class="font-semibold text-lg mb-2">Generate Fixtures?</h3>
-      <p class="text-gray-600 mb-6 text-sm">This will create the tournament bracket. This action cannot be undone.</p>
-      <div class="flex gap-2">
-        <button id="cancelConfirmBtn" class="flex-1 border border-gray-300 rounded-lg py-2 hover:bg-gray-50">
-          Cancel
-        </button>
-        <button id="confirmGenerateBtn" class="flex-1 bg-blue-600 text-white rounded-lg py-2 hover:bg-blue-700">
-          Generate
-        </button>
+  <!-- ── CONFIRM MODAL ── -->
+  <dialog id="confirmModal">
+    <div class="confirm-shell">
+      <div class="confirm-icon">⚠️</div>
+      <h3 class="confirm-title">Generate Fixtures?</h3>
+      <p class="confirm-desc">This will create the tournament bracket. This action cannot be undone.</p>
+      <div class="confirm-btns">
+        <button id="cancelConfirmBtn" class="btn-confirm-cancel">Cancel</button>
+        <button id="confirmGenerateBtn" class="btn-confirm-go">Generate</button>
       </div>
     </div>
   </dialog>
 
+  <!-- ALL SCRIPTS — untouched -->
   <script src="/js/utils.js"></script>
   <script src="/js/api.js"></script>
   <script type="module" src="/js/fixtures.js"></script>
   <script type="module" src="/js/nav.js"></script>
+
+  <script>
+    const pc = document.getElementById('particles');
+    const cols = ['#3B82F6','#6EA8FE','#38BDF8','#ffffff'];
+    for (let i = 0; i < 18; i++) {
+      const p = document.createElement('div');
+      p.className = 'p';
+      const s = Math.random() * 3 + 1.5;
+      p.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${9+Math.random()*12}s;animation-delay:${Math.random()*10}s;`;
+      pc.appendChild(p);
+    }
+  </script>
 </body>
 </html>

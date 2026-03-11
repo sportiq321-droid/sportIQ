@@ -1,6 +1,5 @@
-<!-- explore.html -->
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,22 +8,204 @@
     <script src="js/tailwind-config.js"></script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link rel="stylesheet" href="css/global.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      :root {
+        --blue-950: #020B18;
+        --blue-900: #061527;
+        --blue-500: #1A5FD4;
+        --blue-400: #3B82F6;
+        --blue-300: #6EA8FE;
+        --white-pure: #FFFFFF;
+        --white-ghost: #A8BBDA;
+        --accent-sky: #38BDF8;
+      }
+
+      html, body {
+        min-height: 100vh;
+        background: var(--blue-950);
+        color: var(--white-pure);
+        font-family: 'Rajdhani', sans-serif;
+        overflow-x: hidden;
+      }
+
+      /* ── BG ── */
+      body::before {
+        content: '';
+        position: fixed; inset: 0; z-index: 0;
+        background:
+          radial-gradient(ellipse at 25% 30%, rgba(26,95,212,0.18) 0%, transparent 55%),
+          radial-gradient(ellipse at 75% 70%, rgba(56,189,248,0.07) 0%, transparent 50%),
+          linear-gradient(135deg, #020B18 0%, #040F20 100%);
+        pointer-events: none;
+      }
+      body::after {
+        content: '';
+        position: fixed; inset: 0; z-index: 0;
+        background-image:
+          linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+        background-size: 40px 40px;
+        pointer-events: none;
+      }
+
+      /* ── PARTICLES ── */
+      .particles { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
+      .p { position:absolute; border-radius:50%; animation:floatUp linear infinite; opacity:0; }
+      @keyframes floatUp {
+        0%   { transform:translateY(100vh) scale(0); opacity:0; }
+        10%  { opacity:0.4; }
+        90%  { opacity:0.15; }
+        100% { transform:translateY(-10vh) scale(1.2); opacity:0; }
+      }
+
+      /* ── MAIN ── */
+      main {
+        position: relative; z-index: 1;
+        min-height: 100vh;
+        display: flex; align-items: center; justify-content: center;
+        padding: 24px;
+        padding-bottom: 100px;
+      }
+
+      /* ── COMING SOON CARD ── */
+      .soon-card {
+        text-align: center;
+        background: rgba(6,21,39,0.75);
+        border: 1px solid rgba(59,130,246,0.20);
+        border-radius: 24px;
+        padding: 52px 40px;
+        backdrop-filter: blur(20px);
+        max-width: 420px; width: 100%;
+        position: relative; overflow: hidden;
+        animation: fadeUp .6s ease both;
+      }
+      /* top accent */
+      .soon-card::before {
+        content: '';
+        position: absolute; top: 0; left: 0; right: 0; height: 2px;
+        background: linear-gradient(90deg, var(--blue-500), var(--accent-sky));
+      }
+      /* corner accents */
+      .soon-card::after {
+        content: '';
+        position: absolute; bottom: 14px; right: 14px;
+        width: 22px; height: 22px;
+        border-bottom: 1.5px solid rgba(59,130,246,0.3);
+        border-right:  1.5px solid rgba(59,130,246,0.3);
+        border-radius: 0 0 4px 0;
+      }
+      .corner-tl {
+        position: absolute; top: 14px; left: 14px;
+        width: 22px; height: 22px;
+        border-top:  1.5px solid rgba(59,130,246,0.3);
+        border-left: 1.5px solid rgba(59,130,246,0.3);
+        border-radius: 4px 0 0 0;
+      }
+
+      @keyframes fadeUp {
+        from { opacity:0; transform:translateY(24px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+
+      /* icon ring */
+      .icon-ring {
+        width: 72px; height: 72px; border-radius: 50%;
+        border: 2px solid rgba(59,130,246,0.35);
+        background: rgba(59,130,246,0.08);
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 22px;
+        box-shadow: 0 0 28px rgba(59,130,246,0.2);
+        animation: ringPulse 3s ease-in-out infinite;
+      }
+      @keyframes ringPulse {
+        0%,100% { box-shadow: 0 0 18px rgba(59,130,246,0.2); }
+        50%      { box-shadow: 0 0 36px rgba(59,130,246,0.45); }
+      }
+      .icon-ring svg {
+        width: 32px; height: 32px;
+        stroke: var(--blue-300); fill: none; stroke-width: 1.8;
+      }
+
+      .soon-title {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.8rem; letter-spacing: .18em;
+        text-transform: uppercase; color: var(--white-pure);
+        margin-bottom: 10px;
+      }
+      .soon-title span { color: var(--blue-400); }
+
+      .soon-desc {
+        font-size: .92rem; font-weight: 500;
+        color: var(--white-ghost); line-height: 1.6;
+        letter-spacing: .04em;
+      }
+
+      /* pill badge */
+      .coming-pill {
+        display: inline-flex; align-items: center; gap: 6px;
+        background: rgba(59,130,246,0.1);
+        border: 1px solid rgba(59,130,246,0.28);
+        border-radius: 20px; padding: 5px 14px;
+        margin-top: 22px;
+        font-size: .72rem; font-weight: 700; letter-spacing: .16em;
+        text-transform: uppercase; color: var(--blue-300);
+      }
+      .coming-pill::before {
+        content: '';
+        width: 7px; height: 7px; border-radius: 50%;
+        background: var(--accent-sky);
+        box-shadow: 0 0 8px var(--accent-sky);
+        animation: blink 1.4s ease-in-out infinite;
+      }
+      @keyframes blink {
+        0%,100% { opacity: 1; }
+        50%      { opacity: 0.3; }
+      }
+    </style>
   </head>
-  <body
-    class="bg-background-light dark:bg-background-dark font-display text-white min-h-screen"
-  >
-    <main class="min-h-[60vh] flex items-center justify-center p-6">
-      <div class="text-center text-white/80">
-        <h1 class="text-2xl font-semibold mb-2">Explore</h1>
-        <p>Coming soon.</p>
+
+  <body>
+    <div class="particles" id="particles"></div>
+
+    <main>
+      <div class="soon-card">
+        <div class="corner-tl"></div>
+
+        <div class="icon-ring">
+          <svg viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+        </div>
+
+        <h1 class="soon-title">Explo<span>re</span></h1>
+        <p class="soon-desc">Discover players, coaches, and tournaments across India. Search by sport, district, or academy.</p>
+
+        <div class="coming-pill">Coming Soon</div>
       </div>
     </main>
 
-    <!-- Guard + Nav -->
+    <!-- Guard + Nav — untouched -->
     <script type="module">
       import { requireLogin } from "./js/core/auth.js";
       requireLogin();
     </script>
     <script type="module" src="js/nav.js"></script>
+
+    <script>
+      const pc = document.getElementById('particles');
+      const cols = ['#3B82F6','#6EA8FE','#38BDF8','#ffffff'];
+      for (let i = 0; i < 18; i++) {
+        const p = document.createElement('div');
+        p.className = 'p';
+        const s = Math.random() * 3 + 1.5;
+        p.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${9+Math.random()*12}s;animation-delay:${Math.random()*10}s;`;
+        pc.appendChild(p);
+      }
+    </script>
   </body>
 </html>
