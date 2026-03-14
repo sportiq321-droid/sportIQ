@@ -140,8 +140,8 @@ function initLogin() {
         // --- PROGRESSIVE ONBOARDING GUARD ---
         let needsOnboarding = false;
 
-        // 1. Check Step 1 (Everyone must have a name)
-        if (!me.name || me.name.trim() === "") {
+        // 1. Check Step 1 (Must have DOB to prove they passed the wizard)
+        if (!me.dob) {
           needsOnboarding = true;
         } 
         // 2. Check Step 2 (Everyone must select a sport)
