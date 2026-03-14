@@ -137,11 +137,15 @@ function initLogin() {
         msg.style.color = "green";
       }
       setTimeout(() => {
-        if (returnTo) {
-          // Redirect back to the page that requested re-auth (mobile flow)
-          window.location.href = returnTo;
+        // Check if the user has completed onboarding. 
+        // We assume onboarding is incomplete if they are missing a name.
+        if (!me.name || me.name.trim() === "") {
+          window.location.href = "details.html";
         } else {
-          window.location.href = "dashboard.html";
+          // If they came from a specific page, send them back, otherwise go to dashboard
+          const urlParams = new URLSearchParams(window.location.search);
+          const redirectUrl = urlParams.get("returnTo");
+          window.location.href = redirectUrl ? decodeURIComponent(redirectUrl) : "dashboard.html";
         }
       }, 800);
     } catch {
@@ -384,6 +388,20 @@ function initDetails() {
       if (otpErrorEl) otpErrorEl.textContent = "";
       if (mobileErrorEl) mobileErrorEl.textContent = "";
 
+      // 1. Manual Validation
+      if (!nameEl.value.trim()) return alert("Please enter your full name.");
+      if (!dobEl.value) return alert("Please select your date of birth.");
+      if (!genderEl.value) return alert("Please select your gender.");
+      if (!mobileEl.value.trim() || mobileEl.value.length < 10) return alert("Please enter a valid mobile number.");
+
+      // 2. Safe Date Parsing
+      let isoDate;
+      try {
+        isoDate = new Date(dobEl.value).toISOString();
+      } catch (e) {
+        return alert("Invalid date format. Please select a valid date.");
+      }
+
       const otpClean = otpEl.value.replace(/\s+/g, "").trim();
       if (otpClean !== "123456") {
         if (otpErrorEl) otpErrorEl.textContent = "Invalid OTP (use 123456).";
@@ -392,12 +410,13 @@ function initDetails() {
       }
 
       try {
-        const updated = await API.updateMe({
+        const payload = {
           name: nameEl.value.trim(),
-          dob: new Date(dobEl.value).toISOString(),
+          dob: isoDate,
           gender: genderEl.value,
           mobile: mobileEl.value.trim(),
-        });
+        };
+        const updated = await API.updateMe(payload);
         syncLocalSession(updated);
         showStep(2);
         toggleRoleUI();
