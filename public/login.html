@@ -330,7 +330,7 @@
   .signup a:hover { text-decoration: underline; }
 </style>
 </head>
-<body>
+<body data-page="login">
 
 <div class="bg"></div>
 <img class="olympic-img" src="data:image/png;base64,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UkJJJJIASSSYoASSSSQA0kkkgBJJJJACSSSQQQSSSSQASSSSQAkkkk0JJJJJACSSSQAkkkk0JJJJJACSSSQwSSSSQASSSSQAkkkk0JJJJJIASSSQQAkkkk0JJJIASSSSQAkkkuQQSSSSymSSSSSSSSAAAASSSSSSSSAEkkkgBJJJJIASSSQQAkkkk0JJJJJIASSSQQAkkkk0JJJJJASSSSQAkkkk0JJJJJASSSSQAkkkk0JJJJJASSSSQAkkk6AEkkkgBJJJJIASSSQQAkkkk0JJJJJIASSSQQAkkkk0JJJJJASSSSQAkkkk0JJJJJASSSSQAkkkk0JJJJJASSSSQAkkk6AEkkkgBJJJJIASSSQQAkkkk0JJJJJIASSSQQAkkkk0JJJJJASSSSQAkkkk0JJJJJASSSSQAkkkk0JJJJJASSSSQAkkk6AEkkkgBJJJJIASSSQQAkkkk0JJJJJIASSSQQAkkkk0JJJJJASSSSQAkkkk0JJJJJASSSSQAkkkk0JJJJJASSSSQAkkk6AEkkkgBJJJJIASSSQQAkkkk0JJJJJIASSSQQAkkkk0JJJJJASSSSQAkkkk0JJJJJASSSSQAkkkk0JJJJJASSSSQAkkk6AEkkkgBJJJJIASSSQQAkkkk0JJJJJIASSSQQ" alt="">
@@ -350,36 +350,41 @@
   <div class="divider"></div>
 
   <!-- Form -->
-  <div class="field">
-    <label>Email / Username</label>
-    <div class="field-inner">
-      <input type="text" placeholder="Enter your email or username" id="email">
-      <svg viewBox="0 0 24 24" style="position:absolute;left:14px;pointer-events:none"><path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2z"/><path d="M22 6l-10 7L2 6"/></svg>
+  <form id="loginForm" class="w-full">
+    <div class="field">
+      <label>Email / Username</label>
+      <div class="field-inner">
+        <input type="text" placeholder="Enter your email or username" id="email" required>
+        <svg viewBox="0 0 24 24" style="position:absolute;left:14px;pointer-events:none"><path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2z"/><path d="M22 6l-10 7L2 6"/></svg>
+      </div>
     </div>
-  </div>
 
-  <div class="field">
-    <label>Password</label>
-    <div class="field-inner">
-      <input type="password" placeholder="Enter your password" id="password">
-      <svg viewBox="0 0 24 24" style="position:absolute;left:14px;pointer-events:none"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-      <button class="eye-btn" onclick="togglePw()" type="button" id="eyebtn">
-        <svg id="eye-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-      </button>
+    <div class="field">
+      <label>Password</label>
+      <div class="field-inner">
+        <input type="password" placeholder="Enter your password" id="password" required>
+        <svg viewBox="0 0 24 24" style="position:absolute;left:14px;pointer-events:none"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        <button class="eye-btn" onclick="togglePw()" type="button" id="eyebtn">
+          <svg id="eye-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
     </div>
-  </div>
 
-  <!-- Remember + Forgot -->
-  <div class="row">
-    <label class="remember">
-      <input type="checkbox" id="remember">
-      <span>Remember Me</span>
-    </label>
-    <a href="#" class="forgot">Forgot Password?</a>
-  </div>
+    <!-- Remember + Forgot -->
+    <div class="row">
+      <label class="remember">
+        <input type="checkbox" id="remember">
+        <span>Remember Me</span>
+      </label>
+      <a href="#" class="forgot">Forgot Password?</a>
+    </div>
 
-  <!-- Login -->
-  <button class="btn-login" onclick="window.location.href='dashboard.html'">Login to SportIQ</button>
+    <!-- Login -->
+    <button type="submit" class="btn-login">Login to SportIQ</button>
+    
+    <!-- Message container for JS error outputs -->
+    <p id="loginMessage" style="text-align: center; margin-top: 10px; font-weight: 600;"></p>
+  </form>
 
   <!-- OR -->
   <div class="or-wrap">
@@ -426,5 +431,6 @@
     container.appendChild(p);
   }
 </script>
+<script type="module" src="js/auth-pages.js"></script>
 </body>
 </html>
