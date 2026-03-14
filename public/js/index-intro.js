@@ -11,7 +11,7 @@
       setTimeout(() => btn.classList.remove("ring-4", "ring-primary/50"), 200);
 
       // Navigate to Register
-      window.location.href = "register.html";
+      window.location.href = "signup.html";
     });
   });
 })();
