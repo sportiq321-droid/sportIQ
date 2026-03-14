@@ -1,0 +1,9 @@
+{
+  "outputDirectory": "public",
+  "rewrites": [
+    {
+      "source": "/api/:match*",
+      "destination": "https://sportiq321-sportiqbackend.hf.space/api/:match*"
+    }
+  ]
+}

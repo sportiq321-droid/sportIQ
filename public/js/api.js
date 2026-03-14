@@ -2,9 +2,7 @@
 // Small API client for backend auth/onboarding/profile/assessments.
 // All requests send/receive JSON and include the httpOnly cookie automatically.
 
-const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-  ? '' 
-  : 'https://Sportiq321-sportiqbackend.hf.space';
+const API_BASE = "";
 
 const API = {
   // ==================== AUTH ====================
