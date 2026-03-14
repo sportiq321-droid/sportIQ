@@ -185,7 +185,7 @@ function initLogin() {
         }
         // ------------------------------------
       }, 800);
-    } catch {
+    } catch (err) {
       if (window.setButtonLoading) window.setButtonLoading(btn, false);
 
       if (msg) {
