@@ -122,9 +122,9 @@ function initLogin() {
   const form = document.getElementById("loginForm");
   if (!form) return;
   form.setAttribute("novalidate", "");
-  const msg = document.getElementById("msg");
-  const identifierEl = document.getElementById("loginEmail");
-  const passEl = document.getElementById("loginPass");
+  const msg = document.getElementById("loginMessage");
+  const identifierEl = document.getElementById("email");
+  const passEl = document.getElementById("password");
   const showToggle = document.getElementById("showLoginPass");
 
   // Read optional returnTo for post-login redirection (e.g., assess-situps.html?results=true)
