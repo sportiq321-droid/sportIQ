@@ -81,6 +81,9 @@ function initRegister() {
       return;
     }
 
+    const btn = form.querySelector('button[type="submit"]');
+    if (window.setButtonLoading) window.setButtonLoading(btn, true);
+
     try {
       const me = await API.register({ username, email, password: pass });
       syncLocalSession(me);
@@ -90,13 +93,23 @@ function initRegister() {
       }
       setTimeout(() => (window.location.href = "details.html"), 800);
     } catch (err) {
-      const message = (err && err.message) || "Registration failed";
-      if (message.toLowerCase().includes("exists")) {
-        if (emailErrorEl)
-          emailErrorEl.textContent = "Email or username already exists.";
+      if (window.setButtonLoading) window.setButtonLoading(btn, false);
+      
+      // Check HTTP Status Code for exact error routing
+      if (err.status === 409) {
+        if (emailErrorEl) emailErrorEl.textContent = "Email or username already exists.";
+        else if (msg) {
+          msg.textContent = "❌ Email or username already exists.";
+          msg.style.color = "red";
+        }
+      } else if (err.message && err.message.includes("Failed to fetch")) {
+        if (msg) {
+          msg.textContent = "❌ Network error. Please check your connection.";
+          msg.style.color = "red";
+        }
       } else {
         if (msg) {
-          msg.textContent = "❌ " + message;
+          msg.textContent = "❌ " + (err.message || "Registration failed. Please try again.");
           msg.style.color = "red";
         }
       }
@@ -129,6 +142,16 @@ function initLogin() {
     e.preventDefault();
     const identifier = identifierEl.value.trim();
     const pass = passEl.value;
+    const btn = form.querySelector('button[type="submit"]');
+
+    // Use the global utility to prevent double-clicks
+    if (window.setButtonLoading) window.setButtonLoading(btn, true);
+    
+    if (msg) {
+      msg.textContent = "";
+      msg.style.color = "red";
+    }
+
     try {
       const me = await API.login({ identifier, password: pass });
       syncLocalSession(me);
@@ -163,8 +186,14 @@ function initLogin() {
         // ------------------------------------
       }, 800);
     } catch {
+      if (window.setButtonLoading) window.setButtonLoading(btn, false);
+
       if (msg) {
-        msg.textContent = "❌ Invalid email or password";
+        if (err.message && err.message.includes("Failed to fetch")) {
+          msg.textContent = "❌ Network error. Please check your connection.";
+        } else {
+          msg.textContent = `❌ ${err.message || "Invalid email or password"}`;
+        }
         msg.style.color = "red";
       }
     }

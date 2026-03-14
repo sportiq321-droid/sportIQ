@@ -420,7 +420,9 @@ async function req(url, method = "GET", body) {
 
   if (!res.ok) {
     const msg = data?.error || res.statusText || "Request failed";
-    throw new Error(msg);
+    const error = new Error(msg);
+    error.status = res.status; // Attach the HTTP status code
+    throw error;
   }
   return data;
 }
@@ -438,7 +440,9 @@ async function reqForm(url, method = "POST", formData) {
 
   if (!res.ok) {
     const msg = data?.error || res.statusText || "Request failed";
-    throw new Error(msg);
+    const error = new Error(msg);
+    error.status = res.status; // Attach the HTTP status code
+    throw error;
   }
   return data;
 }
