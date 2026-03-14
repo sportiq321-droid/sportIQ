@@ -140,16 +140,17 @@ function initLogin() {
         // --- PROGRESSIVE ONBOARDING GUARD ---
         let needsOnboarding = false;
 
+        // Helper to check if a value is truly empty (handles primitive null and string "null")
+        const isEmpty = (val) => !val || String(val).trim() === "" || String(val).trim() === "null";
+
         // 1. Check Step 1 (Must have DOB to prove they passed the wizard)
-        if (!me.dob) {
+        if (isEmpty(me.dob)) {
           needsOnboarding = true;
         } 
         // 2. Check Step 2 (Everyone must select a sport)
-        else if (!me.sport || me.sport.trim() === "") {
+        else if (isEmpty(me.sport)) {
           needsOnboarding = true;
         }
-        // Note: We intentionally do NOT check for onboardingDocs here. 
-        // We let them into the dashboard and will restrict their privileges there if unverified.
 
         // Route the user
         if (needsOnboarding) {
