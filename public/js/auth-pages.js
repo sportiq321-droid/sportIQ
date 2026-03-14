@@ -137,16 +137,29 @@ function initLogin() {
         msg.style.color = "green";
       }
       setTimeout(() => {
-        // Check if the user has completed onboarding. 
-        // We assume onboarding is incomplete if they are missing a name.
+        // --- PROGRESSIVE ONBOARDING GUARD ---
+        let needsOnboarding = false;
+
+        // 1. Check Step 1 (Everyone must have a name)
         if (!me.name || me.name.trim() === "") {
+          needsOnboarding = true;
+        } 
+        // 2. Check Step 2 (Everyone must select a sport)
+        else if (!me.sport || me.sport.trim() === "") {
+          needsOnboarding = true;
+        }
+        // Note: We intentionally do NOT check for onboardingDocs here. 
+        // We let them into the dashboard and will restrict their privileges there if unverified.
+
+        // Route the user
+        if (needsOnboarding) {
           window.location.href = "details.html";
         } else {
-          // If they came from a specific page, send them back, otherwise go to dashboard
           const urlParams = new URLSearchParams(window.location.search);
           const redirectUrl = urlParams.get("returnTo");
           window.location.href = redirectUrl ? decodeURIComponent(redirectUrl) : "dashboard.html";
         }
+        // ------------------------------------
       }, 800);
     } catch {
       if (msg) {
