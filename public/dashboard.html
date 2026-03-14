@@ -451,39 +451,9 @@
 </nav>
 
 <!-- ── MAIN ── -->
-<div class="main">
-
-  <!-- Welcome Strip -->
-  <div class="welcome-strip" style="animation-delay:0.1s">
-    <div>
-      <h2>Welcome back, <span id="welcomeName">Player</span>! 👋</h2>
-      <p>ROLE: PLAYER &nbsp;•&nbsp; SPORT: CRICKET</p>
-    </div>
-    <div class="impact-badge">
-      <div class="score">742</div>
-      <div class="label">Impact Score</div>
-    </div>
-  </div>
-
-  <!-- Assessment Section -->
-  <div class="sec-title" style="animation:fadeUp 0.6s ease 0.4s both">🏋️ Assessments</div>
-  <div class="card" style="animation-delay:0.45s">
-    <div class="assess-inner">
-      <div class="assess-icon">
-        <svg viewBox="0 0 24 24"><path d="M6 5v14M18 5v14M6 12h12M3 8h3M18 8h3M3 16h3M18 16h3"/></svg>
-      </div>
-      <div class="assess-info">
-        <h3>Start Assessment</h3>
-        <p>Sit-ups &nbsp;•&nbsp; 800m / 1.6km Run &nbsp;•&nbsp; Broad Jump</p>
-      </div>
-    </div>
-    <div class="assess-btns">
-      <button class="btn-start" onclick="window.location='assessments.html'">Start</button>
-      <button class="btn-myassess" onclick="window.location='my-assessments.html'">My Assessments</button>
-    </div>
-  </div>
-
-</div>
+<main id="dashboardContent" class="dashboard-content pb-24">
+    <!-- Role-specific dashboard will be injected here by dashboards.js -->
+</main>
 
 <!-- ── PROFILE DRAWER ── -->
 <div class="drawer-backdrop" id="drawerBackdrop" onclick="closeProfile()"></div>

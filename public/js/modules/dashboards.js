@@ -76,32 +76,64 @@ if (!window.__govFilterChange) {
   };
 }
 
-// ==================== PLAYER DASHBOARD (UNCHANGED) ====================
+// ==================== PLAYER DASHBOARD ====================
 export async function renderPlayerDashboard() {
-  const latestAssessment = await API.getMyAssessments().catch(() => null);
-  const latest = latestAssessment?.items?.[0];
-  const lastResultText = latest
-    ? `Last result: ${formatLastResult(latest)}`
-    : "";
+  const user = getCurrentUser();
+  
+  // Safe fallbacks for data
+  const name = user?.name || user?.username || "Player";
+  const sport = (user?.sport || "Not selected").toUpperCase();
+  const impactScore = user?.impactScore || 0;
+
+  // Fetch assessments for the bottom section
+  const assessments = await API.getMyAssessments().catch(() => null);
+  const items = assessments?.data?.items || assessments?.items || [];
+  let lastResultText = "";
+  if (items.length > 0) {
+    lastResultText = "Latest: " + formatLastResult(items[0]);
+  }
 
   return `
-    <h1 class="text-white text-2xl font-semibold mb-4">Assessments</h1>
-    <section class="glassmorphic rounded-2xl p-5 shadow-lg border border-white/10 text-white">
+    <!-- Top Welcome & Impact Score Banner -->
+    <div class="glassmorphic rounded-2xl p-6 shadow-lg border border-white/10 text-white mb-6 relative overflow-hidden">
+      <!-- Decorative background glow -->
+      <div class="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-blue-500 rounded-full blur-3xl opacity-20 pointer-events-none"></div>
+      
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
+        <div>
+          <h1 class="text-2xl md:text-3xl font-bold tracking-tight">
+            Welcome back, <span class="text-blue-400">${escapeHTML(name)}</span>! 👋
+          </h1>
+          <p class="text-white/70 text-sm mt-1 tracking-wider font-medium">
+            ROLE: PLAYER &nbsp;•&nbsp; SPORT: ${escapeHTML(sport)}
+          </p>
+        </div>
+        
+        <div class="text-right border-l border-white/10 pl-6">
+          <p class="text-4xl font-black text-blue-400 leading-none">${impactScore}</p>
+          <p class="text-white/50 text-xs font-bold tracking-widest mt-1 uppercase">Impact Score</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Assessments Section -->
+    <div class="flex items-center gap-2 mb-4">
+      <span class="text-yellow-500">🏆</span>
+      <h2 class="text-white text-lg font-bold tracking-wider">ASSESSMENTS</h2>
+    </div>
+    
+    <section class="glassmorphic rounded-2xl p-5 shadow-lg border border-white/10 text-white transition hover:border-white/20">
       <div class="flex items-start gap-4">
-        <div class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center text-primary shrink-0" aria-hidden="true">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 256 256">
-            <path d="M248,120H232V96a8,8,0,0,0-16,0v24H192V96a8,8,0,0,0-16,0v24H80V96a8,8,0,0,0-16,0v24H40V96a8,8,0,0,0-16,0v24H8a8,8,0,0,0,0,16H24v24a8,8,0,0,0,16,0V136H64v24a8,8,0,0,0,16,0V136H176v24a8,8,0,0,0,16,0V136h24v24a8,8,0,0,0,16,0V136h16a8,8,0,0,0,0-16Z"/>
-          </svg>
+        <div class="w-12 h-12 rounded-xl bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-blue-400 shrink-0">
+          <span class="material-symbols-outlined">fitness_center</span>
         </div>
         <div class="flex-1">
-          <h2 class="text-xl font-semibold">Start Assessment</h2>
-          <p class="text-white/70 text-sm">Sit-ups • 800m/1.6km Run • Broad Jump</p>
-          <p class="text-white/60 text-sm mt-3 ${
-            !lastResultText ? "hidden" : ""
-          }">${lastResultText}</p>
-          <div class="mt-4 flex gap-3">
-            <a href="assess.html" class="btn btn-neon-blue inline-block">Start</a>
-            <a href="my-assessments.html" class="inline-block px-5 py-3 rounded-xl bg-white/10 text-white hover:bg-white/15 border border-white/10 transition">My Assessments</a>
+          <h3 class="text-xl font-semibold">Start Assessment</h3>
+          <p class="text-white/60 text-sm mt-1">Sit-ups • 800m/1.6km Run • Broad Jump</p>
+          <p class="text-green-400 text-sm mt-2 font-medium ${!lastResultText ? "hidden" : ""}">${lastResultText}</p>
+          <div class="mt-5 flex gap-3">
+            <a href="assess.html" class="px-6 py-2.5 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-500 transition shadow-lg shadow-blue-500/30">Start</a>
+            <a href="my-assessments.html" class="px-6 py-2.5 rounded-lg bg-white/5 text-white hover:bg-white/10 border border-white/10 transition">History</a>
           </div>
         </div>
       </div>
