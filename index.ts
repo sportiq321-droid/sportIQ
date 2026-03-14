@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from "express";
+import express, { Request, Response, NextFunction, CookieOptions } from "express";
 import cookieParser from "cookie-parser";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
@@ -125,13 +125,27 @@ function signToken(userId: string) {
 }
 
 // Per-request cookie options (mobile-safe)
-function getCookieOptions(req: Request) {
-  return {
-    httpOnly: true,
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    secure: true, 
-    sameSite: "none" as const,
-  };
+function getCookieOptions(req: Request): CookieOptions {
+  const hostname = req.hostname || "";
+  const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
+  
+  // If it's strictly local HTTP, use lax/false. 
+  // If it's Codespaces (.github.dev) or Production (Vercel/HF), use none/true.
+  if (isLocalhost) {
+    return {
+      httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      secure: false, 
+      sameSite: "lax",
+    };
+  } else {
+    return {
+      httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      secure: true, 
+      sameSite: "none",
+    };
+  }
 }
 
 function requireAuth(
@@ -508,10 +522,10 @@ app.post("/api/auth/register", async (req: Request, res: Response) => {
       },
     });
 
-    // Sign cookie (mobile-safe options)
+    // MAKE SURE THESE 3 LINES EXIST:
     const token = signToken(created.id);
     const opts = getCookieOptions(req);
-    res.cookie("sid", token, { ...opts });
+    res.cookie("sid", token, opts);
 
     await logAudit("USER_REGISTERED", "User", created.id, created.id, {
       email: created.email,
