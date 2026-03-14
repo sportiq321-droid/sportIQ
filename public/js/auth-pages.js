@@ -324,12 +324,22 @@ function initDetails() {
     }
 
     // Step 3 — bind Camera/Library to distinct inputs when available (fallback to single)
+    // --- CROSS-PLATFORM CAMERA UI FIX ---
+    // Detect if the user is on a mobile device (iOS/Android)
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
     if (cameraBtn) {
-      cameraBtn.addEventListener("click", () => {
-        const input = profilePicInputCamera || profilePicInput;
-        input?.click();
-      });
+      if (!isMobile) {
+        // Hide the camera button on desktops, as they don't support HTML native capture
+        cameraBtn.style.display = "none";
+      } else {
+        cameraBtn.addEventListener("click", () => {
+          const input = document.getElementById("profilePicCamera") || document.getElementById("profilePic");
+          input?.click();
+        });
+      }
     }
+    // ------------------------------------
     if (libraryBtn) {
       libraryBtn.addEventListener("click", () => {
         const input = profilePicInputLibrary || profilePicInput;
