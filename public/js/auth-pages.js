@@ -622,8 +622,9 @@ function initDetails() {
     }
 
     function finishOnboarding() {
-      alert("Profile setup complete! Please log in.");
-      window.location.href = "login.html";
+      const urlParams = new URLSearchParams(window.location.search);
+      const redirectUrl = urlParams.get("returnTo");
+      window.location.href = redirectUrl ? decodeURIComponent(redirectUrl) : "dashboard.html";
     }
 
     // Prefill Step 1/2
