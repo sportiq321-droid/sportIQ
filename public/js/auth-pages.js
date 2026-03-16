@@ -289,12 +289,12 @@ function initDetails() {
         if (role === "Player") {
           const chipSelected = document.querySelector('input[name="sport"]:checked');
           sportValue = chipSelected ? chipSelected.value : "";
-        } else if (role === "Coach") {
+        } else if (role === "Coach" || role === "Admin" || role === "Government Official") {
           const sportSearch = document.getElementById("sportSearch");
           sportValue = sportSearch?.value?.trim() || "";
         }
 
-        if ((role === "Player" || role === "Coach") && !sportValue) {
+        if (!sportValue) {
           if (sportError) sportError.textContent = "Please select or type a sport before adding a certificate.";
           else alert("Please select or type a sport before uploading your certificate.");
           return;
@@ -454,12 +454,9 @@ function initDetails() {
         primarySportBlock.classList.remove("hidden");
         sportChips.classList.remove("hidden");
         certificateStatus?.classList.add("hidden");
-      } else if (role === "Coach") {
+      } else if (role === "Coach" || role === "Admin" || role === "Government Official") {
         primarySportBlock.classList.remove("hidden");
         sportChips.classList.add("hidden"); // search-only
-        certificateBlock.classList.remove("hidden");
-        await refreshCertificateStatus();
-      } else if (role === "Admin" || role === "Government Official") {
         certificateBlock.classList.remove("hidden");
         await refreshCertificateStatus();
       }
@@ -543,12 +540,9 @@ function initDetails() {
       if (role === "Player") {
         needsSport = true;
         sportValue = chipSelected ? chipSelected.value : "";
-      } else if (role === "Coach") {
+      } else if (role === "Coach" || role === "Admin" || role === "Government Official") {
         needsSport = true;
         sportValue = searchValue;
-        // certificate no longer required for Coach
-      } else if (role === "Admin" || role === "Government Official") {
-        // certificate no longer required for Admin/Government
       }
 
       sportError.textContent = "";

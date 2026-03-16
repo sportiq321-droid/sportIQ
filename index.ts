@@ -631,42 +631,12 @@ app.patch(
       }
 
       // Restrict role changes:
-      // - If role provided and differs from existing role:
-      //   Allow only if there exists an onboarding doc for the requested role.
       let newRole: string | undefined = undefined;
       if (role !== undefined) {
         const requested = String(role).trim();
 
-        if (requested && requested !== me.role) {
-          // ENV-GATED relax rule for Admin/Government Official
-          const allowNoDocs =
-            String(
-              process.env.ALLOW_ROLE_CHANGE_NO_DOCS || ""
-            ).toLowerCase() === "true";
-
-          const isAdminOrGov =
-            requested === "Admin" || requested === "Government Official";
-
-          if (allowNoDocs && isAdminOrGov) {
-            // allow change without onboarding doc
-            newRole = requested;
-          } else {
-            // original requirement: onboarding doc for requested role
-            const doc = await prisma.onboardingDoc.findFirst({
-              where: {
-                userId: me.id,
-                forRole: requested,
-              },
-              select: { id: true },
-            });
-            if (!doc) {
-              return res.status(403).json({ error: "Role change not allowed" });
-            }
-            newRole = requested;
-          }
-        } else {
-          // no change
-          newRole = me.role;
+        if (requested) {
+          newRole = requested;
         }
       }
 
