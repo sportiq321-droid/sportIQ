@@ -696,8 +696,9 @@ export async function renderGovDashboard() {
     <div class="px-4 py-6 mx-auto w-full max-w-4xl md:max-w-6xl lg:max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px]">
       <!-- Heading -->
       <div class="mb-6">
-        <h1 class="text-white text-3xl font-bold mb-1">Government Dashboard</h1>
+        <h1 class="text-white text-3xl font-bold mb-2">Welcome back, ${escapeHTML(me.name || me.username || "Official")}!</h1>
         <p class="text-white/60 text-sm">
+          ROLE: GOVERNMENT OFFICIAL •
           ${state ? `Region: ${escapeHTML(state)}` : "All India"}
           ${district ? ` • District: ${escapeHTML(district)}` : ""}
         </p>

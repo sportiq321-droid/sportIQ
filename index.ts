@@ -2823,9 +2823,54 @@ app.get(
       if (districtFilter) tournamentWhere.district = districtFilter;
 
       // Build user where clause (players/coaches)
-      // Note: User table doesn't have state/district, so we filter by tournaments they're registered in
       const userWhere: any = { role: "Player" };
+      if (stateFilter || districtFilter) {
+        userWhere.OR = [
+          {
+            ...(stateFilter ? { state: stateFilter } : {}),
+            ...(districtFilter ? { district: districtFilter } : {}),
+          },
+          {
+            registrations: {
+              some: {
+                tournament: {
+                  ...(stateFilter ? { state: stateFilter } : {}),
+                  ...(districtFilter ? { district: districtFilter } : {}),
+                },
+              },
+            },
+          },
+        ];
+      }
+
       const coachWhere: any = { role: "Coach" };
+      if (stateFilter || districtFilter) {
+        if (stateFilter) coachWhere.state = stateFilter;
+        if (districtFilter) coachWhere.district = districtFilter;
+      }
+
+      const achievementWhere: any = {};
+      if (stateFilter || districtFilter) {
+        // Filter achievements by their owner's region (direct or via tournaments)
+        achievementWhere.owner = {
+          OR: [
+            {
+              ...(stateFilter ? { state: stateFilter } : {}),
+              ...(districtFilter ? { district: districtFilter } : {}),
+            },
+            {
+              registrations: {
+                some: {
+                  tournament: {
+                    ...(stateFilter ? { state: stateFilter } : {}),
+                    ...(districtFilter ? { district: districtFilter } : {}),
+                  },
+                },
+              },
+            },
+          ],
+        };
+      }
 
       // Parallel queries for performance
       const [
@@ -2859,12 +2904,12 @@ app.get(
         prisma.user.count({ where: coachWhere }),
 
         // Achievements (all)
-        prisma.achievement.count(),
+        prisma.achievement.count({ where: achievementWhere }),
 
         // Achievements by status
-        prisma.achievement.count({ where: { status: "PENDING" } }),
-        prisma.achievement.count({ where: { status: "APPROVED" } }),
-        prisma.achievement.count({ where: { status: "REJECTED" } }),
+        prisma.achievement.count({ where: { ...achievementWhere, status: "PENDING" } }),
+        prisma.achievement.count({ where: { ...achievementWhere, status: "APPROVED" } }),
+        prisma.achievement.count({ where: { ...achievementWhere, status: "REJECTED" } }),
       ]);
       // Additional analytics: Registrations by state
       const regsByState = await prisma.tournamentRegistration.groupBy({
