@@ -76,7 +76,12 @@ verifyBtn.addEventListener("click", async () => {
 
     // Redirect back to Details Step 3 after a short delay
     setTimeout(() => {
-      window.location.href = "details.html?cert=uploaded#step-3";
+      const returnTo = params.get("returnTo");
+      if (returnTo) {
+        window.location.href = decodeURIComponent(returnTo);
+      } else {
+        window.location.href = "details.html?cert=uploaded#step-3";
+      }
     }, 900);
   } catch (err) {
     fileError.textContent = err.message || "Upload failed";

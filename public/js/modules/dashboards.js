@@ -918,7 +918,7 @@ async function getVerificationBannerHtml(user, roleText) {
           <p class="text-yellow-100/80 text-sm mt-1">${escapeHTML(roleText)}</p>
         </div>
       </div>
-      <a href="upload-certificate.html?role=${roleParam}" class="shrink-0 px-6 py-2.5 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 text-yellow-950 font-bold rounded-xl transition shadow-lg shadow-yellow-500/20 whitespace-nowrap text-sm">
+      <a href="upload-certificate.html?role=${roleParam}&returnTo=${encodeURIComponent('dashboard.html')}" class="shrink-0 px-6 py-2.5 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 text-yellow-950 font-bold rounded-xl transition shadow-lg shadow-yellow-500/20 whitespace-nowrap text-sm">
         Upload Certificate
       </a>
     </div>

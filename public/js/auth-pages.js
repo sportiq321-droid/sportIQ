@@ -65,6 +65,25 @@ function initRegister() {
   const pass2ErrorEl = document.getElementById("regPass2Error");
   const emailErrorEl = document.getElementById("regEmailError");
 
+  // Setup password visibility toggles
+  const togglePass = document.getElementById("toggleRegPass");
+  const togglePass2 = document.getElementById("toggleRegPass2");
+
+  if (togglePass) {
+    togglePass.addEventListener("click", () => {
+      const type = passEl.type === "password" ? "text" : "password";
+      passEl.type = type;
+      togglePass.querySelector(".material-icons").textContent = type === "password" ? "visibility_off" : "visibility";
+    });
+  }
+  if (togglePass2) {
+    togglePass2.addEventListener("click", () => {
+      const type = pass2El.type === "password" ? "text" : "password";
+      pass2El.type = type;
+      togglePass2.querySelector(".material-icons").textContent = type === "password" ? "visibility_off" : "visibility";
+    });
+  }
+
   form.onsubmit = async (e) => {
     e.preventDefault();
     if (msg) msg.textContent = "";
@@ -255,6 +274,7 @@ function initDetails() {
     const primarySportBlock = document.getElementById("primarySportBlock");
     const sportSearch = document.getElementById("sportSearch");
     const sportChips = document.getElementById("sportChips");
+    const sportSearchBlock = document.getElementById("sportSearchBlock");
     const sportError = document.getElementById("sportError");
 
     const certificateBlock = document.getElementById("certificateBlock");
@@ -470,6 +490,7 @@ function initDetails() {
 
       primarySportBlock.classList.add("hidden");
       sportChips.classList.add("hidden");
+      if (sportSearchBlock) sportSearchBlock.classList.add("hidden");
       certificateBlock.classList.add("hidden");
 
       if (role === "Player") {
@@ -479,6 +500,7 @@ function initDetails() {
       } else if (role === "Coach") {
         primarySportBlock.classList.remove("hidden");
         sportChips.classList.add("hidden"); // search-only
+        if (sportSearchBlock) sportSearchBlock.classList.remove("hidden");
         certificateBlock.classList.remove("hidden");
         await refreshCertificateStatus();
       } else if (role === "Admin" || role === "Government Official") {
