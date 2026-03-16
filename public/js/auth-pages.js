@@ -284,8 +284,26 @@ function initDetails() {
           alert("Please select a role.");
           return;
         }
+
+        let sportValue = "";
+        if (role === "Player") {
+          const chipSelected = document.querySelector('input[name="sport"]:checked');
+          sportValue = chipSelected ? chipSelected.value : "";
+        } else if (role === "Coach") {
+          const sportSearch = document.getElementById("sportSearch");
+          sportValue = sportSearch?.value?.trim() || "";
+        }
+
+        if ((role === "Player" || role === "Coach") && !sportValue) {
+          if (sportError) sportError.textContent = "Please select or type a sport before adding a certificate.";
+          else alert("Please select or type a sport before uploading your certificate.");
+          return;
+        }
+
         try {
-          await API.updateMe({ role });
+          const payload = { role };
+          if (sportValue) payload.sport = sportValue;
+          await API.updateMe(payload);
         } catch {
           // Non-fatal; proceed anyway
         }
@@ -398,6 +416,18 @@ function initDetails() {
 
     // Helper: fetch and update certificate status pill
     async function refreshCertificateStatus() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const justUploaded = urlParams.get("cert") === "uploaded";
+
+      if (justUploaded && certificateStatus) {
+        certificateStatus.classList.remove("hidden");
+        certificateStatus.innerHTML = `<span class="material-symbols-outlined" style="font-size:16px">check_circle</span><span>Successfully uploaded</span>`;
+        certificateStatus.style.color = "#4ade80"; // text-green-400
+        certificateStatus.style.background = "rgba(74, 222, 128, 0.12)";
+        certificateStatus.style.borderColor = "rgba(74, 222, 128, 0.3)";
+        return true;
+      }
+
       try {
         const doc = await API.getCertificate();
         if (doc && certificateStatus) {
