@@ -170,8 +170,8 @@ function initLogin() {
         if (isEmpty(me.dob)) {
           needsOnboarding = true;
         } 
-        // 2. Check Step 2 (Everyone must select a sport)
-        else if (isEmpty(me.sport)) {
+        // 2. Check Step 2 (Player and Coach must select a sport)
+        else if (isEmpty(me.sport) && me.role !== "Admin" && me.role !== "Government Official") {
           needsOnboarding = true;
         }
 
@@ -223,6 +223,21 @@ function initDetails() {
       2: document.getElementById("step-2"),
       3: document.getElementById("step-3"),
     };
+
+    const AVAILABLE_SPORTS = [
+      "Cricket",
+      "Football",
+      "Kabaddi",
+      "Volleyball",
+      "Badminton",
+      "Hockey"
+    ];
+
+    function getValidSport(val) {
+      if (!val) return "";
+      const norm = String(val).trim().toLowerCase();
+      return AVAILABLE_SPORTS.find(s => s.toLowerCase() === norm) || "";
+    }
 
     // Step 1 refs
     const nameEl = document.getElementById("name");
@@ -286,18 +301,25 @@ function initDetails() {
         }
 
         let sportValue = "";
+        let needsSport = false;
+        
         if (role === "Player") {
+          needsSport = true;
           const chipSelected = document.querySelector('input[name="sport"]:checked');
           sportValue = chipSelected ? chipSelected.value : "";
-        } else if (role === "Coach" || role === "Admin" || role === "Government Official") {
+        } else if (role === "Coach") {
+          needsSport = true;
           const sportSearch = document.getElementById("sportSearch");
           sportValue = sportSearch?.value?.trim() || "";
         }
 
-        if (!sportValue) {
-          if (sportError) sportError.textContent = "Please select or type a sport before adding a certificate.";
-          else alert("Please select or type a sport before uploading your certificate.");
-          return;
+        if (needsSport) {
+          sportValue = getValidSport(sportValue);
+          if (!sportValue) {
+            if (sportError) sportError.textContent = `Please select a valid sport: ${AVAILABLE_SPORTS.join(", ")}`;
+            else alert(`Please select a valid sport: ${AVAILABLE_SPORTS.join(", ")}`);
+            return;
+          }
         }
 
         try {
@@ -454,9 +476,12 @@ function initDetails() {
         primarySportBlock.classList.remove("hidden");
         sportChips.classList.remove("hidden");
         certificateStatus?.classList.add("hidden");
-      } else if (role === "Coach" || role === "Admin" || role === "Government Official") {
+      } else if (role === "Coach") {
         primarySportBlock.classList.remove("hidden");
         sportChips.classList.add("hidden"); // search-only
+        certificateBlock.classList.remove("hidden");
+        await refreshCertificateStatus();
+      } else if (role === "Admin" || role === "Government Official") {
         certificateBlock.classList.remove("hidden");
         await refreshCertificateStatus();
       }
@@ -540,7 +565,7 @@ function initDetails() {
       if (role === "Player") {
         needsSport = true;
         sportValue = chipSelected ? chipSelected.value : "";
-      } else if (role === "Coach" || role === "Admin" || role === "Government Official") {
+      } else if (role === "Coach") {
         needsSport = true;
         sportValue = searchValue;
       }
@@ -548,9 +573,12 @@ function initDetails() {
       sportError.textContent = "";
       certError.textContent = "";
 
-      if (needsSport && !sportValue) {
-        sportError.textContent = "Please select or type a sport.";
-        return;
+      if (needsSport) {
+        sportValue = getValidSport(sportValue);
+        if (!sportValue) {
+          sportError.textContent = `Please select a valid sport: ${AVAILABLE_SPORTS.join(", ")}`;
+          return;
+        }
       }
 
       try {
@@ -624,7 +652,14 @@ function initDetails() {
     // Initial step choice (honor hash to force Step 2 on return)
     const isEmpty = (val) => !val || String(val).trim() === "" || String(val).trim() === "null";
     const hasStep1Data = !isEmpty(u.name) && !isEmpty(u.dob) && !isEmpty(u.gender) && !isEmpty(u.mobile);
-    const hasStep2Data = Boolean(u.role && u.sport && String(u.sport).trim() !== "" && String(u.sport).trim() !== "null");
+    const hasStep2Data = Boolean(
+      u.role && 
+      (
+        (u.role === "Admin" || u.role === "Government Official") 
+          ? true 
+          : (!isEmpty(u.sport))
+      )
+    );
     const hash = (window.location.hash || "").toLowerCase();
 
     if (hash === "#step-1") {
