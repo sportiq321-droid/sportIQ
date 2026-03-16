@@ -315,12 +315,12 @@ export async function renderAdminDashboard() {
       limit: 5,
     });
 
-    const total = stats?.data?.totalTournaments ?? 0;
-    const published = stats?.data?.publishedTournaments ?? 0;
-    const draft = stats?.data?.draftTournaments ?? 0;
-    const active = stats?.data?.activeTournaments ?? 0;
-    const pending = stats?.data?.pendingApprovals ?? 0;
-    const registrations = stats?.data?.totalRegistrations ?? 0;
+    const total = stats?.totalTournaments ?? 0;
+    const published = stats?.publishedTournaments ?? 0;
+    const draft = stats?.draftTournaments ?? 0;
+    const active = stats?.activeTournaments ?? 0;
+    const pending = stats?.pendingApprovals ?? 0;
+    const registrations = stats?.totalRegistrations ?? 0;
 
     return `
     <div class="admin-dashboard-container px-4 py-6 max-w-7xl mx-auto">
@@ -330,7 +330,7 @@ export async function renderAdminDashboard() {
         <h1 class="text-white text-3xl font-bold mb-2">Welcome back, ${escapeHTML(
           admin.name || admin.username
         )}!</h1>
-        <p class="text-white/60">Here's what's happening with your tournaments</p>
+        <p class="text-white/60">ROLE: ADMIN • Here's what's happening with your tournaments</p>
       </div>
 
       <!-- Metrics Grid -->
