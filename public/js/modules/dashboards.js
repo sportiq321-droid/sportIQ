@@ -141,39 +141,154 @@ export async function renderPlayerDashboard() {
   `;
 }
 
-// ==================== COACH DASHBOARD (UNCHANGED) ====================
+// ==================== COACH DASHBOARD ====================
 export async function renderCoachDashboard() {
-  // Fetch pending assessments to get the count.
-  const pendingAssessments = await API.getPendingAssessments().catch(
-    () => null
-  );
-  const count = pendingAssessments?.items?.length || 0;
+  const user = getCurrentUser();
+  
+  // Safe fallbacks for data
+  const name = user?.name || user?.username || "Coach";
+  const sport = (user?.sport || "Not selected").toUpperCase();
 
-  // Return the HTML for the dashboard content.
+  // Safely fetch available KPI data
+  let assessmentsCount = 0;
+  try {
+    if (typeof API.getPendingAssessments === "function") {
+      const pendingAssessments = await API.getPendingAssessments().catch(() => null);
+      assessmentsCount = pendingAssessments?.items?.length || 0;
+    }
+  } catch (err) {
+    console.error("Failed to load assessments count", err);
+  }
+
+  let achievementsCount = 0;
+  try {
+    if (typeof API.getPendingAchievements === "function") {
+      const pendingAchievements = await API.getPendingAchievements().catch(() => null);
+      achievementsCount = pendingAchievements?.items?.length || 0;
+    }
+  } catch (err) {
+    console.error("Failed to load achievements count", err);
+  }
+
+  let activeSchedulesCount = 0;
+  try {
+    if (typeof API.getCoachReport === "function") {
+      const report = await API.getCoachReport().catch(() => null);
+      activeSchedulesCount = report?.upcomingSessions7d || 0;
+    } else if (typeof API.getCoachSchedules === "function" && user?.id) {
+      const schedules = await API.getCoachSchedules(user.id).catch(() => null);
+      activeSchedulesCount = schedules?.items?.length || 0;
+    }
+  } catch (err) {
+    console.error("Failed to load active schedules count", err);
+  }
+
   return `
-    <h1 class="text-white text-2xl font-semibold mb-4">Coach Dashboard</h1>
-    
-    <a href="coachVerifyLand.html" class="block glassmorphic rounded-2xl p-5 text-white border border-white/10 shadow-lg transition hover:shadow-xl hover:border-white/20">
-      <div class="flex items-start justify-between gap-3">
+    <!-- Top Welcome Banner -->
+    <div class="glassmorphic rounded-2xl p-6 shadow-lg border border-white/10 text-white mb-6 relative overflow-hidden">
+      <!-- Decorative background glow -->
+      <div class="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-green-500 rounded-full blur-3xl opacity-20 pointer-events-none"></div>
+      
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
         <div>
-          <h2 class="text-xl font-semibold">Verification Center</h2>
-          <p class="text-white/70 text-sm">Review pending assessments and achievements from players.</p>
+          <h1 class="text-2xl md:text-3xl font-bold tracking-tight">
+            Welcome back, <span class="text-green-400">${escapeHTML(name)}</span>! 👋
+          </h1>
+          <p class="text-white/70 text-sm mt-1 tracking-wider font-medium">
+            ROLE: COACH &nbsp;•&nbsp; SPORT: ${escapeHTML(sport)}
+          </p>
         </div>
-        
-        <!-- This badge only appears if there are pending items -->
-        <span class="${
-          count > 0 ? "" : "hidden"
-        } min-w-[28px] h-7 px-2 inline-flex items-center justify-center rounded-full bg-primary text-white text-sm font-semibold">
-          ${count}
-        </span>
+      </div>
+    </div>
+
+    <!-- KPI Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div class="glassmorphic rounded-xl p-5 border border-white/10 flex items-center justify-between hover:border-white/20 transition">
+        <div>
+          <p class="text-white/70 text-sm font-medium mb-1">Pending Assessments</p>
+          <p class="text-white text-3xl font-bold">${assessmentsCount}</p>
+        </div>
+        <div class="w-12 h-12 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400">
+          <span class="material-symbols-outlined">fitness_center</span>
+        </div>
       </div>
 
-      <div class="mt-4">
-        <span class="inline-block px-5 py-3 rounded-xl bg-primary text-white font-semibold hover:bg-primary/90 transition">
-          Open Verify
-        </span>
+      <div class="glassmorphic rounded-xl p-5 border border-white/10 flex items-center justify-between hover:border-white/20 transition">
+        <div>
+          <p class="text-white/70 text-sm font-medium mb-1">Pending Achievements</p>
+          <p class="text-white text-3xl font-bold">${achievementsCount}</p>
+        </div>
+        <div class="w-12 h-12 rounded-lg bg-yellow-500/20 flex items-center justify-center text-yellow-400">
+          <span class="material-symbols-outlined">emoji_events</span>
+        </div>
       </div>
-    </a>
+
+      <div class="glassmorphic rounded-xl p-5 border border-white/10 flex items-center justify-between hover:border-white/20 transition">
+        <div>
+          <p class="text-white/70 text-sm font-medium mb-1">Active Schedules</p>
+          <p class="text-white text-3xl font-bold">${activeSchedulesCount}</p>
+        </div>
+        <div class="w-12 h-12 rounded-lg bg-purple-500/20 flex items-center justify-center text-purple-400">
+          <span class="material-symbols-outlined">calendar_month</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="mb-8">
+      <h2 class="text-white text-xl font-semibold mb-4">Quick Actions</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <a href="coachVerifyLand.html" class="rounded-xl p-5 border bg-gradient-to-br from-green-600/20 to-green-400/10 border-green-400/30 hover:from-green-600/25 hover:to-green-400/15 transition group">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-lg bg-green-500/20 flex items-center justify-center text-green-300 group-hover:bg-green-500/30 transition">
+              <span class="material-symbols-outlined">verified</span>
+            </div>
+            <div>
+              <h3 class="text-white font-semibold">Verify</h3>
+              <p class="text-white/70 text-sm">Review pending items</p>
+            </div>
+          </div>
+        </a>
+        
+        <a href="schedulesLand.html" class="rounded-xl p-5 border bg-gradient-to-br from-blue-600/20 to-blue-400/10 border-blue-400/30 hover:from-blue-600/25 hover:to-blue-400/15 transition group">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-300 group-hover:bg-blue-500/30 transition">
+              <span class="material-symbols-outlined">calendar_month</span>
+            </div>
+            <div>
+              <h3 class="text-white font-semibold">Schedules</h3>
+              <p class="text-white/70 text-sm">Manage team events</p>
+            </div>
+          </div>
+        </a>
+
+        <a href="coach-reports.html" class="rounded-xl p-5 border bg-gradient-to-br from-purple-600/20 to-purple-400/10 border-purple-400/30 hover:from-purple-600/25 hover:to-purple-400/15 transition group">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-lg bg-purple-500/20 flex items-center justify-center text-purple-300 group-hover:bg-purple-500/30 transition">
+              <span class="material-symbols-outlined">insights</span>
+            </div>
+            <div>
+              <h3 class="text-white font-semibold">Reports</h3>
+              <p class="text-white/70 text-sm">View player analytics</p>
+            </div>
+          </div>
+        </a>
+
+        <a href="viewPlayers.html" class="rounded-xl p-5 border bg-gradient-to-br from-orange-600/20 to-orange-400/10 border-orange-400/30 hover:from-orange-600/25 hover:to-orange-400/15 transition group">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-lg bg-orange-500/20 flex items-center justify-center text-orange-300 group-hover:bg-orange-500/30 transition">
+              <span class="material-symbols-outlined">groups</span>
+            </div>
+            <div>
+              <h3 class="text-white font-semibold">My Players</h3>
+              <p class="text-white/70 text-sm">Manage your roster</p>
+            </div>
+          </div>
+        </a>
+
+      </div>
+    </div>
   `;
 }
 
