@@ -183,6 +183,8 @@ export async function renderCoachDashboard() {
     console.error("Failed to load active schedules count", err);
   }
 
+  const bannerHtml = await getVerificationBannerHtml(user, "Upload your verification document to unlock trusted coach status.");
+
   return `
     <!-- Top Welcome Banner -->
     <div class="glassmorphic rounded-2xl p-6 shadow-lg border border-white/10 text-white mb-6 relative overflow-hidden">
@@ -200,6 +202,8 @@ export async function renderCoachDashboard() {
         </div>
       </div>
     </div>
+
+    ${bannerHtml}
 
     <!-- KPI Grid -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
@@ -331,6 +335,8 @@ export async function renderAdminDashboard() {
         day: "numeric",
       });
     };
+    
+    const bannerHtml = await getVerificationBannerHtml(admin, "Upload a verification document to activate your organizer credibility.");
 
     return `
     <div class="admin-dashboard-container px-4 py-6 max-w-7xl mx-auto">
@@ -342,6 +348,8 @@ export async function renderAdminDashboard() {
         )}!</h1>
         <p class="text-white/60">ROLE: ADMIN • Here's what's happening with your tournaments</p>
       </div>
+
+      ${bannerHtml}
 
       <!-- Metrics Grid -->
       <div class="metrics-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
@@ -682,6 +690,8 @@ export async function renderGovDashboard() {
   const onChangeState = `window.__govFilterChange && window.__govFilterChange('state', this.value)`;
   const onChangeDistrict = `window.__govFilterChange && window.__govFilterChange('district', this.value)`;
 
+  const bannerHtml = await getVerificationBannerHtml(me, "Upload a verification document to complete official verification.");
+
   return `
     <div class="px-4 py-6 mx-auto w-full max-w-4xl md:max-w-6xl lg:max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px]">
       <!-- Heading -->
@@ -731,6 +741,8 @@ export async function renderGovDashboard() {
           </div>
         </div>
       </div>
+
+      ${bannerHtml}
 
       <!-- KPI Grid -->
       <div class="metrics-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
@@ -884,6 +896,34 @@ export async function renderGovDashboard() {
 }
 
 // ==================== HELPER FUNCTIONS ====================
+
+async function getVerificationBannerHtml(user, roleText) {
+  if (!user || user.role === "Player") return "";
+  try {
+    const cert = await API.getCertificate();
+    if (cert) return ""; // Certificate exists, do not show banner
+  } catch (e) {
+    return ""; // Fail safely if the API request errors out
+  }
+
+  const roleParam = encodeURIComponent(user.role);
+  return `
+    <div class="glassmorphic rounded-2xl p-5 mb-6 border border-yellow-500/30 bg-yellow-500/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div class="flex items-start sm:items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-yellow-500/20 border border-yellow-500/30 flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-yellow-400">verified</span>
+        </div>
+        <div>
+          <h3 class="text-yellow-400 font-bold text-lg leading-tight">Add a certificate to verify yourself</h3>
+          <p class="text-yellow-100/80 text-sm mt-1">${escapeHTML(roleText)}</p>
+        </div>
+      </div>
+      <a href="upload-certificate.html?role=${roleParam}" class="shrink-0 px-6 py-2.5 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 text-yellow-950 font-bold rounded-xl transition shadow-lg shadow-yellow-500/20 whitespace-nowrap text-sm">
+        Upload Certificate
+      </a>
+    </div>
+  `;
+}
 
 // HTML escaping
 function escapeHTML(str = "") {
