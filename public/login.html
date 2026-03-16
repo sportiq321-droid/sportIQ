@@ -166,7 +166,7 @@
     position: relative;
     display: flex; align-items: center;
   }
-  .field-inner svg {
+  .field-inner > svg {
     position: absolute; left: 14px;
     width: 18px; height: 18px;
     stroke: rgba(59,130,246,0.5); fill: none;
@@ -192,7 +192,7 @@
     background: rgba(59,130,246,0.08);
     box-shadow: 0 0 0 3px rgba(59,130,246,0.12), 0 0 20px rgba(59,130,246,0.08);
   }
-  .field input:focus + svg, .field-inner:focus-within svg {
+  .field input:focus + svg, .field-inner:focus-within > svg {
     stroke: var(--blue-400);
   }
 
