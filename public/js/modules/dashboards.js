@@ -322,6 +322,16 @@ export async function renderAdminDashboard() {
     const pending = stats?.pendingApprovals ?? 0;
     const registrations = stats?.totalRegistrations ?? 0;
 
+    const localFormatDate = (isoString) => {
+      if (!isoString) return "-";
+      const d = new Date(isoString);
+      return d.toLocaleDateString(undefined, {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      });
+    };
+
     return `
     <div class="admin-dashboard-container px-4 py-6 max-w-7xl mx-auto">
       
@@ -341,10 +351,7 @@ export async function renderAdminDashboard() {
           <div class="flex items-start justify-between mb-3">
             <span class="text-white/70 text-sm font-medium">Total Tournaments</span>
             <div class="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
-              <svg class="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
-                <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
-              </svg>
+              <span class="material-symbols-outlined text-blue-400">sports_score</span>
             </div>
           </div>
           <p class="text-white text-3xl font-bold">${total}</p>
@@ -355,9 +362,7 @@ export async function renderAdminDashboard() {
           <div class="flex items-start justify-between mb-3">
             <span class="text-white/70 text-sm font-medium">Published</span>
             <div class="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center">
-              <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-              </svg>
+              <span class="material-symbols-outlined text-green-400">task_alt</span>
             </div>
           </div>
           <p class="text-white text-3xl font-bold">${published}</p>
@@ -368,10 +373,7 @@ export async function renderAdminDashboard() {
           <div class="flex items-start justify-between mb-3">
             <span class="text-white/70 text-sm font-medium">Drafts</span>
             <div class="w-10 h-10 rounded-lg bg-gray-500/20 flex items-center justify-center">
-              <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"/>
-                <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"/>
-              </svg>
+              <span class="material-symbols-outlined text-gray-400">draft</span>
             </div>
           </div>
           <p class="text-white text-3xl font-bold">${draft}</p>
@@ -382,9 +384,7 @@ export async function renderAdminDashboard() {
           <div class="flex items-start justify-between mb-3">
             <span class="text-white/70 text-sm font-medium">Total Registrations</span>
             <div class="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
-              <svg class="w-5 h-5 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
-              </svg>
+              <span class="material-symbols-outlined text-purple-400">groups</span>
             </div>
           </div>
           <p class="text-white text-3xl font-bold">${registrations}</p>
@@ -395,9 +395,7 @@ export async function renderAdminDashboard() {
           <div class="flex items-start justify-between mb-3">
             <span class="text-white/70 text-sm font-medium">Pending Approvals</span>
             <div class="w-10 h-10 rounded-lg bg-orange-500/20 flex items-center justify-center">
-              <svg class="w-5 h-5 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
-              </svg>
+              <span class="material-symbols-outlined text-orange-400">hourglass_top</span>
             </div>
           </div>
           <p class="text-white text-3xl font-bold">${pending}</p>
@@ -408,9 +406,7 @@ export async function renderAdminDashboard() {
           <div class="flex items-start justify-between mb-3">
             <span class="text-white/70 text-sm font-medium">Active Now</span>
             <div class="w-10 h-10 rounded-lg bg-red-500/20 flex items-center justify-center">
-              <svg class="w-5 h-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>
-              </svg>
+              <span class="material-symbols-outlined text-red-400">play_circle</span>
             </div>
           </div>
           <p class="text-white text-3xl font-bold">${active}</p>
@@ -421,35 +417,52 @@ export async function renderAdminDashboard() {
       <!-- Quick Actions -->
       <div class="quick-actions mb-8">
         <h2 class="text-white text-xl font-semibold mb-4">Quick Actions</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           
-        <!-- Create Tournament (indigo accent) -->
         <a href="admintournament.html" class="rounded-xl p-5 border bg-gradient-to-br from-indigo-600/20 to-indigo-400/10 border-indigo-400/30 hover:from-indigo-600/25 hover:to-indigo-400/15 transition group">
           <div class="flex items-center gap-4">
             <div class="w-12 h-12 rounded-lg bg-indigo-500/20 flex items-center justify-center text-indigo-300 group-hover:bg-indigo-500/30 transition">
-              <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"/>
-              </svg>
+              <span class="material-symbols-outlined">add_circle</span>
             </div>
             <div>
-              <h3 class="text-white font-semibold">Create Tournament</h3>
-              <p class="text-white/70 text-sm">Set up a new tournament</p>
+              <h3 class="text-white font-semibold">Create</h3>
+              <p class="text-white/70 text-sm">New tournament</p>
             </div>
           </div>
         </a>
         
-        <!-- View All Tournaments (fuchsia accent) -->
         <a href="adminregistrations.html" class="rounded-xl p-5 border bg-gradient-to-br from-fuchsia-600/20 to-fuchsia-400/10 border-fuchsia-400/30 hover:from-fuchsia-600/25 hover:to-fuchsia-400/15 transition group">
           <div class="flex items-center gap-4">
             <div class="w-12 h-12 rounded-lg bg-fuchsia-500/20 flex items-center justify-center text-fuchsia-300 group-hover:bg-fuchsia-500/30 transition">
-              <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
-                <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
-              </svg>
+              <span class="material-symbols-outlined">list_alt</span>
             </div>
             <div>
-              <h3 class="text-white font-semibold">View All Tournaments</h3>
-              <p class="text-white/70 text-sm">Manage registrations</p>
+              <h3 class="text-white font-semibold">Registrations</h3>
+              <p class="text-white/70 text-sm">Manage signups</p>
+            </div>
+          </div>
+        </a>
+
+        <a href="fixtures.html" class="rounded-xl p-5 border bg-gradient-to-br from-emerald-600/20 to-emerald-400/10 border-emerald-400/30 hover:from-emerald-600/25 hover:to-emerald-400/15 transition group">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-300 group-hover:bg-emerald-500/30 transition">
+              <span class="material-symbols-outlined">grid_view</span>
+            </div>
+            <div>
+              <h3 class="text-white font-semibold">Fixtures</h3>
+              <p class="text-white/70 text-sm">Manage matches</p>
+            </div>
+          </div>
+        </a>
+
+        <a href="uploadresults.html" class="rounded-xl p-5 border bg-gradient-to-br from-amber-600/20 to-amber-400/10 border-amber-400/30 hover:from-amber-600/25 hover:to-amber-400/15 transition group">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-300 group-hover:bg-amber-500/30 transition">
+              <span class="material-symbols-outlined">upload_file</span>
+            </div>
+            <div>
+              <h3 class="text-white font-semibold">Results</h3>
+              <p class="text-white/70 text-sm">Upload scores</p>
             </div>
           </div>
         </a>
@@ -477,9 +490,7 @@ export async function renderAdminDashboard() {
             recent.items.length === 0
               ? `
             <div class="p-8 text-center">
-              <svg class="w-16 h-16 mx-auto text-white/20 mb-4" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
-              </svg>
+              <span class="material-symbols-outlined text-6xl text-white/20 mb-4 block">event_busy</span>
               <p class="text-white/60 mb-4">No tournaments yet</p>
               <p class="text-white/40 text-sm mb-6">Create your first tournament to get started</p>
               <a href="admintournament.html" class="inline-block px-6 py-3 bg-primary rounded-lg text-white font-semibold hover:bg-primary/90 transition">
@@ -514,7 +525,7 @@ export async function renderAdminDashboard() {
                     <td class="px-4 py-3 text-white/80 hidden md:table-cell">${escapeHTML(
                       t.sport
                     )}</td>
-                    <td class="px-4 py-3 text-white/80 text-sm hidden lg:table-cell">${formatDate(
+                    <td class="px-4 py-3 text-white/80 text-sm hidden lg:table-cell">${localFormatDate(
                       t.startDateTime
                     )}</td>
                     <td class="px-4 py-3">
@@ -527,7 +538,7 @@ export async function renderAdminDashboard() {
                       </span>
                     </td>
                     <td class="px-4 py-3 text-right">
-                      <a href="adminregistrations.html" class="text-primary hover:text-primary/80 text-sm font-medium">
+                      <a href="adminregistrations.html?id=${t.id}" class="text-primary hover:text-primary/80 text-sm font-medium">
                         View →
                       </a>
                     </td>
