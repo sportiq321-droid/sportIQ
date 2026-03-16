@@ -628,8 +628,9 @@ function initDetails() {
     }
 
     // Initial step choice (honor hash to force Step 2 on return)
-    const hasStep1Data = u.name && u.dob && u.gender && u.mobile;
-    const hasStep2Data = u.role && (u.role === "Player" ? u.sport : true);
+    const isEmpty = (val) => !val || String(val).trim() === "" || String(val).trim() === "null";
+    const hasStep1Data = !isEmpty(u.name) && !isEmpty(u.dob) && !isEmpty(u.gender) && !isEmpty(u.mobile);
+    const hasStep2Data = Boolean(u.role && u.sport && String(u.sport).trim() !== "" && String(u.sport).trim() !== "null");
     const hash = (window.location.hash || "").toLowerCase();
 
     if (hash === "#step-1") {
