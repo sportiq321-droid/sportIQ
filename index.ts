@@ -1000,6 +1000,35 @@ app.patch(
 );
 // ==================== END ACHIEVEMENTS API ====================
 
+// --- Onboarding: Get Certificate Endpoint ---
+app.get(
+  "/api/onboarding/certificate",
+  requireAuth,
+  async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const doc = await prisma.onboardingDoc.findFirst({
+        where: { userId: req.userId! },
+        orderBy: { uploadedAt: "desc" },
+        select: {
+          id: true,
+          forRole: true,
+          fileName: true,
+          mimeType: true,
+          size: true,
+          url: true,
+          status: true,
+          uploadedAt: true,
+        },
+      });
+
+      return res.json(doc);
+    } catch (e) {
+      console.error("GET_CERT_ERROR", e);
+      return res.status(500).json({ error: "Server error" });
+    }
+  }
+);
+
 // --- Onboarding: Upload Certificate Endpoint ---
 app.post(
   "/api/onboarding/certificate",
