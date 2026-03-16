@@ -480,7 +480,14 @@ function initDetails() {
       // 2. Safe Date Parsing
       let isoDate;
       try {
-        isoDate = new Date(dobEl.value).toISOString();
+        const parsedDate = new Date(dobEl.value);
+        const year = parsedDate.getFullYear();
+        const currentYear = new Date().getFullYear();
+        
+        if (year < 1900 || year > currentYear) {
+          return alert(`Please enter a valid year of birth (between 1900 and ${currentYear}).`);
+        }
+        isoDate = parsedDate.toISOString();
       } catch (e) {
         return alert("Invalid date format. Please select a valid date.");
       }
