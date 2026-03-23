@@ -226,7 +226,7 @@ import { getCurrentUser } from "./modules/users.js";
   if (role === "Player") {
     injectHeader();
     const tournamentsPages = new Set([
-      "tournament.html",
+      "tournaments.html",
       "find-tournament.html",
       "mytournaments.html",
     ]);
@@ -248,7 +248,7 @@ import { getCurrentUser } from "./modules/users.js";
     const links = [
       { href: "dashboard.html", label: "Home", icon: svg.home, active: isHome },
       {
-        href: "tournament.html",
+        href: "tournaments.html",
         label: "Tournaments",
         icon: svg.tournaments,
         active: isTournaments,
