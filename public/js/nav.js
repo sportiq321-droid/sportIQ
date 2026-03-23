@@ -119,7 +119,15 @@ import { getCurrentUser } from "./modules/users.js";
       "myachieve.html": { title: "My Achievements", back: "achievements.html" },
       "govverifiy.html": { title: "Verification", back: "dashboard.html" }
     };
-    const config = subPageConfig[path];
+
+    let config = null;
+    const dataset = document.body.dataset;
+    if (dataset.headerTitle) {
+      config = { title: dataset.headerTitle, back: dataset.headerBack || "dashboard.html" };
+    } else {
+      config = subPageConfig[path]; // Fallback for unmigrated pages
+    }
+
     if (!config) return;
     if (document.getElementById("navSubHeader")) return; // avoid duplicate
 
@@ -134,9 +142,8 @@ import { getCurrentUser } from "./modules/users.js";
       <h1 class="flex-1 text-center text-white text-[1.1rem] font-bold tracking-[0.16em] uppercase" style="font-family: 'Oswald', sans-serif;">
         ${config.title}
       </h1>
-      <a href="notifications.html" class="relative w-[38px] h-[38px] rounded-full flex items-center justify-center bg-blue-500/10 border border-blue-500/20 text-white/60 hover:text-white hover:bg-blue-500/20 hover:border-blue-400 transition-colors" aria-label="Notifications">
+      <a href="notifications.html" class="relative w-[38px] h-[38px] rounded-full flex items-center justify-center bg-blue-500/10 border border-blue-500/20 text-white/60 hover:text-white hover:bg-blue-500/20 hover:border-blue-400 transition-colors" aria-label="Notifications" data-notify-bell>
         <span class="material-symbols-outlined text-[20px]">notifications</span>
-        <span class="absolute top-[2px] right-[2px] w-2 h-2 bg-red-500 rounded-full border-[1.5px] border-[#020B18]"></span>
       </a>
     `;
     
