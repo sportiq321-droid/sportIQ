@@ -144,6 +144,7 @@ function initLogin() {
   const msg = document.getElementById("loginMessage");
   const identifierEl = document.getElementById("email");
   const passEl = document.getElementById("password");
+  const rememberEl = document.getElementById("remember");
   const showToggle = document.getElementById("showLoginPass");
 
   // Read optional returnTo for post-login redirection (e.g., assess-situps.html?results=true)
@@ -161,6 +162,7 @@ function initLogin() {
     e.preventDefault();
     const identifier = identifierEl.value.trim();
     const pass = passEl.value;
+    const rememberMe = rememberEl ? rememberEl.checked : false;
     const btn = form.querySelector('button[type="submit"]');
 
     // Use the global utility to prevent double-clicks
@@ -172,7 +174,7 @@ function initLogin() {
     }
 
     try {
-      const me = await API.login({ identifier, password: pass });
+      const me = await API.login({ identifier, password: pass, rememberMe });
       syncLocalSession(me);
       if (msg) {
         msg.textContent = "✅ Login successful!";

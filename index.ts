@@ -120,32 +120,27 @@ interface AuthenticatedRequest extends Request {
 }
 
 // Helpers
-function signToken(userId: string) {
-  return jwt.sign({ sub: userId }, JWT_SECRET, { expiresIn: "7d" });
+function signToken(userId: string, rememberMe: boolean = false) {
+  const expiresIn = rememberMe ? "30d" : "1d";
+  return jwt.sign({ sub: userId }, JWT_SECRET, { expiresIn });
 }
 
 // Per-request cookie options (mobile-safe)
-function getCookieOptions(req: Request): CookieOptions {
+function getCookieOptions(req: Request, rememberMe: boolean = false): CookieOptions {
   const hostname = req.hostname || "";
   const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
   
-  // If it's strictly local HTTP, use lax/false. 
-  // If it's Codespaces (.github.dev) or Production (Vercel/HF), use none/true.
-  if (isLocalhost) {
-    return {
-      httpOnly: true,
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      secure: false, 
-      sameSite: "lax",
-    };
-  } else {
-    return {
-      httpOnly: true,
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      secure: true, 
-      sameSite: "none",
-    };
+  const opts: CookieOptions = {
+    httpOnly: true,
+    secure: !isLocalhost,
+    sameSite: isLocalhost ? "lax" : "none",
+  };
+
+  if (rememberMe) {
+    opts.maxAge = 30 * 24 * 60 * 60 * 1000; // 30 days
   }
+
+  return opts;
 }
 
 function requireAuth(
@@ -523,8 +518,8 @@ app.post("/api/auth/register", async (req: Request, res: Response) => {
     });
 
     // MAKE SURE THESE 3 LINES EXIST:
-    const token = signToken(created.id);
-    const opts = getCookieOptions(req);
+    const token = signToken(created.id, true);
+    const opts = getCookieOptions(req, true);
     res.cookie("sid", token, opts);
 
     await logAudit("USER_REGISTERED", "User", created.id, created.id, {
@@ -550,6 +545,7 @@ app.post("/api/auth/login", async (req: Request, res: Response) => {
   try {
     const identifierRaw = String(req.body?.identifier || "").trim();
     const password = String(req.body?.password || "");
+    const rememberMe = Boolean(req.body?.rememberMe);
     if (!identifierRaw || !password) {
       return res.status(400).json({ error: "Missing credentials" });
     }
@@ -570,9 +566,9 @@ app.post("/api/auth/login", async (req: Request, res: Response) => {
     const ok = await bcrypt.compare(password, user.passwordHash);
     if (!ok) return res.status(401).json({ error: "Invalid credentials" });
 
-    const token = signToken(user.id);
-    const opts = getCookieOptions(req);
-    res.cookie("sid", token, { ...opts });
+    const token = signToken(user.id, rememberMe);
+    const opts = getCookieOptions(req, rememberMe);
+    res.cookie("sid", token, opts);
 
     await logAudit("USER_LOGIN", "User", user.id, user.id);
 
