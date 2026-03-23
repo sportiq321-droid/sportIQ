@@ -111,6 +111,55 @@ import { getCurrentUser } from "./modules/users.js";
     });
   }
 
+  // Shared sub-header injection for safe deep pages
+  function injectSubHeader() {
+    const subPageConfig = {
+      "myachieve.html": { title: "My Achievements", back: "achievements.html" },
+      "govverifiy.html": { title: "Verification", back: "dashboard.html" }
+    };
+    const config = subPageConfig[path];
+    if (!config) return;
+    if (document.getElementById("navSubHeader")) return; // avoid duplicate
+
+    const header = document.createElement("header");
+    header.id = "navSubHeader";
+    header.className = "sticky top-0 z-20 flex justify-between items-center p-3.5 px-4 bg-[#020B18]/92 backdrop-blur-xl border-b border-blue-500/10";
+    
+    header.innerHTML = `
+      <a href="${config.back}" id="dynamicBackBtn" class="w-[38px] h-[38px] rounded-full flex items-center justify-center bg-blue-500/10 border border-blue-500/20 text-white/60 hover:text-white hover:bg-blue-500/20 hover:border-blue-400 transition-colors" aria-label="Back">
+        <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+      </a>
+      <h1 class="flex-1 text-center text-white text-[1.1rem] font-bold tracking-[0.16em] uppercase" style="font-family: 'Oswald', sans-serif;">
+        ${config.title}
+      </h1>
+      <a href="notifications.html" class="relative w-[38px] h-[38px] rounded-full flex items-center justify-center bg-blue-500/10 border border-blue-500/20 text-white/60 hover:text-white hover:bg-blue-500/20 hover:border-blue-400 transition-colors" aria-label="Notifications">
+        <span class="material-symbols-outlined text-[20px]">notifications</span>
+        <span class="absolute top-[2px] right-[2px] w-2 h-2 bg-red-500 rounded-full border-[1.5px] border-[#020B18]"></span>
+      </a>
+    `;
+    
+    // Inject into .page-wrap to prevent breaking grid/flex layouts on sub-pages
+    const targetContainer = document.querySelector(".page-wrap") || document.body;
+    targetContainer.prepend(header);
+
+    const backBtn = header.querySelector("#dynamicBackBtn");
+    if (backBtn) {
+      backBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        try {
+          const ref = document.referrer || "";
+          const hasHistory = window.history.length > 1;
+          const sameOrigin = ref && new URL(ref, window.location.href).origin === window.location.origin;
+          if ((sameOrigin && ref !== window.location.href) || hasHistory) {
+            window.history.back();
+            return;
+          }
+        } catch {}
+        window.location.href = config.back;
+      });
+    }
+  }
+
   // Shared bottom bar renderer
   function injectFooter(links) {
     if (document.getElementById("roleBottomNav")) return; // avoid duplicate
@@ -230,6 +279,7 @@ import { getCurrentUser } from "./modules/users.js";
   // PLAYER
   if (role === "Player") {
     injectHeader();
+    injectSubHeader();
     const tournamentsPages = new Set([
       "tournaments.html",
       "find-tournament.html",
@@ -290,6 +340,7 @@ import { getCurrentUser } from "./modules/users.js";
   // ADMIN
   if (role === "Admin") {
     injectHeader();
+    injectSubHeader();
     const links = [
       {
         href: "dashboard.html",
@@ -335,6 +386,7 @@ import { getCurrentUser } from "./modules/users.js";
   // COACH
   if (role === "Coach") {
     injectHeader();
+    injectSubHeader();
 
     // Smart Verify button toggle logic
     const isOnAssessments = path === "coach-assessments.html";
@@ -406,6 +458,7 @@ import { getCurrentUser } from "./modules/users.js";
   // GOVERNMENT OFFICIAL
   if (role === "Government Official") {
     injectHeader();
+    injectSubHeader();
     const links = [
       {
         href: "dashboard.html",
