@@ -303,7 +303,7 @@ import { getCurrentUser } from "./modules/users.js";
     const links = [
       { href: "dashboard.html", label: "Home", icon: svg.home, active: isHome },
       {
-        href: "tournaments.html",
+        href: "find-tournament.html",
         label: "Tournaments",
         icon: svg.tournaments,
         active: isTournaments,
