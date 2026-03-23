@@ -75,9 +75,14 @@ import { getCurrentUser } from "./modules/users.js";
       </svg>`,
   };
 
-  // Shared header injection for dashboard home (all roles)
+  // Shared header injection for safe top-level pages
   function injectHeader() {
-    if (path !== "dashboard.html") return;
+    const headerAllowedPages = new Set([
+      "dashboard.html",
+      "explore.html",
+      "leaderboard.html"
+    ]);
+    if (!headerAllowedPages.has(path)) return;
     if (document.getElementById("navProfileBtn")) return; // avoid duplicate
     const header = document.createElement("header");
     header.className = "flex justify-between items-center p-4 z-20 relative";
