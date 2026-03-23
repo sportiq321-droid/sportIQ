@@ -93,7 +93,7 @@ import { getCurrentUser } from "./modules/users.js";
           "%22"
         )}" alt="Profile" class="w-full h-full object-cover"/>
       </div>
-      <a href="notifications.html" class="relative w-12 h-12 flex items-center justify-center text-white/80 hover:text-white transition-colors" title="Notifications" aria-label="Notifications">
+      <a href="notifications.html" class="relative w-12 h-12 flex items-center justify-center text-white/80 hover:text-white transition-colors" title="Notifications" aria-label="Notifications" data-notify-bell>
         ${svg.notifications}
       </a>`;
     document.body.prepend(header);
