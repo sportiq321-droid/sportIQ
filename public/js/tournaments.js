@@ -482,18 +482,10 @@ function showDetails(t) {
               "Registration submitted for approval. Check 'My Tournaments' for status.";
           } else {
             note.textContent =
-              "Registration confirmed! Redirecting to My Tournaments...";
+              "Registration confirmed!";
           }
           note.classList.remove("hidden");
         }
-
-        // Redirect to My Tournaments
-        setTimeout(
-          () => {
-            window.location.href = "mytournaments.html";
-          },
-          result.status === "PENDING" ? 1500 : 900
-        );
       } catch (error) {
         console.error("Registration error:", error);
 
