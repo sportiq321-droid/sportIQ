@@ -126,6 +126,44 @@
         border-radius: 50%; border: 1.5px solid var(--blue-950);
       }
 
+      /* ── LINE TOGGLE ── */
+      .line-toggle {
+        display: flex; position: relative;
+        border-bottom: 1px solid rgba(59,130,246,0.12);
+        margin: 0 -16px 12px;
+        padding: 0 16px;
+      }
+      .line-toggle > div { flex: 1; }
+      .line-toggle-option {
+        display: flex; align-items: center; justify-content: center; gap: 6px;
+        padding: 10px 0;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .82rem; font-weight: 700; letter-spacing: .12em;
+        text-transform: uppercase; color: var(--white-ghost);
+        cursor: pointer; transition: color .25s;
+        text-decoration: none; white-space: nowrap;
+      }
+      .line-toggle-option.active { color: var(--white-pure); }
+      .line-toggle-slider {
+        position: absolute; bottom: 0; left: 50%;
+        width: calc(50% - 16px); height: 2px;
+        background: linear-gradient(90deg, var(--blue-500), var(--accent-sky));
+        border-radius: 2px;
+        transition: left .3s cubic-bezier(.4,0,.2,1);
+        box-shadow: 0 0 8px rgba(59,130,246,0.5);
+      }
+
+      /* badge */
+      .badge-soft {
+        display: inline-flex; align-items: center; justify-content: center;
+        min-width: 18px; height: 18px; padding: 0 5px;
+        border-radius: 10px;
+        background: rgba(59,130,246,0.15);
+        border: 1px solid rgba(59,130,246,0.28);
+        font-size: .65rem; font-weight: 700; letter-spacing: .04em;
+        color: var(--blue-300);
+      }
+
       /* ── FILTER CHIPS ── */
       .chips-row {
         display: flex; gap: 7px;
@@ -278,11 +316,27 @@
           <a href="profile.html" aria-label="Profile">
             <img id="headerAvatar" src="img/defaultavatar.jpg" alt="Profile avatar" class="header-avatar" />
           </a>
-          <span class="header-title">My Tournaments</span>
+          <span class="header-title">Tournaments</span>
           <a href="notifications.html" class="header-bell" aria-label="Notifications" data-notify-bell>
             <span class="material-symbols-outlined">notifications</span>
             <span class="notif-dot"></span>
           </a>
+        </div>
+
+        <!-- Toggle -->
+        <div class="line-toggle">
+          <div class="flex-1">
+            <a href="find-tournament.html" class="line-toggle-option" style="justify-content:center">
+              <span>Find Tournaments</span>
+            </a>
+          </div>
+          <div class="flex-1">
+            <span class="line-toggle-option active">
+              My Tournaments
+              <span id="myTournamentsCount" class="badge-soft" aria-label="Ongoing tournaments count">0</span>
+            </span>
+          </div>
+          <div class="line-toggle-slider"></div>
         </div>
 
         <!-- Filter chips -->
@@ -359,6 +413,29 @@
       } catch {
         img.src = "img/defaultavatar.jpg";
       }
+    </script>
+
+    <script type="module">
+      import { getCurrentUser } from "./js/modules/users.js";
+      import { loadData } from "./js/core/storage.js";
+      const el = document.getElementById("myTournamentsCount");
+      try {
+        const user = getCurrentUser();
+        const data = loadData();
+        let cnt = 0;
+        if (user && Array.isArray(user.registeredTournaments)) {
+          const now = new Date();
+          user.registeredTournaments.forEach((r) => {
+            const status = String(r.regStatus || "CONFIRMED").toUpperCase();
+            if (status === "REJECTED") return;
+            const admin = (data.tournaments || []).find((t) => t.id === r.id);
+            if (admin && admin.endDateTime) {
+              if (now <= new Date(admin.endDateTime)) cnt++;
+            } else { cnt++; }
+          });
+        }
+        if (el) el.textContent = String(cnt);
+      } catch {}
     </script>
 
     <script type="module" src="js/nav.js"></script>
