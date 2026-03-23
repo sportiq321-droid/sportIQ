@@ -80,7 +80,9 @@ import { getCurrentUser } from "./modules/users.js";
     const headerAllowedPages = new Set([
       "dashboard.html",
       "explore.html",
-      "leaderboard.html"
+      "leaderboard.html",
+      "find-tournament.html",
+      "mytournaments.html"
     ]);
     if (!headerAllowedPages.has(path)) return;
     if (document.getElementById("navProfileBtn")) return; // avoid duplicate

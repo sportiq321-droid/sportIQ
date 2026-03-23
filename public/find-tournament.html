@@ -417,22 +417,6 @@
 
     <div class="page-wrap">
 
-      <!-- ── HEADER ── -->
-      <header>
-        <div class="header-row">
-          <a href="profile.html" aria-label="Profile">
-            <img id="headerAvatar" src="img/defaultavatar.jpg" alt="Profile avatar" class="header-avatar" />
-          </a>
-
-          <span class="header-title">Tournaments</span>
-
-          <a href="notifications.html" class="header-bell" aria-label="Notifications" data-notify-bell>
-            <span class="material-symbols-outlined">notifications</span>
-            <span class="notif-dot"></span>
-          </a>
-        </div>
-      </header>
-
       <!-- ── CONTENT ── -->
       <main>
 
@@ -575,14 +559,6 @@
     <script type="module">
       import { requireLogin } from "./js/core/auth.js";
       requireLogin();
-      import { getCurrentUser } from "./js/modules/users.js";
-      const img = document.getElementById("headerAvatar");
-      try {
-        const u = getCurrentUser();
-        img.src = u?.profilePic || "img/defaultavatar.jpg";
-      } catch {
-        img.src = "img/defaultavatar.jpg";
-      }
     </script>
 
     <script type="module">
