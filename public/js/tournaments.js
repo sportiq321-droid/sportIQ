@@ -774,28 +774,80 @@ function tryLoadSequential(urls) {
 
 /* ---------- Samples (one only) ---------- */
 function makeSampleTournaments(state, district, preferSport) {
-  const date1 = new Date();
-  date1.setDate(date1.getDate() + 7);
-  const date2 = new Date();
-  date2.setDate(date2.getDate() + 9);
+  const d1 = new Date(); d1.setDate(d1.getDate() + 7);
+  const d2 = new Date(); d2.setDate(d2.getDate() + 9);
+  const d3 = new Date(); d3.setDate(d3.getDate() + 14);
+  const d4 = new Date(); d4.setDate(d4.getDate() + 16);
+  const d5 = new Date(); d5.setDate(d5.getDate() + 21);
+  const d6 = new Date(); d6.setDate(d6.getDate() + 22);
 
-  const dateStr = `${date1.toLocaleString(undefined, {
-    month: "short",
-    day: "numeric",
-  })} - ${date2.toLocaleString(undefined, { month: "short", day: "numeric" })}`;
+  const fmt = (d) => d.toLocaleString(undefined, { month: "short", day: "numeric" });
 
   return [
     {
-      id: `sample_${state.replace(/\s+/g, "")}_${district.replace(/\s+/g, "")}`,
-      name: `${district} District Championship`,
-      date: dateStr,
-      venue: `${district} Stadium`,
-      sport: preferSport || "Football",
+      id: `sample_1_${Date.now()}`,
+      name: `${district} Premier ${preferSport || 'Cricket'} League`,
+      date: `${fmt(d1)} - ${fmt(d2)}`,
+      venue: `${district} Central Stadium`,
+      sport: preferSport || 'Cricket',
       state,
       district,
-      description: `District-level open championship in ${district}.`,
+      description: `The biggest ${preferSport || 'Cricket'} tournament in ${district}. Open to all local clubs and academies.`,
       needsApproval: false,
       _source: "sample",
+      registration: { fee: "₹500", lastDate: d1.toISOString() }
+    },
+    {
+      id: `sample_2_${Date.now()}`,
+      name: `State Level Football Cup`,
+      date: `${fmt(d3)} - ${fmt(d4)}`,
+      venue: `${district} Sports Complex`,
+      sport: 'Football',
+      state,
+      district,
+      description: `A competitive state-level football cup hosted in ${district}. Show your skills on the big stage.`,
+      needsApproval: true,
+      _source: "sample",
+      registration: { fee: "₹1000", lastDate: d3.toISOString() }
+    },
+    {
+      id: `sample_3_${Date.now()}`,
+      name: `${district} Badminton Open`,
+      date: `${fmt(d5)} - ${fmt(d6)}`,
+      venue: `${district} Indoor Arena`,
+      sport: 'Badminton',
+      state,
+      district,
+      description: `Open badminton tournament for singles and doubles categories. Exciting prizes to be won.`,
+      needsApproval: false,
+      _source: "sample",
+      registration: { fee: "₹300", lastDate: d5.toISOString() }
+    },
+    {
+      id: `sample_4_${Date.now()}`,
+      name: `Youth Athletics Meet`,
+      date: `${fmt(d1)}`,
+      venue: `${district} University Ground`,
+      sport: 'Athletics',
+      state,
+      district,
+      description: `Track and field events for U-18 athletes. A great platform for young talent.`,
+      needsApproval: false,
+      _source: "sample",
+      registration: { fee: "Free", lastDate: d1.toISOString() }
+    },
+    {
+      id: `sample_5_${Date.now()}`,
+      name: `Pro Kabaddi Challenge`,
+      date: `${fmt(d3)} - ${fmt(d5)}`,
+      venue: `${district} Community Hall`,
+      sport: 'Kabaddi',
+      state,
+      district,
+      description: `High-octane Kabaddi action featuring top teams from the district and surrounding areas.`,
+      needsApproval: true,
+      _source: "sample",
+      registration: { fee: "₹800", lastDate: d3.toISOString() }
     },
   ];
 }

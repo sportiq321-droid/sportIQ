@@ -200,19 +200,20 @@
         color: var(--blue-300);
         pointer-events: none;
       }
-      /* nudge icon up if error text is below */
-      .input-glass.has-err .abs-icon { top: calc(50% - 8px); }
 
       .form-input {
         width: 100%; height: 52px;
-        padding: 0 16px 0 46px;
-        background: transparent;
-        border: none; outline: none;
+        padding: 0 16px 0 46px !important;
+        background: transparent !important;
+        border: none !important; 
+        box-shadow: none !important;
+        outline: none;
         color: var(--white-pure);
         font-family: 'Rajdhani', sans-serif;
         font-size: .95rem; font-weight: 500;
         caret-color: var(--blue-400);
       }
+      .form-input:focus { box-shadow: none !important; border: none !important; }
       .form-input::placeholder { color: var(--white-ghost); }
       .form-input option { background: #061527; color: #fff; }
       /* remove default datalist arrow on Webkit */
@@ -440,23 +441,29 @@
         <!-- STEP 1 — Search -->
         <div id="searchBlock">
 
-          <div class="input-glass">
-            <span class="material-symbols-outlined abs-icon">search</span>
-            <input id="query" type="search" placeholder="Search by name or location" class="form-input" />
+          <div>
+            <div class="input-glass">
+              <span class="material-symbols-outlined abs-icon">search</span>
+              <input id="query" type="search" placeholder="Search by name or location" class="form-input" />
+            </div>
           </div>
 
-          <div class="input-glass has-err">
-            <span class="material-symbols-outlined abs-icon">public</span>
-            <input id="stateInput" type="text" list="stateList" autocomplete="off" placeholder="Select State" class="form-input" />
-            <datalist id="stateList"></datalist>
-            <p id="stateErr" class="field-error"></p>
+          <div>
+            <div class="input-glass">
+              <span class="material-symbols-outlined abs-icon">public</span>
+              <input id="stateInput" type="text" list="stateList" autocomplete="off" placeholder="Select State" class="form-input" />
+              <datalist id="stateList"></datalist>
+            </div>
+            <p id="stateErr" class="field-error empty:hidden mt-1"></p>
           </div>
 
-          <div class="input-glass has-err">
-            <span class="material-symbols-outlined abs-icon">location_on</span>
-            <input id="districtInput" type="text" list="districtList" autocomplete="off" placeholder="Select District" class="form-input" />
-            <datalist id="districtList"></datalist>
-            <p id="districtErr" class="field-error"></p>
+          <div>
+            <div class="input-glass">
+              <span class="material-symbols-outlined abs-icon">location_on</span>
+              <input id="districtInput" type="text" list="districtList" autocomplete="off" placeholder="Select District" class="form-input" />
+              <datalist id="districtList"></datalist>
+            </div>
+            <p id="districtErr" class="field-error empty:hidden mt-1"></p>
           </div>
 
           <div class="btn-row hidden" id="showRow">
