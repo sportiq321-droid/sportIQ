@@ -573,6 +573,8 @@
     <script type="module" src="js/tournaments.js"></script>
 
     <script type="module">
+      import { requireLogin } from "./js/core/auth.js";
+      requireLogin();
       import { getCurrentUser } from "./js/modules/users.js";
       const img = document.getElementById("headerAvatar");
       try {
