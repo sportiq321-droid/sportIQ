@@ -1,3 +1,5 @@
+import { getCurrentUser } from "./modules/users.js";
+
 // ==================== FIXTURES PAGE ====================
 
 let tournamentId = null;
@@ -8,7 +10,7 @@ let fixturesData = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
   // Role guard - Admin only
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const user = getCurrentUser() || {};
   if (!user || user.role !== 'Admin') {
     alert('Access denied. Admin only.');
     window.location.href = '/dashboard.html';
