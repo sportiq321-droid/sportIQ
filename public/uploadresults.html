@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Upload Results - SportIQ</title>
+
+    <script src="js/tailwind-config.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link rel="stylesheet" href="css/global.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      :root {
+        --blue-950: #020B18;
+        --blue-900: #061527;
+        --blue-500: #1A5FD4;
+        --blue-400: #3B82F6;
+        --blue-300: #6EA8FE;
+        --white-pure: #FFFFFF;
+        --white-ghost: #A8BBDA;
+        --accent-sky: #38BDF8;
+      }
+
+      html, body {
+        min-height: 100vh;
+        background: var(--blue-950);
+        color: var(--white-pure);
+        font-family: 'Rajdhani', sans-serif;
+        overflow-x: hidden;
+      }
+
+      /* ── BG ── */
+      body::before {
+        content: '';
+        position: fixed; inset: 0; z-index: 0;
+        background:
+          radial-gradient(ellipse at 25% 30%, rgba(26,95,212,0.18) 0%, transparent 55%),
+          radial-gradient(ellipse at 75% 70%, rgba(56,189,248,0.07) 0%, transparent 50%),
+          linear-gradient(135deg, #020B18 0%, #040F20 100%);
+        pointer-events: none;
+      }
+      body::after {
+        content: '';
+        position: fixed; inset: 0; z-index: 0;
+        background-image:
+          linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+        background-size: 40px 40px;
+        pointer-events: none;
+      }
+
+      /* ── PARTICLES ── */
+      .particles { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
+      .p { position:absolute; border-radius:50%; animation:floatUp linear infinite; opacity:0; }
+      @keyframes floatUp {
+        0%   { transform:translateY(100vh) scale(0); opacity:0; }
+        10%  { opacity:0.4; }
+        90%  { opacity:0.15; }
+        100% { transform:translateY(-10vh) scale(1.2); opacity:0; }
+      }
+
+      /* ── PAGE WRAP ── */
+      .page-wrap {
+        position: relative; z-index: 1;
+        display: flex; flex-direction: column;
+        min-height: 100vh;
+      }
+
+      /* ── MAIN ── */
+      main {
+        position: relative; z-index: 1;
+        flex: 1;
+        display: flex; align-items: center; justify-content: center;
+        padding: 24px;
+        padding-bottom: 100px;
+      }
+
+      /* ── PLACEHOLDER CARD ── */
+      .placeholder-card {
+        text-align: center;
+        background: rgba(6,21,39,0.75);
+        border: 1px solid rgba(59,130,246,0.20);
+        border-radius: 24px;
+        padding: 52px 40px;
+        backdrop-filter: blur(20px);
+        max-width: 460px; width: 100%;
+        position: relative; overflow: hidden;
+        animation: fadeUp .6s ease both;
+      }
+      .placeholder-card::before {
+        content: '';
+        position: absolute; top: 0; left: 0; right: 0; height: 2px;
+        background: linear-gradient(90deg, var(--blue-500), var(--accent-sky));
+      }
+      .placeholder-card::after {
+        content: '';
+        position: absolute; bottom: 14px; right: 14px;
+        width: 22px; height: 22px;
+        border-bottom: 1.5px solid rgba(59,130,246,0.3);
+        border-right:  1.5px solid rgba(59,130,246,0.3);
+        border-radius: 0 0 4px 0;
+      }
+      .corner-tl {
+        position: absolute; top: 14px; left: 14px;
+        width: 22px; height: 22px;
+        border-top:  1.5px solid rgba(59,130,246,0.3);
+        border-left: 1.5px solid rgba(59,130,246,0.3);
+        border-radius: 4px 0 0 0;
+      }
+
+      @keyframes fadeUp {
+        from { opacity:0; transform:translateY(24px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+
+      .icon-ring {
+        width: 72px; height: 72px; border-radius: 50%;
+        border: 2px solid rgba(59,130,246,0.35);
+        background: rgba(59,130,246,0.08);
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 22px;
+        box-shadow: 0 0 28px rgba(59,130,246,0.2);
+        animation: ringPulse 3s ease-in-out infinite;
+      }
+      @keyframes ringPulse {
+        0%,100% { box-shadow: 0 0 18px rgba(59,130,246,0.2); }
+        50%      { box-shadow: 0 0 36px rgba(59,130,246,0.45); }
+      }
+      .icon-ring .material-symbols-outlined {
+        font-size: 32px;
+        color: var(--blue-300);
+      }
+
+      .placeholder-title {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.5rem; letter-spacing: .08em;
+        text-transform: uppercase; color: var(--white-pure);
+        margin-bottom: 12px;
+      }
+
+      .placeholder-desc {
+        font-size: .92rem; font-weight: 500;
+        color: var(--white-ghost); line-height: 1.6;
+        margin-bottom: 24px;
+      }
+
+      .btn-primary-action {
+        display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        padding: 12px 28px; border-radius: 12px;
+        background: linear-gradient(135deg, var(--blue-500), var(--blue-600));
+        border: none; color: #fff; text-decoration: none;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: .95rem; font-weight: 700; letter-spacing: .1em;
+        text-transform: uppercase;
+        box-shadow: 0 0 16px rgba(26,95,212,0.4);
+        transition: transform .2s, box-shadow .3s;
+      }
+      .btn-primary-action:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 26px rgba(59,130,246,0.6);
+      }
+    </style>
+  </head>
+
+  <body data-page="uploadresults.html" data-header-title="Upload Results" data-header-back="dashboard.html">
+    <div class="particles" id="particles"></div>
+
+    <div class="page-wrap">
+      <main>
+        <div class="placeholder-card">
+          <div class="corner-tl"></div>
+
+          <div class="icon-ring">
+            <span class="material-symbols-outlined">upload_file</span>
+          </div>
+
+          <h1 class="placeholder-title">Central Upload Coming Soon</h1>
+          <p class="placeholder-desc">
+            Match results and player statistics are currently entered directly within each tournament's <strong>Fixtures</strong> view. Bulk CSV uploads are in development!
+          </p>
+
+          <a href="dashboard.html" class="btn-primary-action">
+            <span class="material-symbols-outlined">home</span>
+            Go to Dashboard
+          </a>
+        </div>
+      </main>
+    </div>
+
+    <script type="module" src="js/notify-dot.js"></script>
+    <script type="module" src="js/nav.js"></script>
+
+    <script>
+      const pc = document.getElementById('particles');
+      const cols = ['#3B82F6','#6EA8FE','#38BDF8','#ffffff'];
+      for (let i = 0; i < 18; i++) {
+        const p = document.createElement('div');
+        p.className = 'p';
+        const s = Math.random() * 3 + 1.5;
+        p.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${9+Math.random()*12}s;animation-delay:${Math.random()*10}s;`;
+        pc.appendChild(p);
+      }
+    </script>
+  </body>
+</html>
