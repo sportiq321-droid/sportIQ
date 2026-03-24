@@ -430,7 +430,10 @@
   <main id="fixturesContainer" class="hidden">
     <div class="action-bar">
       <span id="matchCount"></span>
-      <button id="viewLeaderboardBtn">View Tournament Leaderboard</button>
+      <div style="display:flex; gap:12px; align-items:center;">
+        <button id="advanceRoundBtn" class="hidden" style="background: linear-gradient(135deg, var(--blue-500), var(--blue-600)); color: white; border: none; padding: 6px 14px; border-radius: 6px; font-family: 'Rajdhani', sans-serif; font-size: .85rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; cursor: pointer; box-shadow: 0 0 10px rgba(26,95,212,0.4);">Advance Round</button>
+        <button id="viewLeaderboardBtn">View Tournament Leaderboard</button>
+      </div>
     </div>
     <div id="roundsContainer"></div>
   </main>

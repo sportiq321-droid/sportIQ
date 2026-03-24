@@ -4003,6 +4003,99 @@ app.post(
   }
 );
 
+// TASK 1.5: Advance Round (Manual Knockout Progression)
+app.post(
+  "/api/admin/tournaments/:id/advance-round",
+  requireAuth,
+  requireAdmin,
+  async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const tournamentId = req.params.id;
+      const adminId = req.userId!;
+
+      // 1. Verify tournament
+      const tournament = await prisma.tournament.findUnique({
+        where: { id: tournamentId },
+      });
+
+      if (!tournament) return res.status(404).json({ error: "Tournament not found" });
+      if (tournament.createdBy !== adminId) return res.status(403).json({ error: "Not authorized" });
+      if (tournament.format && tournament.format !== "KNOCKOUT") {
+        return res.status(400).json({ error: "Only knockout tournaments can advance rounds" });
+      }
+
+      // 2. Fetch matches to determine current round state
+      const matches = await prisma.match.findMany({
+        where: { tournamentId },
+        orderBy: [{ round: "desc" }, { matchNumber: "asc" }],
+      });
+
+      if (!matches.length) return res.status(400).json({ error: "No fixtures generated yet" });
+
+      const currentRound = matches[0].round;
+      const currentRoundMatches = matches.filter(m => m.round === currentRound);
+
+      // Explicitly prevent duplicate next-round creation
+      const nextRound = currentRound + 1;
+      const nextRoundExists = await prisma.match.findFirst({
+        where: { tournamentId, round: nextRound }
+      });
+      if (nextRoundExists) {
+        return res.status(400).json({ error: `Round ${nextRound} fixtures already exist.` });
+      }
+
+      // 3. Prevent advancement if any match is incomplete
+      const incomplete = currentRoundMatches.some(m => m.status !== "COMPLETED");
+      if (incomplete) {
+        return res.status(400).json({ error: "All matches in the current round must be completed first" });
+      }
+
+      // 4. Collect winners in stable order (ascending match number)
+      currentRoundMatches.sort((a, b) => a.matchNumber - b.matchNumber);
+      const winners = [];
+      
+      for (const match of currentRoundMatches) {
+        if (match.winner === "DRAW") {
+          return res.status(400).json({ error: `Match ${match.matchNumber} is a DRAW. Knockouts require a winner.` });
+        }
+        if (match.winner === "A" && match.teamAId) {
+          winners.push({ id: match.teamAId, name: match.teamA });
+        } else if (match.winner === "B" && match.teamBId) {
+          winners.push({ id: match.teamBId, name: match.teamB });
+        }
+      }
+
+      if (winners.length <= 1) {
+        return res.status(400).json({ error: "Tournament complete. Only one winner remains." });
+      }
+
+      // 5. Generate next round
+      const fixtures = [];
+
+      for (let i = 0; i < winners.length; i += 2) {
+        const playerA = winners[i];
+        const playerB = winners[i + 1];
+        const matchNumber = Math.floor(i / 2) + 1;
+
+        if (playerB) {
+          fixtures.push({ tournamentId, round: nextRound, matchNumber, teamA: playerA.name, teamAId: playerA.id, teamB: playerB.name, teamBId: playerB.id, status: "SCHEDULED" });
+        } else {
+          // Odd number of winners - Auto BYE
+          fixtures.push({ tournamentId, round: nextRound, matchNumber, teamA: playerA.name, teamAId: playerA.id, teamB: "BYE", teamBId: null, winner: "A", scoreA: 0, scoreB: 0, status: "COMPLETED" });
+        }
+      }
+
+      await prisma.match.createMany({ data: fixtures });
+      await logAudit("ROUND_ADVANCED", "Tournament", tournamentId, adminId, { round: nextRound, matches: fixtures.length });
+
+      return res.status(201).json({ message: `Advanced to Round ${nextRound}`, round: nextRound, count: fixtures.length });
+    } catch (e) {
+      console.error("ADVANCE_ROUND_ERROR", e);
+      return res.status(500).json({ error: "Failed to advance round" });
+    }
+  }
+);
+
 // TASK 2: Get Fixtures
 app.get(
   "/api/admin/tournaments/:id/fixtures",

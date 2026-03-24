@@ -96,6 +96,12 @@ function setupEventListeners() {
       window.location.href = `/leaderboard.html?tournamentId=${tournamentId}`;
     });
   }
+  
+  // Advance round button
+  const advanceRoundBtn = document.getElementById('advanceRoundBtn');
+  if (advanceRoundBtn) {
+    advanceRoundBtn.addEventListener('click', handleAdvanceRound);
+  }
 }
 
 // ==================== DATA LOADING ====================
@@ -191,6 +197,22 @@ function renderFixtures() {
       matchesContainer.appendChild(createMatchCard(match));
     });
   });
+
+  // Manage "Advance Round" button visibility
+  const advanceBtn = document.getElementById('advanceRoundBtn');
+  if (advanceBtn && fixturesData.length > 0) {
+    const roundNumbers = Object.keys(rounds).map(Number);
+    const latestRound = Math.max(...roundNumbers);
+    const latestMatches = rounds[latestRound] || [];
+    const allCompleted = latestMatches.every(m => m.status === 'COMPLETED');
+    
+    // Show if all completed and we have more than 1 match in the round (meaning it's not the final)
+    if (allCompleted && latestMatches.length > 1) {
+      advanceBtn.classList.remove('hidden');
+    } else {
+      advanceBtn.classList.add('hidden');
+    }
+  }
 }
 
 function createMatchCard(match) {
@@ -311,6 +333,28 @@ async function handleGenerateFixtures() {
     showEmptyState();
   } finally {
     if (btn) setButtonLoading(btn, false, 'Generate');
+  }
+}
+
+// ==================== ADVANCE ROUND ====================
+
+async function handleAdvanceRound() {
+  const btn = document.getElementById('advanceRoundBtn');
+  const originalText = btn.textContent;
+  if (btn) btn.textContent = 'Advancing...';
+  try {
+    const res = await fetch(`/api/admin/tournaments/${tournamentId}/advance-round`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include'
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to advance round');
+    await loadTournamentAndFixtures();
+  } catch (error) {
+    alert(error.message);
+  } finally {
+    if (btn) btn.textContent = originalText;
   }
 }
 
