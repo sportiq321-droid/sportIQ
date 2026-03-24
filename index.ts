@@ -1,3 +1,4 @@
+import "dotenv/config";
 import express, { Request, Response, NextFunction, CookieOptions } from "express";
 import cookieParser from "cookie-parser";
 import jwt from "jsonwebtoken";
@@ -1898,6 +1899,10 @@ app.post(
         description,
         needsApproval,
         status,
+        registrationFee,
+        registrationDocs,
+        registrationLastDate,
+        media,
       } = req.body;
 
       // Validate required fields
@@ -1929,6 +1934,10 @@ app.post(
           description: description ? String(description).trim() : "",
           needsApproval: needsApproval === true,
           status: tournamentStatus,
+          registrationFee: registrationFee !== undefined && registrationFee !== null && registrationFee !== "" ? Number(registrationFee) : null,
+          registrationDocs: registrationDocs !== undefined ? registrationDocs : null,
+          registrationLastDate: registrationLastDate ? new Date(registrationLastDate) : null,
+          media: media !== undefined ? media : null,
           createdBy: userId,
           // If status is PUBLISHED, set publishedAt and publishedBy
           ...(tournamentStatus === "PUBLISHED" && {
@@ -1977,7 +1986,7 @@ app.put(
 
       const hasRegistrations = tournament._count.registrations > 0;
 
-      const { description, venue, startDateTime, endDateTime } = req.body;
+      const { description, venue, startDateTime, endDateTime, registrationFee, registrationDocs, registrationLastDate, media } = req.body;
 
       // If tournament has registrations, restrict to safe fields only
       if (hasRegistrations) {
@@ -1991,6 +2000,9 @@ app.put(
         }
         if (endDateTime !== undefined) {
           safeUpdates.endDateTime = new Date(endDateTime);
+        }
+        if (media !== undefined) {
+          safeUpdates.media = media;
         }
 
         const updated = await prisma.tournament.update({
@@ -2021,6 +2033,18 @@ app.put(
       }
       if (endDateTime !== undefined) {
         updateData.endDateTime = new Date(endDateTime);
+      }
+      if (registrationFee !== undefined) {
+        updateData.registrationFee = registrationFee !== null && registrationFee !== "" ? Number(registrationFee) : null;
+      }
+      if (registrationDocs !== undefined) {
+        updateData.registrationDocs = registrationDocs;
+      }
+      if (registrationLastDate !== undefined) {
+        updateData.registrationLastDate = registrationLastDate ? new Date(registrationLastDate) : null;
+      }
+      if (media !== undefined) {
+        updateData.media = media;
       }
 
       const updated = await prisma.tournament.update({
@@ -2732,7 +2756,10 @@ app.get(
             endDateTime: true,
             needsApproval: true,
             status: true,
-            // If you later add media/banner columns, you can select here
+            registrationFee: true,
+            registrationDocs: true,
+            registrationLastDate: true,
+            media: true,
           },
         }),
         prisma.tournament.count({ where }),
@@ -2778,6 +2805,10 @@ app.get(
           endDateTime: true,
           needsApproval: true,
           status: true,
+          registrationFee: true,
+          registrationDocs: true,
+          registrationLastDate: true,
+          media: true,
         },
       });
 

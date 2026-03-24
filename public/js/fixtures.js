@@ -1,4 +1,5 @@
 import { getCurrentUser } from "./modules/users.js";
+import API from "./api.js";
 
 // ==================== FIXTURES PAGE ====================
 
@@ -114,11 +115,11 @@ async function loadTournamentAndFixtures() {
   
   try {
     // Fetch tournament details
-    tournamentData = await getTournamentDetails(tournamentId);
+    tournamentData = await API.getTournamentDetails(tournamentId);
     updateTournamentHeader();
     
     // Fetch fixtures
-    fixturesData = await getFixtures(tournamentId);
+    fixturesData = await API.getFixtures(tournamentId);
     
     if (fixturesData.length === 0) {
       showEmptyState();
@@ -320,7 +321,7 @@ async function handleGenerateFixtures() {
   if (btn) setButtonLoading(btn, true, 'Generate');
   
   try {
-    await generateFixtures(tournamentId);
+    await API.generateFixtures(tournamentId);
     const confirmModal = document.getElementById('confirmModal');
     if (confirmModal) confirmModal.close();
     await loadTournamentAndFixtures();
@@ -440,7 +441,7 @@ async function handleScoreSubmit(e) {
   };
   
   try {
-    await updateMatchScore(matchId, data);
+    await API.updateMatchScore(matchId, data);
     document.getElementById('scoreModal').close();
     await loadTournamentAndFixtures();
   } catch (error) {
@@ -520,7 +521,7 @@ async function handleStatsSubmit(e) {
   });
   
   try {
-    await addPlayerMatchStats(matchId, data);
+    await API.addPlayerMatchStats(matchId, data);
     
     const statsSuccess = document.getElementById('statsSuccess');
     if (statsSuccess) {
