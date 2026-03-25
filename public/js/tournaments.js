@@ -356,8 +356,9 @@ function showDetails(t) {
   const docsNone = document.getElementById("dDocsNone");
   if (docsList && docsNone) {
     docsList.innerHTML = "";
-    const docs =
-      t.registration && Array.isArray(t.registration.documents)
+    const docs = Array.isArray(t.registrationDocs)
+      ? t.registrationDocs
+      : t.registration && Array.isArray(t.registration.documents)
         ? t.registration.documents
         : [];
     if (docs.length) {
@@ -382,7 +383,10 @@ function showDetails(t) {
   let hasAnyFees = false;
 
   if (feeRow && feeEl) {
-    const fee = t.registration && t.registration.fee;
+    const fee =
+      t.registrationFee !== undefined && t.registrationFee !== null
+        ? t.registrationFee
+        : t.registration && t.registration.fee;
     if (fee !== undefined && fee !== null && String(fee).trim() !== "") {
       const feeStr =
         typeof fee === "number"
@@ -399,7 +403,9 @@ function showDetails(t) {
   }
 
   if (deadlineRow && deadlineEl) {
-    const lastDate = t.registration && t.registration.lastDate;
+    const lastDate =
+      t.registrationLastDate ||
+      (t.registration && t.registration.lastDate);
     if (lastDate) {
       const d = new Date(lastDate);
       if (!isNaN(d)) {
@@ -684,6 +690,13 @@ function switchStep(step) {
   const el = document.querySelector(`.t-step-${step}`);
   if (el) el.classList.remove("hidden");
   if (el) el.classList.add("active");
+
+  /* Hide global page header on detail view to prevent double header.
+     .step3-header provides its own back-btn + title + bell. */
+  const pageHeader = document.querySelector(".page-wrap > header");
+  if (pageHeader) {
+    pageHeader.classList.toggle("hidden", step === 3);
+  }
 }
 
 /* ---------- Formatting & placeholders ---------- */
