@@ -9,4 +9,4 @@ pinned: false
 ---
 
 # SportIQ Backend
-This repository powers the Node.js + Python AI backend for SportIQ.
+This repository powers the Node.js + Python AI backend for SportIQ
